@@ -4,8 +4,6 @@
 :root{--pu:#6c3fc5;--pu-dark:#4a2a8a;--pu-light:#ede8fa;--pu-mid:#8b5cf6}
 body{font-family:var(--font-sans);background:#f7f5ff;min-height:100vh;display:flex;flex-direction:column}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-
-/* NAV */
 nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:#1a0a3c;letter-spacing:0.01em}
 .logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
@@ -15,13 +13,9 @@ nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;
 .nav-btn.active{background:var(--pu);color:#fff;border-color:var(--pu)}
 .cart-wrap{position:relative}
 .cart-badge{position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700}
-
-/* LAYOUT */
 .main{flex:1}
 .page{display:none;padding:24px}
 .page.active{display:block}
-
-/* POLLS */
 .polls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:14px;max-width:1100px;margin:0 auto}
 .poll-card{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;cursor:pointer;transition:all 0.15s}
 .poll-card:hover{border-color:var(--pu);box-shadow:0 4px 16px rgba(108,63,197,0.1);transform:translateY(-2px)}
@@ -30,8 +24,6 @@ nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;
 .vote-now-btn{padding:7px 20px;border:1.5px solid var(--pu);border-radius:8px;font-size:12px;font-weight:600;color:var(--pu);background:#fff;cursor:pointer;transition:all 0.15s}
 .vote-now-btn:hover{background:var(--pu);color:#fff}
 .empty-st{grid-column:1/-1;text-align:center;padding:60px;color:#8b79ad;font-size:14px}
-
-/* VOTE */
 .vote-inner{max-width:580px;margin:0 auto}
 .back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#5a4a7a;background:#fff;cursor:pointer;margin-bottom:18px;font-weight:500}
 .back-btn:hover{border-color:var(--pu);color:var(--pu)}
@@ -56,8 +48,6 @@ nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;
 .add-cart-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;transition:all 0.15s}
 .add-cart-btn:hover{background:var(--pu-dark)}
 .add-cart-btn:disabled{opacity:0.35;cursor:not-allowed}
-
-/* CART */
 .cart-inner{max-width:560px;margin:0 auto}
 .cart-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:22px;margin-bottom:14px}
 .cart-box h2{font-size:16px;font-weight:700;color:#1a0a3c;margin-bottom:14px}
@@ -82,8 +72,6 @@ nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;
 .pay-btn{width:100%;padding:12px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
 .pay-btn:hover{background:var(--pu-dark)}
 .squad-badge{font-size:11px;color:#8b79ad;text-align:center;margin-top:8px}
-
-/* ADMIN */
 .admin-inner{max-width:680px;margin:0 auto}
 .a-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:20px 22px;margin-bottom:16px}
 .a-box h2{font-size:15px;font-weight:700;color:#1a0a3c;margin-bottom:14px}
@@ -116,8 +104,41 @@ nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;
 .price-row input{width:90px;padding:6px 9px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
 .price-row input:focus{outline:none;border-color:var(--pu)}
 .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:#ede8fa;color:var(--pu);font-weight:600;margin-left:6px}
-
-/* FOOTER */
+/* LOGIN PAGE */
+.login-wrap{min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;padding:32px 24px}
+.login-split{display:grid;grid-template-columns:1fr 1fr;max-width:780px;width:100%;border-radius:20px;overflow:hidden;box-shadow:0 8px 40px rgba(108,63,197,0.13);border:1.5px solid #e5dff7}
+.login-left{background:linear-gradient(145deg,#2d1666 0%,#4a2a8a 60%,#6c3fc5 100%);padding:44px 36px;display:flex;flex-direction:column;justify-content:space-between}
+.login-left-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
+.login-left-logo .lmark{width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;border:1.5px solid rgba(255,255,255,0.25)}
+.login-left-logo span{color:#fff;font-size:14px;font-weight:600;letter-spacing:0.02em}
+.login-left h2{font-size:26px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:14px}
+.login-left p{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7;margin-bottom:32px}
+.login-secure-box{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.18);border-radius:12px;padding:16px 18px}
+.login-secure-box .sb-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.login-secure-box p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6}
+.login-right{background:#fff;padding:44px 36px;display:flex;flex-direction:column;justify-content:center}
+.login-avatar{width:54px;height:54px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;border:2px solid #d4c5f5}
+.login-right h3{text-align:center;font-size:20px;font-weight:700;color:#1a0a3c;margin-bottom:5px}
+.login-right .login-sub{text-align:center;font-size:13px;color:#8b79ad;margin-bottom:26px}
+.login-field{margin-bottom:14px}
+.login-field label{display:block;font-size:12px;font-weight:600;color:#5a4a7a;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.04em}
+.login-field input{width:100%;padding:10px 13px;border:1.5px solid #e5dff7;border-radius:9px;font-size:13px;color:#1a0a3c;background:#fff;transition:border-color 0.15s}
+.login-field input:focus{outline:none;border-color:var(--pu)}
+.login-field .pw-wrap{position:relative}
+.login-field .pw-wrap input{padding-right:38px}
+.login-field .pw-toggle{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#8b79ad;padding:2px;display:flex;align-items:center}
+.login-field .pw-toggle:hover{color:var(--pu)}
+.login-error{background:#fff0f0;border:1.5px solid #f5c4c4;border-radius:8px;padding:9px 12px;font-size:12px;color:#a32d2d;margin-bottom:14px;display:none}
+.login-error.show{display:block}
+.sign-in-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px}
+.sign-in-btn:hover{background:var(--pu-dark)}
+.login-hint{text-align:center;font-size:11px;color:#8b79ad;margin-top:14px}
+/* Admin header bar */
+.admin-topbar{display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto 18px;padding:0 2px}
+.admin-topbar-left{font-size:14px;font-weight:600;color:#1a0a3c;display:flex;align-items:center;gap:8px}
+.admin-topbar-left .a-pill{background:var(--pu-light);color:var(--pu);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.logout-btn{padding:6px 14px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#e24b4a;background:#fff;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all 0.15s}
+.logout-btn:hover{border-color:#e24b4a;background:#fff0f0}
 footer{background:#1a0a3c;color:#c4b5f5;padding:40px 28px 24px}
 .footer-inner{max-width:1100px;margin:0 auto}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:32px}
@@ -132,16 +153,17 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:40px 28px 24px}
 .footer-credit{font-size:12px;color:#6b5a9a}
 .footer-credit a{color:#a090c8;text-decoration:none}
 .footer-credit a:hover{color:#fff}
+@media(max-width:600px){.login-split{grid-template-columns:1fr}.login-left{padding:28px 24px}.login-right{padding:28px 24px}.footer-top{grid-template-columns:1fr}}
 </style>
 
-<h2 class="sr-only">LASU Awards Voting Platform</h2>
+<h2 class="sr-only">NACOS-LASU Awards Voting Platform</h2>
 
 <div class="main">
 <nav>
-  <div class="nav-logo"><div class="logo-mark">LA</div> LASU AWARDS</div>
+  <div class="nav-logo"><div class="logo-mark">LA</div> NACOS-LASU AWARDS</div>
   <div class="nav-right">
     <button class="nav-btn active" onclick="showPage('polls')">Polls</button>
-    <button class="nav-btn" onclick="showPage('admin')">Admin</button>
+    <button class="nav-btn" id="admin-nav-btn" onclick="handleAdminNav()">Admin</button>
     <div class="cart-wrap">
       <button class="nav-btn" onclick="showPage('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i> Vote Cart</button>
       <span class="cart-badge" id="cart-badge">0</span>
@@ -197,9 +219,64 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:40px 28px 24px}
   </div>
 </div>
 
-<!-- ADMIN -->
+<!-- ADMIN LOGIN -->
+<div class="page" id="page-admin-login">
+  <div class="login-wrap">
+    <div class="login-split">
+      <div class="login-left">
+        <div>
+          <div class="login-left-logo">
+            <div class="lmark">LA</div>
+            <span>NACOS-LASU AWARDS</span>
+          </div>
+          <h2>Welcome back</h2>
+          <p>Sign in to manage polls, payments, receipts, results, and admin activities from one secure dashboard.</p>
+        </div>
+        <div class="login-secure-box">
+          <div class="sb-title"><i class="ti ti-shield-lock" aria-hidden="true" style="font-size:14px"></i> Secure Access</div>
+          <p>Login with your username or email and continue to your admin workspace.</p>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-avatar">
+          <i class="ti ti-user" aria-hidden="true" style="font-size:24px;color:var(--pu)"></i>
+        </div>
+        <h3>Admin Login</h3>
+        <p class="login-sub">Enter your credentials to access the admin panel.</p>
+        <div class="login-error" id="login-error">Incorrect username or password. Please try again.</div>
+        <div class="login-field">
+          <label for="login-user">Username or Email</label>
+          <input type="text" id="login-user" placeholder="Enter your username or email" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" />
+        </div>
+        <div class="login-field">
+          <label for="login-pw">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="login-pw" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
+            <button class="pw-toggle" onclick="togglePw()" aria-label="Toggle password visibility" tabindex="-1">
+              <i class="ti ti-eye" id="pw-eye" style="font-size:16px" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <button class="sign-in-btn" onclick="doLogin()">Sign In</button>
+        <p class="login-hint">Default: <strong>admin</strong> / <strong>nacos2026</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN (authenticated) -->
 <div class="page" id="page-admin">
   <div class="admin-inner">
+    <div class="admin-topbar">
+      <div class="admin-topbar-left">
+        <i class="ti ti-settings" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i>
+        Admin Panel
+        <span class="a-pill">Authenticated</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">
+        <i class="ti ti-logout" aria-hidden="true" style="font-size:14px"></i> Logout
+      </button>
+    </div>
     <div class="a-box">
       <h2>Squad API Key</h2>
       <div class="a-key-row" style="display:flex;gap:8px">
@@ -219,18 +296,27 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:40px 28px 24px}
       <h2>Categories <span class="tag" id="cat-count">0</span></h2>
       <div id="admin-list"></div>
     </div>
+    <div class="a-box" style="margin-bottom:0">
+      <h2>Change Credentials</h2>
+      <div class="a-form-row" style="flex-wrap:wrap;gap:8px">
+        <input type="text" id="new-user" placeholder="New username" />
+        <input type="password" id="new-pw" placeholder="New password" />
+        <input type="password" id="new-pw2" placeholder="Confirm password" />
+        <button class="a-btn" onclick="changeCredentials()">Update</button>
+      </div>
+      <div style="font-size:11px;color:#8b79ad;margin-top:6px">Changes take effect immediately for this session only.</div>
+    </div>
   </div>
 </div>
-</div><!-- end .main -->
+</div>
 
-<!-- FOOTER -->
 <footer>
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
         <div class="logo-mark-f">LA</div>
-        <h3>LASU Awards</h3>
-        <p>The official voting platform for the LASU Awards. Cast your votes, support your favourites, and celebrate excellence at Lagos State University.</p>
+        <h3>NACOS-LASU Awards</h3>
+        <p>The official voting platform for the NACOS-LASU Awards. Cast your votes, support your favourites, and celebrate excellence at Lagos State University.</p>
       </div>
       <div class="footer-col">
         <h4>Navigation</h4>
@@ -240,35 +326,84 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:40px 28px 24px}
       </div>
       <div class="footer-col">
         <h4>Admin</h4>
-        <a onclick="showPage('admin')">Admin Login</a>
+        <a onclick="handleAdminNav()">Admin Login</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2026 Business Automation Management System</span>
-      <span class="footer-credit">Built by <a href="#">Ayomide Obashola (Mide Bash)</a></span>
+      <span class="footer-copy">© 2026 E-VOTING</span>
+      <span class="footer-credit">Built by <a href="https://sleek-portfolio-wine.vercel.app/">BIBIRESANMI DAVID (BIBIREDAVID)</a></span>
     </div>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@squadco/js@latest/dist/squad.min.js"></script>
 <script>
-let categories=[], cart=[], currentCatIdx=null, voteState={}, openCats={};
+let categories=[],cart=[],currentCatIdx=null,voteState={},openCats={};
+let adminAuth=false;
+let adminCreds={username:'admin',password:'nacos2026'};
+
+function handleAdminNav(){
+  if(adminAuth) showPage('admin');
+  else showPage('admin-login');
+}
+
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pw').value;
+  const err=document.getElementById('login-error');
+  if(u===adminCreds.username&&p===adminCreds.password||u==='admin@nacoslasu.com'&&p===adminCreds.password){
+    adminAuth=true;
+    err.classList.remove('show');
+    document.getElementById('login-user').value='';
+    document.getElementById('login-pw').value='';
+    showPage('admin');
+    renderAdmin();
+  } else {
+    err.classList.add('show');
+    document.getElementById('login-pw').value='';
+  }
+}
+
+function doLogout(){
+  adminAuth=false;
+  showPage('polls');
+}
+
+function togglePw(){
+  const inp=document.getElementById('login-pw');
+  const icon=document.getElementById('pw-eye');
+  if(inp.type==='password'){inp.type='text';icon.className='ti ti-eye-off';}
+  else{inp.type='password';icon.className='ti ti-eye';}
+}
+
+function changeCredentials(){
+  const u=document.getElementById('new-user').value.trim();
+  const p=document.getElementById('new-pw').value;
+  const p2=document.getElementById('new-pw2').value;
+  if(!u||!p){alert('Please fill in both username and password.');return;}
+  if(p!==p2){alert('Passwords do not match.');return;}
+  adminCreds={username:u,password:p};
+  document.getElementById('new-user').value='';
+  document.getElementById('new-pw').value='';
+  document.getElementById('new-pw2').value='';
+  alert('Credentials updated successfully.');
+}
 
 function showPage(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const map={polls:0,admin:1,cart:2};
+  const map={polls:0,admin:1,'admin-login':1,cart:2};
   if(map[p]!==undefined) document.querySelectorAll('.nav-btn')[map[p]].classList.add('active');
   if(p==='polls') renderPolls();
-  if(p==='admin') renderAdmin();
+  if(p==='admin'&&adminAuth) renderAdmin();
   if(p==='cart') renderCart();
 }
 
 function addCategory(){
   const name=document.getElementById('cat-input').value.trim().toUpperCase();
   const price=parseInt(document.getElementById('cat-price').value)||100;
-  if(!name) return;
+  if(!name)return;
   if(categories.find(c=>c.name===name)){alert('Already exists.');return;}
   categories.push({name,price,nominees:[]});
   document.getElementById('cat-input').value='';
@@ -440,5 +575,5 @@ function initiatePayment(){
   }catch(e){alert('Could not load Squad. Check your API key.');console.error(e);}
 }
 
-renderPolls();renderAdmin();
+renderPolls();
 </script>
