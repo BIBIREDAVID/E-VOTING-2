@@ -1,82 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NACOS-LASU Awards – Voting Platform</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--pu:#6c3fc5;--pu-dark:#4a2a8a;--pu-light:#ede8fa;--pu-mid:#8b5cf6}
-html{font-family:system-ui,-apple-system,sans-serif;background:#f7f5ff;min-height:100vh}
-body{display:flex;flex-direction:column;min-height:100vh}
+body{font-family:var(--font-sans);background:#f7f5ff;min-height:100vh;display:flex;flex-direction:column}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-
-/* ── NAV ── */
 nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
-.nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a0a3c;text-decoration:none}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a0a3c}
 .logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
 .nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.nav-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#5a4a7a;background:#fff;cursor:pointer;transition:all .15s;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.nav-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#5a4a7a;background:#fff;cursor:pointer;transition:all 0.15s;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .nav-btn:hover{border-color:var(--pu);color:var(--pu);background:var(--pu-light)}
 .nav-btn.active{background:var(--pu);color:#fff;border-color:var(--pu)}
 .cart-wrap{position:relative}
 .cart-badge{position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700}
-
-/* ── LAYOUT ── */
 .main{flex:1}
 .page{display:none;padding:20px 16px}
 .page.active{display:block}
 
-/* ── TOAST ── */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a0a3c;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transition:transform .3s ease;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a0a3c;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transition:transform 0.3s ease;pointer-events:none;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* ── LOADING OVERLAY ── */
-#app-loader{position:fixed;inset:0;background:#f7f5ff;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:14px;transition:opacity .4s}
-#app-loader .lmark-big{width:56px;height:56px;background:var(--pu);border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700}
-#app-loader p{font-size:13px;color:#8b79ad;font-weight:600}
-.spinner{width:22px;height:22px;border:3px solid #e5dff7;border-top-color:var(--pu);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;vertical-align:middle}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-/* ── PAGE HEADER ── */
+/* POLLS */
 .page-header{max-width:1100px;margin:0 auto 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .page-header h2{font-size:16px;font-weight:700;color:#1a0a3c}
 .page-header p{font-size:12px;color:#8b79ad;margin-top:2px}
-.search-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e5dff7;border-radius:9px;padding:6px 12px;min-width:190px}
+.search-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e5dff7;border-radius:9px;padding:6px 12px;min-width:200px}
 .search-bar input{border:none;outline:none;font-size:13px;color:#1a0a3c;background:transparent;width:100%}
 .search-bar i{color:#8b79ad;font-size:16px}
-
-/* ── POLLS ── */
 .polls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:12px;max-width:1100px;margin:0 auto}
-.poll-card{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;cursor:pointer;transition:all .18s;position:relative}
-.poll-card:hover:not(.closed){border-color:var(--pu);box-shadow:0 4px 18px rgba(108,63,197,.1);transform:translateY(-2px)}
-.poll-card.closed{opacity:.55;cursor:not-allowed}
-.closed-badge{position:absolute;top:10px;right:10px;background:#faeeda;color:#854f0b;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:.04em}
+.poll-card{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:20px 14px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;cursor:pointer;transition:all 0.18s;position:relative}
+.poll-card:hover{border-color:var(--pu);box-shadow:0 4px 18px rgba(108,63,197,0.1);transform:translateY(-2px)}
+.poll-card.closed{opacity:0.55;cursor:not-allowed}
+.poll-card.closed:hover{transform:none;box-shadow:none;border-color:#e5dff7}
+.closed-badge{position:absolute;top:10px;right:10px;background:#faeeda;color:#854f0b;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.04em}
 .poll-icon{width:44px;height:44px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--pu);border:1.5px solid #d4c5f5}
-.poll-card h3{font-size:12px;font-weight:700;color:#1a0a3c;line-height:1.5}
+.poll-card h3{font-size:12px;font-weight:700;color:#1a0a3c;letter-spacing:0.02em;line-height:1.5}
 .poll-price{font-size:11px;color:#8b79ad;font-weight:500}
 .poll-nominees{font-size:11px;color:#a090c8}
-.vote-now-btn{padding:7px 18px;border:1.5px solid var(--pu);border-radius:8px;font-size:12px;font-weight:600;color:var(--pu);background:#fff;cursor:pointer;transition:all .15s}
+.vote-now-btn{padding:7px 18px;border:1.5px solid var(--pu);border-radius:8px;font-size:12px;font-weight:600;color:var(--pu);background:#fff;cursor:pointer;transition:all 0.15s}
 .vote-now-btn:hover{background:var(--pu);color:#fff}
 .empty-st{grid-column:1/-1;text-align:center;padding:60px;color:#8b79ad;font-size:14px}
-.empty-st i{font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px}
 
-/* ── VOTE PAGE ── */
+/* VOTE */
 .vote-inner{max-width:560px;margin:0 auto}
 .back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#5a4a7a;background:#fff;cursor:pointer;margin-bottom:16px;font-weight:500}
 .back-btn:hover{border-color:var(--pu);color:var(--pu)}
 .vote-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:22px}
 .vote-box h2{font-size:17px;font-weight:700;color:#1a0a3c;margin-bottom:3px}
-.nominees-lbl{font-size:11px;color:#8b79ad;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.nom-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1.5px solid #ede8fa;border-radius:10px;margin-bottom:7px;background:#fff;transition:border-color .15s}
+.nominees-lbl{font-size:11px;color:#8b79ad;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.nom-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1.5px solid #ede8fa;border-radius:10px;margin-bottom:7px;background:#fff;transition:border-color 0.15s}
 .nom-row:hover{border-color:#c4adf0}
 .nom-avatar{width:36px;height:36px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--pu);flex-shrink:0;border:1.5px solid #d4c5f5}
 .nom-info{flex:1}
 .nom-name{font-size:13px;font-weight:600;color:#1a0a3c}
 .nom-sub{font-size:11px;color:#8b79ad}
 .counter{display:flex;align-items:center;gap:6px}
-.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid #d4c5f5;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#5a4a7a;transition:all .1s}
+.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid #d4c5f5;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#5a4a7a;transition:all 0.1s}
 .c-btn:hover{border-color:var(--pu);color:var(--pu)}
 .c-btn.plus{background:var(--pu);color:#fff;border-color:var(--pu)}
 .c-btn.plus:hover{background:var(--pu-dark)}
@@ -84,11 +64,11 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .vote-summary{background:#f7f5ff;border:1.5px solid #e5dff7;border-radius:10px;padding:13px 15px;margin-top:14px}
 .summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:#8b79ad}
 .summary-row span:last-child{color:#1a0a3c;font-weight:600}
-.add-cart-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-top:11px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.add-cart-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-top:11px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:7px}
 .add-cart-btn:hover{background:var(--pu-dark)}
-.add-cart-btn:disabled{opacity:.35;cursor:not-allowed}
+.add-cart-btn:disabled{opacity:0.35;cursor:not-allowed}
 
-/* ── CART ── */
+/* CART */
 .cart-inner{max-width:540px;margin:0 auto}
 .cart-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:20px;margin-bottom:12px}
 .cart-box h2{font-size:15px;font-weight:700;color:#1a0a3c;margin-bottom:14px}
@@ -113,50 +93,45 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .cf-row{display:flex;gap:9px;margin-bottom:9px}
 .cf-row input{flex:1;padding:9px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#1a0a3c;background:#fff;min-width:0}
 .cf-row input:focus{outline:none;border-color:var(--pu)}
-.pay-btn{width:100%;padding:12px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.pay-btn{width:100%;padding:12px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
 .pay-btn:hover{background:var(--pu-dark)}
-.pay-btn:disabled{opacity:.45;cursor:not-allowed}
 .squad-badge{font-size:11px;color:#8b79ad;text-align:center;margin-top:7px}
 
-/* ── RESULTS ── */
+/* RESULTS PAGE */
 .results-inner{max-width:680px;margin:0 auto}
-.results-lock{text-align:center;padding:60px 20px;color:#8b79ad}
-.results-lock i{font-size:44px;color:#d4c5f5;display:block;margin-bottom:12px}
-.results-lock p{font-size:14px;margin-bottom:18px}
-.results-lock button{padding:9px 22px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer}
 .results-cat{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:18px 20px;margin-bottom:12px}
-.results-cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:6px}
+.results-cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .results-cat-head h3{font-size:14px;font-weight:700;color:#1a0a3c}
 .results-cat-head span{font-size:11px;color:#8b79ad}
 .result-bar-row{margin-bottom:10px}
-.result-bar-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;gap:8px}
-.result-bar-top .rbn{font-weight:600;color:#1a0a3c;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
-.result-bar-top .rbv{color:#8b79ad;white-space:nowrap}
+.result-bar-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.result-bar-top .rbn{font-weight:600;color:#1a0a3c}
+.result-bar-top .rbv{color:#8b79ad}
 .result-bar-bg{background:#f0ebfa;border-radius:99px;height:8px;overflow:hidden}
-.result-bar-fill{height:8px;border-radius:99px;background:var(--pu);transition:width .6s ease}
-.winner-badge{display:inline-flex;align-items:center;gap:3px;background:#ede8fa;color:#4a2a8a;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px}
+.result-bar-fill{height:8px;border-radius:99px;background:var(--pu);transition:width 0.6s ease}
+.result-bar-fill.top{background:#6c3fc5}
+.winner-badge{display:inline-flex;align-items:center;gap:4px;background:#ede8fa;color:#4a2a8a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:7px}
 .results-empty{text-align:center;padding:50px;color:#8b79ad;font-size:13px}
-.results-empty i{font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px}
 
-/* ── ADMIN LOGIN ── */
+/* ADMIN LOGIN */
 .login-wrap{min-height:calc(100vh - 100px);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .login-split{display:grid;grid-template-columns:1fr 1fr;max-width:740px;width:100%;border-radius:18px;overflow:hidden;border:1.5px solid #e5dff7}
 .login-left{background:linear-gradient(145deg,#2d1666 0%,#4a2a8a 60%,#6c3fc5 100%);padding:40px 32px;display:flex;flex-direction:column;justify-content:space-between}
 .login-left-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
-.login-left-logo .lmark{width:34px;height:34px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;border:1.5px solid rgba(255,255,255,.25);flex-shrink:0}
+.login-left-logo .lmark{width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;border:1.5px solid rgba(255,255,255,0.25);flex-shrink:0}
 .login-left-logo span{color:#fff;font-size:13px;font-weight:700}
 .login-left h2{font-size:22px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:11px}
-.login-left p{font-size:12px;color:rgba(255,255,255,.6);line-height:1.7;margin-bottom:28px}
-.login-secure-box{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.18);border-radius:11px;padding:14px 16px}
+.login-left p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:28px}
+.login-secure-box{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.18);border-radius:11px;padding:14px 16px}
 .login-secure-box .sb-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.login-secure-box p{font-size:11px;color:rgba(255,255,255,.55);line-height:1.6}
+.login-secure-box p{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.6}
 .login-right{background:#fff;padding:40px 32px;display:flex;flex-direction:column;justify-content:center}
 .login-avatar{width:50px;height:50px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:2px solid #d4c5f5}
 .login-right h3{text-align:center;font-size:18px;font-weight:700;color:#1a0a3c;margin-bottom:4px}
 .login-sub{text-align:center;font-size:12px;color:#8b79ad;margin-bottom:22px}
 .login-field{margin-bottom:12px}
-.login-field label{display:block;font-size:11px;font-weight:700;color:#5a4a7a;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
-.login-field input{width:100%;padding:9px 12px;border:1.5px solid #e5dff7;border-radius:9px;font-size:13px;color:#1a0a3c;background:#fff;transition:border-color .15s}
+.login-field label{display:block;font-size:11px;font-weight:700;color:#5a4a7a;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
+.login-field input{width:100%;padding:9px 12px;border:1.5px solid #e5dff7;border-radius:9px;font-size:13px;color:#1a0a3c;background:#fff;transition:border-color 0.15s}
 .login-field input:focus{outline:none;border-color:var(--pu)}
 .pw-wrap{position:relative}
 .pw-wrap input{padding-right:38px}
@@ -164,32 +139,29 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .pw-toggle:hover{color:var(--pu)}
 .login-error{background:#fff0f0;border:1.5px solid #f5c4c4;border-radius:8px;padding:8px 12px;font-size:12px;color:#a32d2d;margin-bottom:12px;display:none;align-items:center;gap:6px}
 .login-error.show{display:flex}
-.sign-in-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:7px}
+.sign-in-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px}
 .sign-in-btn:hover{background:var(--pu-dark)}
-.sign-in-btn:disabled{opacity:.5;cursor:not-allowed}
+.login-hint{text-align:center;font-size:11px;color:#8b79ad;margin-top:12px}
 
-/* ── ADMIN PANEL ── */
+/* ADMIN PANEL */
 .admin-inner{max-width:680px;margin:0 auto}
 .admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
 .admin-topbar-left{font-size:14px;font-weight:700;color:#1a0a3c;display:flex;align-items:center;gap:8px}
 .a-pill{background:var(--pu-light);color:var(--pu);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
-.a-pill.green{background:#e1f5ee;color:#0f6e56}
-.logout-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#e24b4a;background:#fff;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all .15s}
+.logout-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#e24b4a;background:#fff;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all 0.15s}
 .logout-btn:hover{border-color:#e24b4a;background:#fff0f0}
 .a-box{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:18px 20px;margin-bottom:14px}
 .a-box h2{font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:12px;display:flex;align-items:center;gap:7px}
 .a-form-row{display:flex;gap:7px;flex-wrap:wrap}
 .a-form-row input{flex:1;min-width:110px;padding:8px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#1a0a3c;background:#fff}
 .a-form-row input:focus{outline:none;border-color:var(--pu)}
-.a-btn{padding:8px 16px;background:var(--pu);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;transition:all .15s}
+.a-btn{padding:8px 16px;background:var(--pu);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .a-btn:hover{background:var(--pu-dark)}
-.a-btn:disabled{opacity:.4;cursor:not-allowed}
 .a-btn.secondary{background:#fff;color:var(--pu);border:1.5px solid var(--pu)}
 .a-btn.secondary:hover{background:var(--pu-light)}
 .a-btn.danger{background:#fff;color:#e24b4a;border:1.5px solid #e5dff7}
 .a-btn.danger:hover{border-color:#e24b4a;background:#fff0f0}
-.a-key-row{display:flex;gap:8px}
-.a-key-row input{flex:1;padding:8px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;font-family:monospace;background:#f7f5ff;color:#1a0a3c}
+.a-key-row input{flex:1;padding:8px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;font-family:var(--font-mono);background:#f7f5ff;color:#1a0a3c;width:100%}
 .a-key-row input:focus{outline:none;border-color:var(--pu)}
 .key-hint{font-size:11px;color:#8b79ad;margin-top:5px}
 .cat-item{border:1.5px solid #e5dff7;border-radius:10px;margin-bottom:8px;overflow:hidden}
@@ -201,13 +173,12 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .status-dot.open{background:#1d9e75}
 .status-dot.closed{background:#e24b4a}
 .cat-acts{display:flex;gap:4px;flex-shrink:0}
-.sm-btn{padding:4px 9px;border:1.5px solid #e5dff7;border-radius:6px;font-size:11px;color:#5a4a7a;background:#fff;cursor:pointer;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px;transition:all .15s}
+.sm-btn{padding:4px 9px;border:1.5px solid #e5dff7;border-radius:6px;font-size:11px;color:#5a4a7a;background:#fff;cursor:pointer;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px}
 .sm-btn:hover{border-color:var(--pu);color:var(--pu)}
 .sm-btn.red{color:#e24b4a}
 .sm-btn.red:hover{border-color:#e24b4a;background:#fff0f0}
 .sm-btn.green{color:#0f6e56}
 .sm-btn.green:hover{border-color:#0f6e56;background:#e1f5ee}
-.sm-btn:disabled{opacity:.4;cursor:not-allowed}
 .cat-body{padding:13px;background:#f7f5ff;border-top:1.5px solid #e5dff7}
 .nom-list-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#1a0a3c;padding:5px 0;border-bottom:1px solid #ede8fa}
 .nom-list-item:last-of-type{border-bottom:none}
@@ -215,7 +186,7 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .nom-add-row input{flex:1;padding:7px 10px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
 .nom-add-row input:focus{outline:none;border-color:var(--pu)}
 .nom-add-row button{padding:7px 13px;background:var(--pu);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
-.price-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.price-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;gap:7px}
 .price-row label{font-size:12px;color:#8b79ad;font-weight:600}
 .price-row input{width:85px;padding:6px 9px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
 .price-row input:focus{outline:none;border-color:var(--pu)}
@@ -228,24 +199,22 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .stat-card .sc-label{font-size:11px;color:#8b79ad;font-weight:600;margin-bottom:4px}
 .stat-card .sc-val{font-size:22px;font-weight:700;color:#1a0a3c}
 .export-row{display:flex;gap:7px;flex-wrap:wrap}
-.saving-indicator{font-size:11px;color:#8b79ad;display:flex;align-items:center;gap:5px;margin-top:6px}
 
-/* ── FOOTER ── */
+/* FOOTER */
 footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 .footer-inner{max-width:1100px;margin:0 auto}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px;margin-bottom:24px}
 .footer-brand .logo-mark-f{width:32px;height:32px;background:var(--pu);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;margin-bottom:8px}
 .footer-brand h3{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px}
 .footer-brand p{font-size:11px;line-height:1.7;color:#a090c8;max-width:220px}
-.footer-col h4{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
-.footer-col a{display:block;font-size:12px;color:#a090c8;text-decoration:none;margin-bottom:6px;cursor:pointer;transition:color .15s}
+.footer-col h4{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:10px}
+.footer-col a{display:block;font-size:12px;color:#a090c8;text-decoration:none;margin-bottom:6px;cursor:pointer;transition:color 0.15s}
 .footer-col a:hover{color:#fff}
 .footer-bottom{border-top:1px solid #2e1a5c;padding-top:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px}
 .footer-copy{font-size:11px;color:#6b5a9a}
 .footer-credit{font-size:11px;color:#6b5a9a}
 .footer-credit a{color:#a090c8;text-decoration:none}
 .footer-credit a:hover{color:#fff}
-
 @media(max-width:580px){
   .login-split{grid-template-columns:1fr}
   .login-left{padding:24px 20px}
@@ -254,195 +223,188 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   .nav-btn span{display:none}
 }
 </style>
-</head>
-<body>
 
-<!-- Loading Overlay -->
-<div id="app-loader">
-  <div class="lmark-big">LA</div>
-  <div class="spinner"></div>
-  <p>Loading platform...</p>
-</div>
-
+<h2 class="sr-only">NACOS-LASU Awards Voting Platform</h2>
 <div class="toast" id="toast"></div>
 
 <div class="main">
-  <nav>
-    <div class="nav-logo"><div class="logo-mark">LA</div> NACOS-LASU AWARDS</div>
-    <div class="nav-right">
-      <button class="nav-btn active" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-home" aria-hidden="true"></i><span> Polls</span></button>
-      <button class="nav-btn" id="nb-results" onclick="handleResultsNav()"><i class="ti ti-chart-bar" aria-hidden="true"></i><span> Results</span></button>
-      <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()"><i class="ti ti-settings" aria-hidden="true"></i><span> Admin</span></button>
-      <div class="cart-wrap">
-        <button class="nav-btn" id="nb-cart" onclick="showPage('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i><span> Cart</span></button>
-        <span class="cart-badge" id="cart-badge">0</span>
-      </div>
-    </div>
-  </nav>
-
-  <!-- POLLS -->
-  <div class="page active" id="page-polls">
-    <div class="page-header">
-      <div><h2>Active Polls</h2><p id="polls-count">Loading...</p></div>
-      <div class="search-bar"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="poll-search" placeholder="Search categories..." oninput="renderPolls()" /></div>
-    </div>
-    <div class="polls-grid" id="polls-grid"><div class="empty-st"><div class="spinner"></div></div></div>
-  </div>
-
-  <!-- VOTE -->
-  <div class="page" id="page-vote">
-    <div class="vote-inner">
-      <button class="back-btn" onclick="showPage('polls')"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back to polls</button>
-      <div class="vote-box">
-        <h2 id="vote-title"></h2>
-        <div class="nominees-lbl">Choose your nominees</div>
-        <div id="nom-rows"></div>
-        <div class="vote-summary">
-          <div class="summary-row"><span>Selected votes</span><span id="sv-count">0</span></div>
-          <div class="summary-row"><span>Price per vote</span><span id="sv-price">₦0</span></div>
-          <div class="summary-row"><span>Subtotal</span><span id="sv-sub">₦0</span></div>
-          <button class="add-cart-btn" id="add-cart-btn" onclick="addToCart()" disabled>
-            <i class="ti ti-shopping-cart-plus" aria-hidden="true"></i> Add to Cart
-          </button>
-        </div>
-      </div>
+<nav>
+  <div class="nav-logo"><div class="logo-mark">LA</div> NACOS-LASU AWARDS</div>
+  <div class="nav-right">
+    <button class="nav-btn active" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-home" aria-hidden="true"></i><span>Polls</span></button>
+    <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
+    <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()"><i class="ti ti-settings" aria-hidden="true"></i><span>Admin</span></button>
+    <div class="cart-wrap">
+      <button class="nav-btn" id="nb-cart" onclick="showPage('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i><span>Cart</span></button>
+      <span class="cart-badge" id="cart-badge">0</span>
     </div>
   </div>
+</nav>
 
-  <!-- CART -->
-  <div class="page" id="page-cart">
-    <div class="cart-inner">
-      <div class="cart-box"><h2>Vote Cart</h2><div id="cart-items"></div></div>
-      <div class="totals-box" id="totals-box"></div>
-      <div class="checkout-form" id="checkout-form-wrap">
-        <h3>Your Details</h3>
-        <div class="cf-row">
-          <input type="text" id="cf-fname" placeholder="First name" />
-          <input type="text" id="cf-lname" placeholder="Last name" />
-        </div>
-        <div class="cf-row"><input type="email" id="cf-email" placeholder="Email address" /></div>
-        <button class="pay-btn" id="pay-btn" onclick="initiatePayment()">
-          <i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad
+<!-- POLLS -->
+<div class="page active" id="page-polls">
+  <div class="page-header">
+    <div><h2>Active Polls</h2><p id="polls-count">Loading categories...</p></div>
+    <div class="search-bar"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="poll-search" placeholder="Search categories..." oninput="renderPolls()" /></div>
+  </div>
+  <div class="polls-grid" id="polls-grid"></div>
+</div>
+
+<!-- VOTE -->
+<div class="page" id="page-vote">
+  <div class="vote-inner">
+    <button class="back-btn" onclick="showPage('polls')"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back to polls</button>
+    <div class="vote-box">
+      <h2 id="vote-title"></h2>
+      <div class="nominees-lbl">Choose your nominees</div>
+      <div id="nom-rows"></div>
+      <div class="vote-summary">
+        <div class="summary-row"><span>Selected votes</span><span id="sv-count">0</span></div>
+        <div class="summary-row"><span>Price per vote</span><span id="sv-price">₦0</span></div>
+        <div class="summary-row"><span>Subtotal</span><span id="sv-sub">₦0</span></div>
+        <button class="add-cart-btn" id="add-cart-btn" onclick="addToCart()" disabled>
+          <i class="ti ti-shopping-cart-plus" aria-hidden="true"></i> Add to Cart
         </button>
-        <div class="squad-badge">Secured by Squad · GTBank (HabariPay)</div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- RESULTS (admin-only) -->
-  <div class="page" id="page-results">
-    <div class="results-inner">
-      <div class="page-header" style="max-width:680px">
-        <div><h2>Live Results</h2><p>Real-time vote counts from Firestore</p></div>
+<!-- CART -->
+<div class="page" id="page-cart">
+  <div class="cart-inner">
+    <div class="cart-box">
+      <h2>Vote Cart</h2>
+      <div id="cart-items"></div>
+    </div>
+    <div class="totals-box" id="totals-box"></div>
+    <div class="checkout-form" id="checkout-form-wrap">
+      <h3>Your Details</h3>
+      <div class="cf-row">
+        <input type="text" id="cf-fname" placeholder="First name" />
+        <input type="text" id="cf-lname" placeholder="Last name" />
       </div>
-      <div id="results-body"></div>
+      <div class="cf-row">
+        <input type="email" id="cf-email" placeholder="Email address" />
+      </div>
+      <button class="pay-btn" onclick="initiatePayment()">
+        <i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad
+      </button>
+      <div class="squad-badge">Secured by Squad · GTBank (HabariPay)</div>
     </div>
   </div>
+</div>
 
-  <!-- ADMIN LOGIN -->
-  <div class="page" id="page-admin-login">
-    <div class="login-wrap">
-      <div class="login-split">
-        <div class="login-left">
-          <div>
-            <div class="login-left-logo"><div class="lmark">LA</div><span>NACOS-LASU AWARDS</span></div>
-            <h2>Welcome back</h2>
-            <p>Sign in to manage polls, nominees, results, and platform settings from one secure dashboard.</p>
-          </div>
-          <div class="login-secure-box">
-            <div class="sb-title"><i class="ti ti-shield-lock" aria-hidden="true" style="font-size:14px"></i> Firebase Auth</div>
-            <p>Authentication is handled securely by Google Firebase. Your credentials never touch this server.</p>
+<!-- RESULTS -->
+<div class="page" id="page-results">
+  <div class="results-inner">
+    <div class="page-header" style="max-width:680px">
+      <div><h2>Live Results</h2><p>Vote counts update as ballots are cast</p></div>
+    </div>
+    <div id="results-body"></div>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="page" id="page-admin-login">
+  <div class="login-wrap">
+    <div class="login-split">
+      <div class="login-left">
+        <div>
+          <div class="login-left-logo"><div class="lmark">LA</div><span>NACOS-LASU AWARDS</span></div>
+          <h2>Welcome back</h2>
+          <p>Sign in to manage polls, nominees, results, and platform settings from one secure dashboard.</p>
+        </div>
+        <div class="login-secure-box">
+          <div class="sb-title"><i class="ti ti-shield-lock" aria-hidden="true" style="font-size:14px"></i> Secure Access</div>
+          <p>Login with your username or email to continue to your admin workspace.</p>
+        </div>
+      </div>
+      <div class="login-right">
+        <div class="login-avatar"><i class="ti ti-user" aria-hidden="true" style="font-size:22px;color:var(--pu)"></i></div>
+        <h3>Admin Login</h3>
+        <p class="login-sub">Enter your credentials to access the panel.</p>
+        <div class="login-error" id="login-error"><i class="ti ti-alert-circle" aria-hidden="true" style="font-size:14px"></i> Incorrect username or password.</div>
+        <div class="login-field">
+          <label for="login-user">Username or Email</label>
+          <input type="text" id="login-user" placeholder="Enter your username or email" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" />
+        </div>
+        <div class="login-field">
+          <label for="login-pw">Password</label>
+          <div class="pw-wrap">
+            <input type="password" id="login-pw" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
+            <button class="pw-toggle" onclick="togglePw()" aria-label="Toggle password visibility" tabindex="-1">
+              <i class="ti ti-eye" id="pw-eye" style="font-size:16px" aria-hidden="true"></i>
+            </button>
           </div>
         </div>
-        <div class="login-right">
-          <div class="login-avatar"><i class="ti ti-user" aria-hidden="true" style="font-size:22px;color:var(--pu)"></i></div>
-          <h3>Admin Login</h3>
-          <p class="login-sub">Enter your Firebase Auth credentials.</p>
-          <div class="login-error" id="login-error"><i class="ti ti-alert-circle" aria-hidden="true" style="font-size:14px"></i>&nbsp;<span id="login-error-msg">Incorrect email or password.</span></div>
-          <div class="login-field">
-            <label for="login-email">Email Address</label>
-            <input type="email" id="login-email" placeholder="admin@nacoslasu.com" autocomplete="email" onkeydown="if(event.key==='Enter')doLogin()" />
-          </div>
-          <div class="login-field">
-            <label for="login-pw">Password</label>
-            <div class="pw-wrap">
-              <input type="password" id="login-pw" placeholder="Enter your password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
-              <button class="pw-toggle" onclick="togglePw()" aria-label="Toggle password visibility" tabindex="-1">
-                <i class="ti ti-eye" id="pw-eye" style="font-size:16px" aria-hidden="true"></i>
-              </button>
-            </div>
-          </div>
-          <button class="sign-in-btn" id="login-btn" onclick="doLogin()">
-            <i class="ti ti-login" aria-hidden="true" style="font-size:15px"></i> Sign In
-          </button>
-          <p style="font-size:11px;color:#8b79ad;margin-top:12px;text-align:center">
-            Create admin account in Firebase Console → Authentication → Users
-          </p>
-        </div>
+        <button class="sign-in-btn" onclick="doLogin()">Sign In</button>
+        <p class="login-hint">Default: <strong>admin</strong> / <strong>nacos2026</strong></p>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ADMIN PANEL -->
-  <div class="page" id="page-admin">
-    <div class="admin-inner">
-      <div class="admin-topbar">
-        <div class="admin-topbar-left">
-          <i class="ti ti-settings" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i>
-          Admin Panel
-          <span class="a-pill green" id="admin-user-pill">Authenticated</span>
-        </div>
-        <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout" aria-hidden="true" style="font-size:13px"></i> Logout</button>
+<!-- ADMIN PANEL -->
+<div class="page" id="page-admin">
+  <div class="admin-inner">
+    <div class="admin-topbar">
+      <div class="admin-topbar-left"><i class="ti ti-settings" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i> Admin Panel <span class="a-pill">Authenticated</span></div>
+      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout" aria-hidden="true" style="font-size:13px"></i> Logout</button>
+    </div>
+
+    <div class="a-box">
+      <h2><i class="ti ti-chart-pie" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Overview</h2>
+      <div class="stats-grid" id="admin-stats"></div>
+    </div>
+
+    <div class="a-box">
+      <h2><i class="ti ti-credit-card" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Squad API Key</h2>
+      <div class="a-key-row" style="display:flex;gap:8px">
+        <input type="text" id="squad-key" placeholder="Paste your Squad public key (e.g. test_pk_...)" />
       </div>
+      <div class="key-hint">Get your key from <strong>sandbox.squadco.com</strong> (test) or <strong>dashboard.squadco.com</strong> (live)</div>
+    </div>
 
-      <div class="a-box">
-        <h2><i class="ti ti-chart-pie" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Overview</h2>
-        <div class="stats-grid" id="admin-stats">
-          <div class="stat-card"><div class="sc-label">Categories</div><div class="sc-val" id="stat-cats">–</div></div>
-          <div class="stat-card"><div class="sc-label">Nominees</div><div class="sc-val" id="stat-noms">–</div></div>
-          <div class="stat-card"><div class="sc-label">Total Votes</div><div class="sc-val" id="stat-votes">–</div></div>
-          <div class="stat-card"><div class="sc-label">Open Polls</div><div class="sc-val" id="stat-open">–</div></div>
-        </div>
+    <div class="a-box">
+      <h2><i class="ti ti-plus" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Add Category</h2>
+      <div class="a-form-row">
+        <input type="text" id="cat-input" placeholder="Category name (e.g. DJ OF THE YEAR)" />
+        <input type="number" id="cat-price" placeholder="Price ₦" min="0" value="100" style="max-width:100px" />
+        <button class="a-btn" onclick="addCategory()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px"></i> Add</button>
       </div>
+    </div>
 
-      <div class="a-box">
-        <h2><i class="ti ti-credit-card" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Squad API Key</h2>
-        <div class="a-key-row">
-          <input type="text" id="squad-key" placeholder="Paste your Squad public key (e.g. test_pk_...)" />
-          <button class="a-btn" onclick="saveSquadKey()"><i class="ti ti-device-floppy" aria-hidden="true" style="font-size:13px"></i> Save</button>
-        </div>
-        <div class="key-hint">Get your key from <strong>sandbox.squadco.com</strong> (test) or <strong>dashboard.squadco.com</strong> (live). Saved to Firestore — persists across sessions.</div>
+    <div class="a-box">
+      <h2><i class="ti ti-list" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Categories <span class="tag" id="cat-count">0</span></h2>
+      <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="sm-btn green" onclick="setAllStatus(true)"><i class="ti ti-lock-open" aria-hidden="true" style="font-size:11px"></i> Open All</button>
+        <button class="sm-btn red" onclick="setAllStatus(false)"><i class="ti ti-lock" aria-hidden="true" style="font-size:11px"></i> Close All</button>
       </div>
+      <div id="admin-list"></div>
+    </div>
 
-      <div class="a-box">
-        <h2><i class="ti ti-plus" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Add Category</h2>
-        <div class="a-form-row">
-          <input type="text" id="cat-input" placeholder="Category name (e.g. DJ OF THE YEAR)" />
-          <input type="number" id="cat-price" placeholder="Price ₦" min="0" value="100" style="max-width:100px" />
-          <button class="a-btn" id="add-cat-btn" onclick="addCategory()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px"></i> Add</button>
-        </div>
+    <div class="a-box">
+      <h2><i class="ti ti-download" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Export</h2>
+      <div class="export-row">
+        <button class="a-btn secondary" onclick="exportCSV()"><i class="ti ti-file-spreadsheet" aria-hidden="true" style="font-size:13px"></i> Export Results CSV</button>
+        <button class="a-btn secondary" onclick="exportJSON()"><i class="ti ti-braces" aria-hidden="true" style="font-size:13px"></i> Export JSON</button>
       </div>
+    </div>
 
-      <div class="a-box">
-        <h2><i class="ti ti-list" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Categories <span class="tag" id="cat-count">0</span></h2>
-        <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
-          <button class="sm-btn green" onclick="setAllStatus(true)"><i class="ti ti-lock-open" aria-hidden="true" style="font-size:11px"></i> Open All</button>
-          <button class="sm-btn red" onclick="setAllStatus(false)"><i class="ti ti-lock" aria-hidden="true" style="font-size:11px"></i> Close All</button>
-        </div>
-        <div id="admin-list"><div style="font-size:13px;color:#8b79ad;padding:6px 0">Loading from Firestore...</div></div>
+    <div class="a-box">
+      <h2><i class="ti ti-key" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Change Credentials</h2>
+      <div class="a-form-row" style="flex-wrap:wrap">
+        <input type="text" id="new-user" placeholder="New username" />
+        <input type="password" id="new-pw" placeholder="New password" />
+        <input type="password" id="new-pw2" placeholder="Confirm password" />
+        <button class="a-btn" onclick="changeCredentials()">Update</button>
       </div>
-
-      <div class="a-box">
-        <h2><i class="ti ti-download" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Export</h2>
-        <div class="export-row">
-          <button class="a-btn secondary" onclick="exportCSV()"><i class="ti ti-file-spreadsheet" aria-hidden="true" style="font-size:13px"></i> Export Results CSV</button>
-          <button class="a-btn secondary" onclick="exportJSON()"><i class="ti ti-braces" aria-hidden="true" style="font-size:13px"></i> Export JSON</button>
-        </div>
-      </div>
-
+      <div style="font-size:11px;color:#8b79ad;margin-top:6px">Changes apply immediately for this session.</div>
     </div>
   </div>
-</div><!-- end .main -->
+</div>
+</div>
 
 <footer>
   <div class="footer-inner">
@@ -456,13 +418,12 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <h4>Navigate</h4>
         <a onclick="showPage('polls')">Home</a>
         <a onclick="showPage('polls')">Polls</a>
-        <a onclick="handleAdminNav()">Admin</a>
+        <a onclick="showPage('results')">Results</a>
+        <a onclick="showPage('cart')">Cart</a>
       </div>
       <div class="footer-col">
-        <h4>Platform</h4>
+        <h4>Admin</h4>
         <a onclick="handleAdminNav()">Admin Login</a>
-        <a href="https://sandbox.squadco.com" target="_blank" rel="noopener">Squad Dashboard</a>
-        <a href="https://console.firebase.google.com" target="_blank" rel="noopener">Firebase Console</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -472,581 +433,379 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   </div>
 </footer>
 
-<!-- Firebase SDK (module) -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
-  onSnapshot, getDocs, getDoc, query, orderBy, serverTimestamp, increment, writeBatch
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script src="https://cdn.jsdelivr.net/npm/@squadco/js@latest/dist/squad.min.js"></script>
+<script>
+let categories=[], cart=[], currentCatIdx=null, voteState={}, openCats={};
+let adminAuth=false, adminCreds={username:'admin',password:'nacos2026'};
+let voteRecords={};
 
-// ── FIREBASE CONFIG ──────────────────────────────────────────
-const firebaseConfig = {
-  apiKey: "AIzaSyAnLbRVRAHEkgSBbAxZRW7SLH83Ch_Uw_8",
-  authDomain: "e-voting-8.firebaseapp.com",
-  projectId: "e-voting-8",
-  storageBucket: "e-voting-8.firebasestorage.app",
-  messagingSenderId: "271989222272",
-  appId: "1:271989222272:web:36cef51f0d09f4e8ae6f65",
-  measurementId: "G-4NWL71QRN6"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// ── STATE ────────────────────────────────────────────────────
-let categories = [];       // live from Firestore
-let cart = [];
-let currentCatId = null;
-let voteState = {};
-let openCatPanels = {};
-let adminUser = null;
-let unsubCategories = null;
-let squadKey = '';
-
-// ── HELPERS ──────────────────────────────────────────────────
-function toast(msg, dur = 2800) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), dur);
+function toast(msg,dur=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
 }
 
-function hideLoader() {
-  const el = document.getElementById('app-loader');
-  el.style.opacity = '0';
-  setTimeout(() => el.style.display = 'none', 400);
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const nb=document.getElementById('nb-'+p)||document.getElementById('nb-admin');
+  if(nb) nb.classList.add('active');
+  if(p==='polls') renderPolls();
+  if(p==='admin'&&adminAuth) renderAdmin();
+  if(p==='cart') renderCart();
+  if(p==='results') renderResults();
 }
 
-function showPage(p) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('page-' + p).classList.add('active');
-  const nb = document.getElementById('nb-' + p) || document.getElementById('nb-admin');
-  if (nb) nb.classList.add('active');
-  if (p === 'polls') renderPolls();
-  if (p === 'cart') renderCart();
-  if (p === 'results') renderResults();
-  if (p === 'admin' && adminUser) renderAdmin();
-}
-window.showPage = showPage;
+function handleAdminNav(){adminAuth?showPage('admin'):showPage('admin-login');}
 
-function handleAdminNav() { adminUser ? showPage('admin') : showPage('admin-login'); }
-window.handleAdminNav = handleAdminNav;
-
-function handleResultsNav() { adminUser ? showPage('results') : showPage('admin-login'); }
-window.handleResultsNav = handleResultsNav;
-
-// ── AUTH ─────────────────────────────────────────────────────
-window.doLogin = async function () {
-  const email = document.getElementById('login-email').value.trim();
-  const pw = document.getElementById('login-pw').value;
-  const err = document.getElementById('login-error');
-  const btn = document.getElementById('login-btn');
-  if (!email || !pw) { showLoginError('Please enter your email and password.'); return; }
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Signing in...';
-  try {
-    await signInWithEmailAndPassword(auth, email, pw);
-    err.classList.remove('show');
-    document.getElementById('login-email').value = '';
-    document.getElementById('login-pw').value = '';
-  } catch (e) {
-    const msgs = {
-      'auth/wrong-password': 'Incorrect password. Please try again.',
-      'auth/user-not-found': 'No admin account found with that email.',
-      'auth/invalid-email': 'Please enter a valid email address.',
-      'auth/too-many-requests': 'Too many failed attempts. Try again later.',
-      'auth/invalid-credential': 'Incorrect email or password.'
-    };
-    showLoginError(msgs[e.code] || 'Login failed: ' + e.message);
-  }
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ti ti-login" aria-hidden="true" style="font-size:15px"></i> Sign In';
-};
-
-function showLoginError(msg) {
-  document.getElementById('login-error-msg').textContent = msg;
-  document.getElementById('login-error').classList.add('show');
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pw').value;
+  const err=document.getElementById('login-error');
+  if((u===adminCreds.username||u==='admin@nacoslasu.com')&&p===adminCreds.password){
+    adminAuth=true; err.classList.remove('show');
+    document.getElementById('login-user').value='';
+    document.getElementById('login-pw').value='';
+    showPage('admin'); renderAdmin();
+  } else { err.classList.add('show'); document.getElementById('login-pw').value=''; }
 }
 
-window.doLogout = async function () {
-  await signOut(auth);
-  toast('Logged out successfully.');
-  showPage('polls');
-};
+function doLogout(){adminAuth=false; toast('Logged out.'); showPage('polls');}
 
-window.togglePw = function () {
-  const inp = document.getElementById('login-pw'), icon = document.getElementById('pw-eye');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  icon.className = inp.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off';
-};
-
-// Auth state watcher
-onAuthStateChanged(auth, async (user) => {
-  adminUser = user;
-  if (user) {
-    document.getElementById('admin-user-pill').textContent = user.email;
-    await loadSquadKey();
-    showPage('admin');
-  }
-  hideLoader();
-});
-
-// ── FIRESTORE: CATEGORIES ────────────────────────────────────
-function subscribeCategories() {
-  if (unsubCategories) unsubCategories();
-  const q = query(collection(db, 'categories'), orderBy('createdAt'));
-  unsubCategories = onSnapshot(q, (snap) => {
-    categories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderPolls();
-    if (adminUser && document.getElementById('page-admin').classList.contains('active')) renderAdmin();
-    if (adminUser && document.getElementById('page-results').classList.contains('active')) renderResults();
-    updateAdminStats();
-  }, (err) => {
-    console.error('Firestore read error:', err);
-  });
+function togglePw(){
+  const inp=document.getElementById('login-pw'), icon=document.getElementById('pw-eye');
+  inp.type=inp.type==='password'?'text':'password';
+  icon.className=inp.type==='password'?'ti ti-eye':'ti ti-eye-off';
 }
 
-window.addCategory = async function () {
-  const name = document.getElementById('cat-input').value.trim().toUpperCase();
-  const price = parseInt(document.getElementById('cat-price').value) || 100;
-  if (!name) { toast('Please enter a category name.'); return; }
-  if (categories.find(c => c.name === name)) { toast('Category already exists.'); return; }
-  const btn = document.getElementById('add-cat-btn');
-  btn.disabled = true;
-  try {
-    await addDoc(collection(db, 'categories'), {
-      name, price, nominees: [], open: true, createdAt: serverTimestamp()
-    });
-    document.getElementById('cat-input').value = '';
-    document.getElementById('cat-price').value = '100';
-    toast('Category added.');
-  } catch (e) { toast('Error: ' + e.message); }
-  btn.disabled = false;
-};
+function changeCredentials(){
+  const u=document.getElementById('new-user').value.trim();
+  const p=document.getElementById('new-pw').value;
+  const p2=document.getElementById('new-pw2').value;
+  if(!u||!p){toast('Please fill in username and password.');return;}
+  if(p!==p2){toast('Passwords do not match.');return;}
+  adminCreds={username:u,password:p};
+  document.getElementById('new-user').value='';
+  document.getElementById('new-pw').value='';
+  document.getElementById('new-pw2').value='';
+  toast('Credentials updated successfully.');
+}
 
-window.deleteCategory = async function (id, name) {
-  if (!confirm('Delete "' + name + '"? All votes for this category will also be deleted.')) return;
-  try {
-    await deleteDoc(doc(db, 'categories', id));
-    toast('Category deleted.');
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function addCategory(){
+  const name=document.getElementById('cat-input').value.trim().toUpperCase();
+  const price=parseInt(document.getElementById('cat-price').value)||100;
+  if(!name){toast('Please enter a category name.');return;}
+  if(categories.find(c=>c.name===name)){toast('Category already exists.');return;}
+  categories.push({name,price,nominees:[],open:true});
+  voteRecords[name]={};
+  document.getElementById('cat-input').value='';
+  document.getElementById('cat-price').value='100';
+  renderAdmin(); renderPolls(); toast('Category added.');
+}
 
-window.toggleCatStatus = async function (id, current) {
-  try {
-    await updateDoc(doc(db, 'categories', id), { open: !current });
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function deleteCategory(i){
+  if(!confirm('Delete "'+categories[i].name+'"? This cannot be undone.'))return;
+  delete voteRecords[categories[i].name];
+  categories.splice(i,1);
+  renderAdmin(); renderPolls(); toast('Category deleted.');
+}
 
-window.setAllStatus = async function (open) {
-  const batch = writeBatch(db);
-  categories.forEach(c => batch.update(doc(db, 'categories', c.id), { open }));
-  try {
-    await batch.commit();
-    toast(open ? 'All categories opened.' : 'All categories closed.');
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function toggleCat(i){openCats[i]=!openCats[i];renderAdmin();}
 
-window.renameCat = async function (id, inputId) {
-  const val = document.getElementById(inputId).value.trim().toUpperCase();
-  if (!val) { toast('Name cannot be empty.'); return; }
-  if (categories.find(c => c.name === val && c.id !== id)) { toast('Name already in use.'); return; }
-  try {
-    await updateDoc(doc(db, 'categories', id), { name: val });
-    toast('Category renamed.');
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function toggleCatStatus(i){
+  categories[i].open=!categories[i].open;
+  renderAdmin(); renderPolls();
+  toast(categories[i].name+(categories[i].open?' opened for voting.'.'closed for voting.'));
+}
 
-window.updatePrice = async function (id, inputId) {
-  const price = parseInt(document.getElementById(inputId).value) || 0;
-  try {
-    await updateDoc(doc(db, 'categories', id), { price });
-    toast('Price updated.');
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function setAllStatus(open){
+  categories.forEach(c=>c.open=open);
+  renderAdmin(); renderPolls();
+  toast(open?'All categories opened.':'All categories closed.');
+}
 
-window.addNominee = async function (catId, inputId) {
-  const inp = document.getElementById(inputId);
-  const name = inp.value.trim().toUpperCase();
-  if (!name) return;
-  const cat = categories.find(c => c.id === catId);
-  if (!cat) return;
-  if ((cat.nominees || []).includes(name)) { toast('Nominee already exists.'); return; }
-  const updated = [...(cat.nominees || []), name];
-  try {
-    await updateDoc(doc(db, 'categories', catId), { nominees: updated });
-    inp.value = '';
-    toast('Nominee added.');
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function renameCat(i){
+  const val=document.getElementById('rename-'+i).value.trim().toUpperCase();
+  if(!val){toast('Name cannot be empty.');return;}
+  if(categories.find((c,idx)=>c.name===val&&idx!==i)){toast('Name already in use.');return;}
+  const old=categories[i].name;
+  voteRecords[val]=voteRecords[old]||{};
+  delete voteRecords[old];
+  categories[i].name=val;
+  renderAdmin(); renderPolls(); toast('Category renamed.');
+}
 
-window.deleteNominee = async function (catId, nomName) {
-  const cat = categories.find(c => c.id === catId);
-  if (!cat) return;
-  const updated = (cat.nominees || []).filter(n => n !== nomName);
-  try {
-    await updateDoc(doc(db, 'categories', catId), { nominees: updated });
-    toast('Nominee removed.');
-  } catch (e) { toast('Error: ' + e.message); }
-};
+function addNominee(i){
+  const inp=document.getElementById('nin-'+i);
+  const name=inp.value.trim().toUpperCase();
+  if(!name)return;
+  if(categories[i].nominees.includes(name)){toast('Nominee already exists.');return;}
+  categories[i].nominees.push(name);
+  if(!voteRecords[categories[i].name]) voteRecords[categories[i].name]={};
+  voteRecords[categories[i].name][name]=0;
+  inp.value=''; renderAdmin(); toast('Nominee added.');
+}
 
-window.toggleCatPanel = function (id) {
-  openCatPanels[id] = !openCatPanels[id];
+function deleteNominee(ci,ni){
+  const nom=categories[ci].nominees[ni];
+  delete (voteRecords[categories[ci].name]||{})[nom];
+  categories[ci].nominees.splice(ni,1);
   renderAdmin();
-};
-
-// ── SQUAD KEY ────────────────────────────────────────────────
-async function loadSquadKey() {
-  try {
-    const snap = await getDoc(doc(db, 'settings', 'platform'));
-    if (snap.exists()) {
-      squadKey = snap.data().squadKey || '';
-      const el = document.getElementById('squad-key');
-      if (el) el.value = squadKey;
-    }
-  } catch (e) { console.warn('Could not load Squad key:', e); }
 }
 
-window.saveSquadKey = async function () {
-  const val = document.getElementById('squad-key').value.trim();
-  try {
-    await setDoc(doc(db, 'settings', 'platform'), { squadKey: val }, { merge: true });
-    squadKey = val;
-    toast('Squad key saved to Firestore.');
-  } catch (e) { toast('Error saving key: ' + e.message); }
-};
+function updatePrice(i){
+  categories[i].price=parseInt(document.getElementById('price-'+i).value)||0;
+  toast('Price updated.');
+}
 
-// ── RENDER POLLS ─────────────────────────────────────────────
-function renderPolls() {
-  const q = (document.getElementById('poll-search') || { value: '' }).value.toLowerCase();
-  const filtered = categories.filter(c => c.name.toLowerCase().includes(q));
-  const grid = document.getElementById('polls-grid');
-  const countEl = document.getElementById('polls-count');
-  const icons = ['ti-music', 'ti-star', 'ti-trophy', 'ti-award', 'ti-microphone', 'ti-camera', 'ti-palette', 'ti-device-gamepad'];
-  if (!categories.length) {
-    grid.innerHTML = '<div class="empty-st"><i class="ti ti-mood-empty" aria-hidden="true"></i>No categories yet.</div>';
-    if (countEl) countEl.textContent = 'No polls available';
-    return;
-  }
-  if (countEl) countEl.textContent = filtered.length + ' poll' + (filtered.length !== 1 ? 's' : '') + ' · ' + categories.filter(c => c.open).length + ' open';
-  if (!filtered.length && q) {
-    grid.innerHTML = '<div class="empty-st">No results for "' + q + '"</div>';
-    return;
-  }
-  grid.innerHTML = filtered.map((cat, ri) => {
-    const icon = icons[ri % icons.length];
-    return `<div class="poll-card${cat.open ? '' : ' closed'}" onclick="${cat.open ? 'openVote("' + cat.id + '")' : ''}">
-      ${!cat.open ? '<span class="closed-badge"><i class="ti ti-lock" aria-hidden="true" style="font-size:9px"></i> Closed</span>' : ''}
-      <div class="poll-icon"><i class="ti ${icon}" aria-hidden="true"></i></div>
-      <h3>${cat.name}</h3>
-      <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
-      <div class="poll-nominees">${(cat.nominees || []).length} nominee${(cat.nominees || []).length !== 1 ? 's' : ''}</div>
-      ${cat.open ? '<button class="vote-now-btn">Vote Now</button>' : '<span style="font-size:11px;color:#8b79ad;font-weight:600">Voting closed</span>'}
+function renderAdmin(){
+  const totalCats=categories.length;
+  const totalNoms=categories.reduce((a,c)=>a+c.nominees.length,0);
+  const totalVotes=Object.values(voteRecords).reduce((a,cat)=>a+Object.values(cat).reduce((b,v)=>b+v,0),0);
+  const openCount=categories.filter(c=>c.open).length;
+  document.getElementById('admin-stats').innerHTML=
+    `<div class="stat-card"><div class="sc-label">Categories</div><div class="sc-val">${totalCats}</div></div>
+     <div class="stat-card"><div class="sc-label">Nominees</div><div class="sc-val">${totalNoms}</div></div>
+     <div class="stat-card"><div class="sc-label">Total Votes</div><div class="sc-val">${totalVotes.toLocaleString()}</div></div>
+     <div class="stat-card"><div class="sc-label">Open Polls</div><div class="sc-val">${openCount}</div></div>`;
+  document.getElementById('cat-count').textContent=totalCats;
+  const el=document.getElementById('admin-list');
+  if(!totalCats){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:6px 0">No categories yet.</div>';return;}
+  el.innerHTML=categories.map((cat,i)=>{
+    const open=openCats[i];
+    const noms=cat.nominees.map((n,j)=>`
+      <div class="nom-list-item">
+        <span>${n} <span style="color:#a090c8;font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
+        <button class="sm-btn red" onclick="deleteNominee(${i},${j})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
+      </div>`).join('');
+    return `<div class="cat-item">
+      <div class="cat-header">
+        <div class="cat-title-wrap">
+          <span class="status-dot ${cat.open?'open':'closed'}"></span>
+          <span class="cat-title">${cat.name}</span>
+          <span class="cat-meta">${cat.nominees.length} nominees · ₦${cat.price}/vote</span>
+        </div>
+        <div class="cat-acts">
+          <button class="sm-btn ${cat.open?'red':'green'}" onclick="toggleCatStatus(${i})">${cat.open?'<i class="ti ti-lock" aria-hidden="true" style="font-size:11px"></i> Close':'<i class="ti ti-lock-open" aria-hidden="true" style="font-size:11px"></i> Open'}</button>
+          <button class="sm-btn" onclick="toggleCat(${i})">${open?'<i class="ti ti-chevron-up" aria-hidden="true" style="font-size:11px"></i>':'<i class="ti ti-pencil" aria-hidden="true" style="font-size:11px"></i> Edit'}</button>
+          <button class="sm-btn red" onclick="deleteCategory(${i})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
+        </div>
+      </div>
+      ${open?`<div class="cat-body">
+        <div class="edit-name-row">
+          <input type="text" id="rename-${i}" value="${cat.name}" placeholder="Category name" />
+          <button class="sm-btn" onclick="renameCat(${i})"><i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i> Rename</button>
+        </div>
+        <div class="price-row">
+          <label>Price per vote (₦)</label>
+          <input type="number" id="price-${i}" value="${cat.price}" min="0" onchange="updatePrice(${i})" />
+        </div>
+        <div>${noms||'<div style="font-size:12px;color:#8b79ad;padding:4px 0">No nominees yet.</div>'}</div>
+        <div class="nom-add-row">
+          <input type="text" id="nin-${i}" placeholder="Nominee name" onkeydown="if(event.key==='Enter')addNominee(${i})" />
+          <button onclick="addNominee(${i})"><i class="ti ti-plus" aria-hidden="true" style="font-size:12px"></i> Add</button>
+        </div>
+      </div>`:''}
     </div>`;
   }).join('');
 }
 
-// ── VOTE PAGE ────────────────────────────────────────────────
-window.openVote = function (id) {
-  const cat = categories.find(c => c.id === id);
-  if (!cat || !cat.open) { toast('Voting for this category is closed.'); return; }
-  currentCatId = id;
-  voteState = {};
-  (cat.nominees || []).forEach(n => voteState[n] = 0);
-  document.getElementById('vote-title').textContent = cat.name;
-  document.getElementById('sv-price').textContent = '₦' + cat.price.toLocaleString();
-  renderNomRows();
-  showPage('vote');
-};
-
-function renderNomRows() {
-  const cat = categories.find(c => c.id === currentCatId);
-  const el = document.getElementById('nom-rows');
-  if (!cat || !(cat.nominees || []).length) {
-    el.innerHTML = '<div style="font-size:13px;color:#8b79ad;padding:8px 0">No nominees added yet.</div>';
+function renderPolls(){
+  const q=(document.getElementById('poll-search')||{value:''}).value.toLowerCase();
+  const filtered=categories.filter(c=>c.name.toLowerCase().includes(q));
+  const grid=document.getElementById('polls-grid');
+  const count=document.getElementById('polls-count');
+  if(!categories.length){
+    grid.innerHTML='<div class="empty-st"><i class="ti ti-mood-empty" aria-hidden="true" style="font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px"></i>No categories yet. Go to Admin to add some.</div>';
+    if(count) count.textContent='No polls available';
     return;
   }
-  el.innerHTML = cat.nominees.map(n =>
+  if(count) count.textContent=filtered.length+' poll'+(filtered.length!==1?'s':'')+' · '+categories.filter(c=>c.open).length+' open';
+  const icons=['ti-music','ti-star','ti-trophy','ti-award','ti-microphone','ti-camera','ti-palette','ti-device-gamepad'];
+  grid.innerHTML=filtered.map((cat,ri)=>{
+    const i=categories.indexOf(cat);
+    const icon=icons[i%icons.length];
+    return `<div class="poll-card${cat.open?'':' closed'}" onclick="${cat.open?'openVote('+i+')':'\"\"'}">
+      ${!cat.open?'<span class="closed-badge"><i class="ti ti-lock" aria-hidden="true" style="font-size:9px"></i> Closed</span>':''}
+      <div class="poll-icon"><i class="ti ${icon}" aria-hidden="true"></i></div>
+      <h3>${cat.name}</h3>
+      <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
+      <div class="poll-nominees">${cat.nominees.length} nominee${cat.nominees.length!==1?'s':''}</div>
+      ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:#8b79ad;font-weight:600">Voting closed</span>'}
+    </div>`;
+  }).join('');
+  if(!filtered.length&&q) grid.innerHTML='<div class="empty-st">No results for "'+q+'"</div>';
+}
+
+function openVote(i){
+  if(!categories[i].open){toast('Voting for this category is closed.');return;}
+  currentCatIdx=i;
+  const cat=categories[i];
+  voteState={};
+  cat.nominees.forEach(n=>voteState[n]=0);
+  document.getElementById('vote-title').textContent=cat.name;
+  document.getElementById('sv-price').textContent='₦'+cat.price.toLocaleString();
+  renderNomRows();
+  showPage('vote');
+}
+
+function renderNomRows(){
+  const cat=categories[currentCatIdx];
+  const el=document.getElementById('nom-rows');
+  if(!cat.nominees.length){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:8px 0">No nominees added yet.</div>';return;}
+  el.innerHTML=cat.nominees.map(n=>
     `<div class="nom-row">
       <div class="nom-avatar">${n.charAt(0)}</div>
       <div class="nom-info"><div class="nom-name">${n}</div><div class="nom-sub">Add votes below</div></div>
       <div class="counter">
-        <button class="c-btn" onclick="chgVote('${n.replace(/'/g, "\\'")}', -1)" aria-label="Remove vote">−</button>
-        <span class="c-val" id="cv-${n.replace(/\s+/g, '_')}">${voteState[n]}</span>
-        <button class="c-btn plus" onclick="chgVote('${n.replace(/'/g, "\\'")}', 1)" aria-label="Add vote">+</button>
+        <button class="c-btn" onclick="chgVote('${n.replace(/'/g,"\\'")}', -1)" aria-label="Remove vote">−</button>
+        <span class="c-val" id="cv-${n.replace(/\s+/g,'_')}">${voteState[n]}</span>
+        <button class="c-btn plus" onclick="chgVote('${n.replace(/'/g,"\\'")}', 1)" aria-label="Add vote">+</button>
       </div>
     </div>`
   ).join('');
   updateVoteSummary();
 }
 
-window.chgVote = function (nom, d) {
-  voteState[nom] = Math.max(0, (voteState[nom] || 0) + d);
-  const el = document.getElementById('cv-' + nom.replace(/\s+/g, '_'));
-  if (el) el.textContent = voteState[nom];
+function chgVote(nom,d){
+  voteState[nom]=Math.max(0,(voteState[nom]||0)+d);
+  const el=document.getElementById('cv-'+nom.replace(/\s+/g,'_'));
+  if(el) el.textContent=voteState[nom];
   updateVoteSummary();
-};
-
-function updateVoteSummary() {
-  const cat = categories.find(c => c.id === currentCatId);
-  if (!cat) return;
-  const total = Object.values(voteState).reduce((a, b) => a + b, 0);
-  document.getElementById('sv-count').textContent = total;
-  document.getElementById('sv-sub').textContent = '₦' + (total * cat.price).toLocaleString();
-  document.getElementById('add-cart-btn').disabled = total === 0;
 }
 
-window.addToCart = function () {
-  const cat = categories.find(c => c.id === currentCatId);
-  if (!cat) return;
-  const votes = Object.entries(voteState).filter(([, v]) => v > 0);
-  if (!votes.length) return;
-  const sub = votes.reduce((a, [, v]) => a + (v * cat.price), 0);
-  cart.push({ catId: cat.id, category: cat.name, price: cat.price, votes, subtotal: sub });
-  updateCartBadge();
-  toast('Added to cart!');
-  showPage('polls');
-};
-
-// ── CART ─────────────────────────────────────────────────────
-function updateCartBadge() {
-  const b = document.getElementById('cart-badge');
-  b.textContent = cart.length;
-  b.style.display = cart.length ? 'flex' : 'none';
+function updateVoteSummary(){
+  const total=Object.values(voteState).reduce((a,b)=>a+b,0);
+  const price=categories[currentCatIdx].price;
+  document.getElementById('sv-count').textContent=total;
+  document.getElementById('sv-sub').textContent='₦'+(total*price).toLocaleString();
+  document.getElementById('add-cart-btn').disabled=total===0;
 }
 
-window.removeCartItem = function (i) { cart.splice(i, 1); updateCartBadge(); renderCart(); toast('Item removed.'); };
+function addToCart(){
+  const cat=categories[currentCatIdx];
+  const votes=Object.entries(voteState).filter(([,v])=>v>0);
+  if(!votes.length)return;
+  const sub=votes.reduce((a,[,v])=>a+(v*cat.price),0);
+  cart.push({category:cat.name,price:cat.price,votes,subtotal:sub,catIdx:currentCatIdx});
+  updateCartBadge(); toast('Added to cart!'); showPage('polls');
+}
 
-function renderCart() {
-  const el = document.getElementById('cart-items');
-  const tot = document.getElementById('totals-box');
-  const form = document.getElementById('checkout-form-wrap');
-  if (!cart.length) {
-    el.innerHTML = `<div class="cart-empty"><i class="ti ti-shopping-cart" aria-hidden="true"></i><p>Your cart is empty.</p><button class="cart-empty-btn" onclick="showPage('polls')">Browse Polls</button></div>`;
-    tot.innerHTML = ''; form.style.display = 'none'; return;
+function updateCartBadge(){
+  const b=document.getElementById('cart-badge');
+  b.textContent=cart.length;
+  b.style.display=cart.length?'flex':'none';
+}
+
+function removeCartItem(i){cart.splice(i,1);updateCartBadge();renderCart();toast('Item removed.');}
+
+function renderCart(){
+  const el=document.getElementById('cart-items');
+  const tot=document.getElementById('totals-box');
+  const form=document.getElementById('checkout-form-wrap');
+  if(!cart.length){
+    el.innerHTML=`<div class="cart-empty">
+      <i class="ti ti-shopping-cart" aria-hidden="true"></i>
+      <p>Your cart is empty.</p>
+      <button class="cart-empty-btn" onclick="showPage('polls')">Browse Polls</button>
+    </div>`;
+    tot.innerHTML=''; form.style.display='none'; return;
   }
-  form.style.display = 'block';
-  el.innerHTML = cart.map((item, i) =>
+  form.style.display='block';
+  el.innerHTML=cart.map((item,i)=>
     `<div class="cart-item">
       <div class="cart-item-top">
-        <div><div class="cart-item-name">${item.category}</div><div class="cart-item-detail">${item.votes.map(([n, v]) => `${n}: ${v} vote${v > 1 ? 's' : ''}`).join(' · ')}</div></div>
+        <div><div class="cart-item-name">${item.category}</div><div class="cart-item-detail">${item.votes.map(([n,v])=>`${n}: ${v} vote${v>1?'s':''}`).join(' · ')}</div></div>
         <div style="text-align:right"><div class="cart-item-price">₦${item.subtotal.toLocaleString()}</div><button class="rm-btn" onclick="removeCartItem(${i})">Remove</button></div>
       </div>
     </div>`
   ).join('');
-  const votesTotal = cart.reduce((a, c) => a + c.subtotal, 0);
-  tot.innerHTML = `
+  const votesTotal=cart.reduce((a,c)=>a+c.subtotal,0);
+  tot.innerHTML=`
     <div class="total-row"><span>Votes subtotal</span><span>₦${votesTotal.toLocaleString()}</span></div>
     <div class="total-row"><span>Platform fee</span><span>₦50</span></div>
-    <div class="total-row grand"><span>Total</span><span>₦${(votesTotal + 50).toLocaleString()}</span></div>`;
+    <div class="total-row grand"><span>Total</span><span>₦${(votesTotal+50).toLocaleString()}</span></div>`;
 }
 
-// ── PAYMENT ──────────────────────────────────────────────────
-window.initiatePayment = async function () {
-  if (!cart.length) { toast('Your cart is empty.'); return; }
-  const email = document.getElementById('cf-email').value.trim();
-  if (!email) { toast('Please enter your email address.'); return; }
-  const key = squadKey || document.getElementById('squad-key').value.trim();
-  if (!key) { toast('Payment not configured. Please contact the admin.'); return; }
-  const fname = document.getElementById('cf-fname').value.trim();
-  const lname = document.getElementById('cf-lname').value.trim();
-  const amount = cart.reduce((a, c) => a + c.subtotal, 0) + 50;
-  const btn = document.getElementById('pay-btn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Opening payment...';
-  try {
-    const s = new squad({
-      onClose: () => { btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad'; },
-      onLoad: () => {},
-      onSuccess: async (ref) => {
-        btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad';
-        await recordVotes(ref, email, fname + ' ' + lname);
-      },
-      key, email, amount: amount * 100, currency_code: 'NGN',
-      customer_name: (fname + ' ' + lname).trim() || undefined,
-      metadata: { cart: cart.map(c => ({ category: c.category, votes: c.votes })), platform_fee: 50 }
-    });
-    s.setup(); s.open();
-  } catch (e) {
-    toast('Could not load Squad. Check the API key in Admin.');
-    btn.disabled = false; btn.innerHTML = '<i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad';
-    console.error(e);
-  }
-};
-
-async function recordVotes(ref, email, name) {
-  // Write each vote as an increment to the votes subcollection
-  const batch = writeBatch(db);
-  cart.forEach(item => {
-    item.votes.forEach(([nominee, count]) => {
-      const voteRef = doc(db, 'categories', item.catId, 'votes', nominee);
-      batch.set(voteRef, { count: increment(count), category: item.category }, { merge: true });
-    });
-    // Log transaction
-    const txRef = doc(collection(db, 'transactions'));
-    batch.set(txRef, {
-      ref, email, name: name.trim() || 'Anonymous',
-      category: item.category, votes: item.votes,
-      amount: item.subtotal, timestamp: serverTimestamp()
-    });
-  });
-  try {
-    await batch.commit();
-    cart = []; updateCartBadge(); showPage('polls');
-    toast('Payment successful! Votes recorded. Thank you!', 4000);
-  } catch (e) {
-    toast('Votes could not be recorded. Please contact admin with ref: ' + ref);
-    console.error(e);
-  }
-}
-
-// ── RESULTS ──────────────────────────────────────────────────
-async function renderResults() {
-  const el = document.getElementById('results-body');
-  if (!adminUser) {
-    el.innerHTML = `<div class="results-lock"><i class="ti ti-lock" aria-hidden="true"></i><p>Results are visible to admins only.</p><button onclick="handleAdminNav()">Sign In</button></div>`;
-    return;
-  }
-  if (!categories.length) {
-    el.innerHTML = '<div class="results-empty"><i class="ti ti-chart-bar" aria-hidden="true"></i>No categories yet.</div>';
-    return;
-  }
-  el.innerHTML = '<div style="font-size:13px;color:#8b79ad;padding:20px 0;text-align:center"><span class="spinner"></span> Loading results...</div>';
-  // Fetch vote counts for all categories
-  const allVotes = {};
-  await Promise.all(categories.map(async cat => {
-    const snap = await getDocs(collection(db, 'categories', cat.id, 'votes'));
-    allVotes[cat.id] = {};
-    snap.forEach(d => { allVotes[cat.id][d.id] = d.data().count || 0; });
-  }));
-  el.innerHTML = categories.map(cat => {
-    const recs = allVotes[cat.id] || {};
-    const total = Object.values(recs).reduce((a, b) => a + b, 0);
-    const sorted = [...(cat.nominees || [])].sort((a, b) => (recs[b] || 0) - (recs[a] || 0));
-    const bars = sorted.map((n, rank) => {
-      const v = recs[n] || 0;
-      const pct = total > 0 ? Math.round(v / total * 100) : 0;
+function renderResults(){
+  const el=document.getElementById('results-body');
+  if(!categories.length){el.innerHTML='<div class="results-empty"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px"></i>No categories yet.</div>';return;}
+  el.innerHTML=categories.map(cat=>{
+    const recs=voteRecords[cat.name]||{};
+    const total=Object.values(recs).reduce((a,b)=>a+b,0);
+    const sorted=[...cat.nominees].sort((a,b)=>(recs[b]||0)-(recs[a]||0));
+    const bars=sorted.map((n,rank)=>{
+      const v=recs[n]||0;
+      const pct=total>0?Math.round(v/total*100):0;
       return `<div class="result-bar-row">
         <div class="result-bar-top">
-          <span class="rbn">${rank === 0 && total > 0 ? '<span class="winner-badge"><i class="ti ti-trophy" aria-hidden="true" style="font-size:9px"></i> Leading</span>' : ''} ${n}</span>
-          <span class="rbv">${v.toLocaleString()} vote${v !== 1 ? 's' : ''} · ${pct}%</span>
+          <span class="rbn">${rank===0&&total>0?'<span class="winner-badge"><i class="ti ti-trophy" aria-hidden="true" style="font-size:10px"></i> Leading</span>':''} ${n}</span>
+          <span class="rbv">${v.toLocaleString()} vote${v!==1?'s':''} · ${pct}%</span>
         </div>
-        <div class="result-bar-bg"><div class="result-bar-fill" style="width:${pct}%"></div></div>
+        <div class="result-bar-bg"><div class="result-bar-fill${rank===0?' top':''}" style="width:${pct}%"></div></div>
       </div>`;
     }).join('');
     return `<div class="results-cat">
       <div class="results-cat-head">
         <h3>${cat.name}</h3>
-        <span>${total.toLocaleString()} total vote${total !== 1 ? 's' : ''} · <span style="color:${cat.open ? '#0f6e56' : '#e24b4a'};font-weight:700">${cat.open ? 'Open' : 'Closed'}</span></span>
+        <span>${total.toLocaleString()} total vote${total!==1?'s':''} · <span style="color:${cat.open?'#0f6e56':'#e24b4a'};font-weight:600">${cat.open?'Open':'Closed'}</span></span>
       </div>
-      ${bars || '<div style="font-size:12px;color:#8b79ad">No nominees yet.</div>'}
+      ${bars||'<div style="font-size:12px;color:#8b79ad">No nominees yet.</div>'}
     </div>`;
   }).join('');
 }
 
-// ── ADMIN RENDER ─────────────────────────────────────────────
-function updateAdminStats() {
-  const totalNoms = categories.reduce((a, c) => a + (c.nominees || []).length, 0);
-  document.getElementById('stat-cats').textContent = categories.length;
-  document.getElementById('stat-noms').textContent = totalNoms;
-  document.getElementById('stat-open').textContent = categories.filter(c => c.open).length;
+function exportCSV(){
+  if(!categories.length){toast('No data to export.');return;}
+  let csv='Category,Nominee,Votes\n';
+  categories.forEach(cat=>{
+    const recs=voteRecords[cat.name]||{};
+    cat.nominees.forEach(n=>{ csv+=`"${cat.name}","${n}",${recs[n]||0}\n`; });
+  });
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='nacos_lasu_results.csv'; a.click();
+  URL.revokeObjectURL(url); toast('CSV exported.');
 }
 
-function renderAdmin() {
-  if (!adminUser) return;
-  document.getElementById('cat-count').textContent = categories.length;
-  const el = document.getElementById('admin-list');
-  if (!categories.length) { el.innerHTML = '<div style="font-size:13px;color:#8b79ad;padding:6px 0">No categories yet.</div>'; return; }
-  el.innerHTML = categories.map(cat => {
-    const open = openCatPanels[cat.id];
-    const noms = (cat.nominees || []).map(n =>
-      `<div class="nom-list-item">
-        <span>${n}</span>
-        <button class="sm-btn red" onclick="deleteNominee('${cat.id}','${n.replace(/'/g,"\\'")}')"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
-      </div>`
-    ).join('');
-    return `<div class="cat-item">
-      <div class="cat-header">
-        <div class="cat-title-wrap">
-          <span class="status-dot ${cat.open ? 'open' : 'closed'}"></span>
-          <span class="cat-title">${cat.name}</span>
-          <span class="cat-meta">${(cat.nominees || []).length} nominees · ₦${cat.price}/vote</span>
-        </div>
-        <div class="cat-acts">
-          <button class="sm-btn ${cat.open ? 'red' : 'green'}" onclick="toggleCatStatus('${cat.id}',${cat.open})">${cat.open ? '<i class="ti ti-lock" aria-hidden="true" style="font-size:11px"></i> Close' : '<i class="ti ti-lock-open" aria-hidden="true" style="font-size:11px"></i> Open'}</button>
-          <button class="sm-btn" onclick="toggleCatPanel('${cat.id}')">${open ? '<i class="ti ti-chevron-up" aria-hidden="true" style="font-size:11px"></i>' : '<i class="ti ti-pencil" aria-hidden="true" style="font-size:11px"></i> Edit'}</button>
-          <button class="sm-btn red" onclick="deleteCategory('${cat.id}','${cat.name.replace(/'/g,"\\'")}')"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
-        </div>
-      </div>
-      ${open ? `<div class="cat-body">
-        <div class="edit-name-row">
-          <input type="text" id="rename-${cat.id}" value="${cat.name}" placeholder="Category name" />
-          <button class="sm-btn" onclick="renameCat('${cat.id}','rename-${cat.id}')"><i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i> Save</button>
-        </div>
-        <div class="price-row">
-          <label>Price per vote (₦)</label>
-          <input type="number" id="price-${cat.id}" value="${cat.price}" min="0" />
-          <button class="sm-btn" onclick="updatePrice('${cat.id}','price-${cat.id}')"><i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i> Save</button>
-        </div>
-        <div>${noms || '<div style="font-size:12px;color:#8b79ad;padding:4px 0">No nominees yet.</div>'}</div>
-        <div class="nom-add-row">
-          <input type="text" id="nin-${cat.id}" placeholder="Nominee name" onkeydown="if(event.key==='Enter')addNominee('${cat.id}','nin-${cat.id}')" />
-          <button onclick="addNominee('${cat.id}','nin-${cat.id}')"><i class="ti ti-plus" aria-hidden="true" style="font-size:12px"></i> Add</button>
-        </div>
-      </div>` : ''}
-    </div>`;
-  }).join('');
+function exportJSON(){
+  if(!categories.length){toast('No data to export.');return;}
+  const data=categories.map(cat=>({name:cat.name,price:cat.price,open:cat.open,nominees:cat.nominees.map(n=>({name:n,votes:(voteRecords[cat.name]||{})[n]||0}))}));
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='nacos_lasu_data.json'; a.click();
+  URL.revokeObjectURL(url); toast('JSON exported.');
 }
 
-// ── EXPORT ───────────────────────────────────────────────────
-window.exportCSV = async function () {
-  if (!categories.length) { toast('No data to export.'); return; }
-  toast('Fetching vote data...');
-  let csv = 'Category,Status,Nominee,Votes\n';
-  await Promise.all(categories.map(async cat => {
-    const snap = await getDocs(collection(db, 'categories', cat.id, 'votes'));
-    const recs = {};
-    snap.forEach(d => { recs[d.id] = d.data().count || 0; });
-    (cat.nominees || []).forEach(n => {
-      csv += `"${cat.name}","${cat.open ? 'Open' : 'Closed'}","${n}",${recs[n] || 0}\n`;
+function initiatePayment(){
+  if(!cart.length){toast('Your cart is empty.');return;}
+  const email=document.getElementById('cf-email').value.trim();
+  if(!email){toast('Please enter your email address.');return;}
+  const key=document.getElementById('squad-key').value.trim();
+  if(!key){toast('Please add your Squad public key in Admin.');return;}
+  const fname=document.getElementById('cf-fname').value.trim();
+  const lname=document.getElementById('cf-lname').value.trim();
+  const amount=cart.reduce((a,c)=>a+c.subtotal,0)+50;
+  try{
+    const s=new squad({
+      onClose:()=>{},
+      onLoad:()=>{},
+      onSuccess:(ref)=>{
+        cart.forEach(item=>{
+          item.votes.forEach(([n,v])=>{
+            if(!voteRecords[item.category]) voteRecords[item.category]={};
+            voteRecords[item.category][n]=(voteRecords[item.category][n]||0)+v;
+          });
+        });
+        cart=[]; updateCartBadge(); showPage('results'); toast('Payment successful! Votes recorded.');
+      },
+      key,email,amount:amount*100,currency_code:'NGN',
+      customer_name:(fname+' '+lname).trim()||undefined,
+      metadata:{cart:cart.map(c=>({category:c.category,votes:c.votes})),platform_fee:50}
     });
-  }));
-  download(csv, 'nacos_lasu_results.csv', 'text/csv');
-  toast('CSV exported.');
-};
-
-window.exportJSON = async function () {
-  if (!categories.length) { toast('No data to export.'); return; }
-  toast('Fetching vote data...');
-  const data = await Promise.all(categories.map(async cat => {
-    const snap = await getDocs(collection(db, 'categories', cat.id, 'votes'));
-    const recs = {};
-    snap.forEach(d => { recs[d.id] = d.data().count || 0; });
-    return { name: cat.name, price: cat.price, open: cat.open, nominees: (cat.nominees || []).map(n => ({ name: n, votes: recs[n] || 0 })) };
-  }));
-  download(JSON.stringify(data, null, 2), 'nacos_lasu_data.json', 'application/json');
-  toast('JSON exported.');
-};
-
-function download(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
+    s.setup(); s.open();
+  }catch(e){toast('Could not load Squad. Check your API key.'); console.error(e);}
 }
 
-// ── INIT ─────────────────────────────────────────────────────
-subscribeCategories();
-
-// poll-search needs global ref
-document.getElementById('poll-search').addEventListener('input', renderPolls);
-
+renderPolls();
 </script>
-
-<!-- Squad Payment SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@squadco/js@latest/dist/squad.min.js"></script>
-</body>
-</html>
