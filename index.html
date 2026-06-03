@@ -1,0 +1,444 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--pu:#6c3fc5;--pu-dark:#4a2a8a;--pu-light:#ede8fa;--pu-mid:#8b5cf6}
+body{font-family:var(--font-sans);background:#f7f5ff;min-height:100vh;display:flex;flex-direction:column}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+/* NAV */
+nav{background:#fff;border-bottom:1px solid #e5dff7;padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:#1a0a3c;letter-spacing:0.01em}
+.logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-btn{padding:7px 15px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#5a4a7a;background:#fff;cursor:pointer;transition:all 0.15s;font-weight:500}
+.nav-btn:hover{border-color:var(--pu);color:var(--pu);background:var(--pu-light)}
+.nav-btn.active{background:var(--pu);color:#fff;border-color:var(--pu)}
+.cart-wrap{position:relative}
+.cart-badge{position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700}
+
+/* LAYOUT */
+.main{flex:1}
+.page{display:none;padding:24px}
+.page.active{display:block}
+
+/* POLLS */
+.polls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:14px;max-width:1100px;margin:0 auto}
+.poll-card{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:22px 16px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;cursor:pointer;transition:all 0.15s}
+.poll-card:hover{border-color:var(--pu);box-shadow:0 4px 16px rgba(108,63,197,0.1);transform:translateY(-2px)}
+.poll-card h3{font-size:12px;font-weight:600;color:#1a0a3c;text-transform:uppercase;letter-spacing:0.05em;line-height:1.5}
+.poll-price{font-size:11px;color:#8b79ad;font-weight:500}
+.vote-now-btn{padding:7px 20px;border:1.5px solid var(--pu);border-radius:8px;font-size:12px;font-weight:600;color:var(--pu);background:#fff;cursor:pointer;transition:all 0.15s}
+.vote-now-btn:hover{background:var(--pu);color:#fff}
+.empty-st{grid-column:1/-1;text-align:center;padding:60px;color:#8b79ad;font-size:14px}
+
+/* VOTE */
+.vote-inner{max-width:580px;margin:0 auto}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#5a4a7a;background:#fff;cursor:pointer;margin-bottom:18px;font-weight:500}
+.back-btn:hover{border-color:var(--pu);color:var(--pu)}
+.vote-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:24px}
+.vote-box h2{font-size:18px;font-weight:700;color:#1a0a3c;margin-bottom:4px}
+.nominees-lbl{font-size:12px;color:#8b79ad;margin-bottom:14px;font-weight:500;text-transform:uppercase;letter-spacing:0.04em}
+.nom-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid #ede8fa;border-radius:10px;margin-bottom:8px;background:#fff;transition:border-color 0.15s}
+.nom-row:hover{border-color:#c4adf0}
+.nom-avatar{width:36px;height:36px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--pu);flex-shrink:0;border:1.5px solid #d4c5f5}
+.nom-info{flex:1}
+.nom-name{font-size:13px;font-weight:600;color:#1a0a3c}
+.nom-sub{font-size:11px;color:#8b79ad}
+.counter{display:flex;align-items:center;gap:6px}
+.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid #d4c5f5;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#5a4a7a;transition:all 0.1s}
+.c-btn:hover{border-color:var(--pu);color:var(--pu)}
+.c-btn.plus{background:var(--pu);color:#fff;border-color:var(--pu)}
+.c-btn.plus:hover{background:var(--pu-dark)}
+.c-val{width:30px;text-align:center;font-size:13px;font-weight:600;color:#1a0a3c}
+.vote-summary{background:#f7f5ff;border:1.5px solid #e5dff7;border-radius:10px;padding:14px 16px;margin-top:16px}
+.summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;color:#8b79ad}
+.summary-row span:last-child{color:#1a0a3c;font-weight:600}
+.add-cart-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;transition:all 0.15s}
+.add-cart-btn:hover{background:var(--pu-dark)}
+.add-cart-btn:disabled{opacity:0.35;cursor:not-allowed}
+
+/* CART */
+.cart-inner{max-width:560px;margin:0 auto}
+.cart-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:22px;margin-bottom:14px}
+.cart-box h2{font-size:16px;font-weight:700;color:#1a0a3c;margin-bottom:14px}
+.cart-item{padding:12px 0;border-bottom:1px solid #f0ebfa}
+.cart-item:last-of-type{border-bottom:none}
+.cart-item-top{display:flex;justify-content:space-between;align-items:flex-start}
+.cart-item-name{font-size:13px;font-weight:600;color:#1a0a3c}
+.cart-item-detail{font-size:11px;color:#8b79ad;margin-top:2px}
+.cart-item-price{font-size:13px;font-weight:700;color:var(--pu)}
+.rm-btn{font-size:11px;color:#e24b4a;background:none;border:none;cursor:pointer;display:block;margin-top:2px;text-align:right}
+.cart-empty{text-align:center;padding:36px;color:#8b79ad;font-size:14px}
+.totals-box{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:16px 22px;margin-bottom:14px}
+.total-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:#8b79ad}
+.total-row span:last-child{color:#1a0a3c;font-weight:600}
+.total-row.grand{border-top:1.5px solid #e5dff7;margin-top:8px;padding-top:12px;font-size:15px;font-weight:700;color:#1a0a3c}
+.total-row.grand span:last-child{color:var(--pu);font-size:17px}
+.checkout-form{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:18px 22px;margin-bottom:14px}
+.checkout-form h3{font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:12px}
+.cf-row{display:flex;gap:10px;margin-bottom:10px}
+.cf-row input{flex:1;padding:9px 12px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#1a0a3c;background:#fff}
+.cf-row input:focus{outline:none;border-color:var(--pu)}
+.pay-btn{width:100%;padding:12px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.pay-btn:hover{background:var(--pu-dark)}
+.squad-badge{font-size:11px;color:#8b79ad;text-align:center;margin-top:8px}
+
+/* ADMIN */
+.admin-inner{max-width:680px;margin:0 auto}
+.a-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:20px 22px;margin-bottom:16px}
+.a-box h2{font-size:15px;font-weight:700;color:#1a0a3c;margin-bottom:14px}
+.a-form-row{display:flex;gap:8px;flex-wrap:wrap}
+.a-form-row input{flex:1;min-width:120px;padding:9px 12px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#1a0a3c;background:#fff}
+.a-form-row input:focus{outline:none;border-color:var(--pu)}
+.a-btn{padding:9px 18px;background:var(--pu);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
+.a-btn:hover{background:var(--pu-dark)}
+.a-key-row input{flex:1;padding:9px 12px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;font-family:var(--font-mono);background:#f7f5ff;color:#1a0a3c;width:100%}
+.a-key-row input:focus{outline:none;border-color:var(--pu)}
+.key-hint{font-size:11px;color:#8b79ad;margin-top:6px}
+.cat-item{border:1.5px solid #e5dff7;border-radius:10px;margin-bottom:8px;overflow:hidden}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;background:#fff;transition:background 0.1s}
+.cat-header:hover{background:#f7f5ff}
+.cat-title{font-size:13px;font-weight:600;color:#1a0a3c}
+.cat-meta{font-size:11px;color:#8b79ad;margin-left:8px}
+.cat-acts{display:flex;gap:5px}
+.sm-btn{padding:4px 10px;border:1.5px solid #e5dff7;border-radius:6px;font-size:11px;color:#5a4a7a;background:#fff;cursor:pointer;font-weight:500}
+.sm-btn:hover{border-color:var(--pu);color:var(--pu)}
+.sm-btn.red:hover{border-color:#e24b4a;color:#e24b4a}
+.cat-body{padding:14px;background:#f7f5ff;border-top:1.5px solid #e5dff7}
+.nom-list-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#1a0a3c;padding:5px 0;border-bottom:1px solid #ede8fa}
+.nom-list-item:last-of-type{border-bottom:none}
+.nom-add-row{display:flex;gap:7px;margin-top:10px}
+.nom-add-row input{flex:1;padding:7px 10px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
+.nom-add-row input:focus{outline:none;border-color:var(--pu)}
+.nom-add-row button{padding:7px 14px;background:var(--pu);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer}
+.price-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.price-row label{font-size:12px;color:#8b79ad;font-weight:500}
+.price-row input{width:90px;padding:6px 9px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
+.price-row input:focus{outline:none;border-color:var(--pu)}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:#ede8fa;color:var(--pu);font-weight:600;margin-left:6px}
+
+/* FOOTER */
+footer{background:#1a0a3c;color:#c4b5f5;padding:40px 28px 24px}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr;gap:32px;margin-bottom:32px}
+.footer-brand .logo-mark-f{width:34px;height:34px;background:var(--pu);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;margin-bottom:10px}
+.footer-brand h3{font-size:15px;font-weight:700;color:#fff;margin-bottom:8px}
+.footer-brand p{font-size:12px;line-height:1.7;color:#a090c8;max-width:240px}
+.footer-col h4{font-size:12px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
+.footer-col a{display:block;font-size:13px;color:#a090c8;text-decoration:none;margin-bottom:7px;transition:color 0.15s;cursor:pointer}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid #2e1a5c;padding-top:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap}
+.footer-copy{font-size:12px;color:#6b5a9a}
+.footer-credit{font-size:12px;color:#6b5a9a}
+.footer-credit a{color:#a090c8;text-decoration:none}
+.footer-credit a:hover{color:#fff}
+</style>
+
+<h2 class="sr-only">LASU Awards Voting Platform</h2>
+
+<div class="main">
+<nav>
+  <div class="nav-logo"><div class="logo-mark">LA</div> LASU AWARDS</div>
+  <div class="nav-right">
+    <button class="nav-btn active" onclick="showPage('polls')">Polls</button>
+    <button class="nav-btn" onclick="showPage('admin')">Admin</button>
+    <div class="cart-wrap">
+      <button class="nav-btn" onclick="showPage('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i> Vote Cart</button>
+      <span class="cart-badge" id="cart-badge">0</span>
+    </div>
+  </div>
+</nav>
+
+<!-- POLLS -->
+<div class="page active" id="page-polls">
+  <div class="polls-grid" id="polls-grid"></div>
+</div>
+
+<!-- VOTE -->
+<div class="page" id="page-vote">
+  <div class="vote-inner">
+    <button class="back-btn" onclick="showPage('polls')"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button>
+    <div class="vote-box">
+      <h2 id="vote-title"></h2>
+      <div class="nominees-lbl">Nominees</div>
+      <div id="nom-rows"></div>
+      <div class="vote-summary">
+        <div class="summary-row"><span>Selected votes</span><span id="sv-count">0</span></div>
+        <div class="summary-row"><span>Price per vote</span><span id="sv-price">₦0</span></div>
+        <div class="summary-row"><span>Subtotal</span><span id="sv-sub">₦0</span></div>
+        <button class="add-cart-btn" id="add-cart-btn" onclick="addToCart()" disabled>Add to Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="page" id="page-cart">
+  <div class="cart-inner">
+    <div class="cart-box">
+      <h2>Vote Cart</h2>
+      <div id="cart-items"></div>
+    </div>
+    <div class="totals-box" id="totals-box"></div>
+    <div class="checkout-form">
+      <h3>Your Details</h3>
+      <div class="cf-row">
+        <input type="text" id="cf-fname" placeholder="First name" />
+        <input type="text" id="cf-lname" placeholder="Last name" />
+      </div>
+      <div class="cf-row">
+        <input type="email" id="cf-email" placeholder="Email address" />
+      </div>
+      <button class="pay-btn" onclick="initiatePayment()">
+        <i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad
+      </button>
+      <div class="squad-badge">Secured by Squad · GTBank (HabariPay)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="page" id="page-admin">
+  <div class="admin-inner">
+    <div class="a-box">
+      <h2>Squad API Key</h2>
+      <div class="a-key-row" style="display:flex;gap:8px">
+        <input type="text" id="squad-key" placeholder="Paste your Squad public key (e.g. test_pk_...)" />
+      </div>
+      <div class="key-hint">Get your key from <strong>sandbox.squadco.com</strong> (test) or <strong>dashboard.squadco.com</strong> (live)</div>
+    </div>
+    <div class="a-box">
+      <h2>Add Category</h2>
+      <div class="a-form-row">
+        <input type="text" id="cat-input" placeholder="Category name (e.g. DJ OF THE YEAR)" />
+        <input type="number" id="cat-price" placeholder="Price ₦" min="0" value="100" style="max-width:110px" />
+        <button class="a-btn" onclick="addCategory()">Add Category</button>
+      </div>
+    </div>
+    <div class="a-box">
+      <h2>Categories <span class="tag" id="cat-count">0</span></h2>
+      <div id="admin-list"></div>
+    </div>
+  </div>
+</div>
+</div><!-- end .main -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo-mark-f">LA</div>
+        <h3>LASU Awards</h3>
+        <p>The official voting platform for the LASU Awards. Cast your votes, support your favourites, and celebrate excellence at Lagos State University.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <a onclick="showPage('polls')">Home</a>
+        <a onclick="showPage('polls')">Polls</a>
+        <a onclick="showPage('cart')">Cart</a>
+      </div>
+      <div class="footer-col">
+        <h4>Admin</h4>
+        <a onclick="showPage('admin')">Admin Login</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 Business Automation Management System</span>
+      <span class="footer-credit">Built by <a href="#">Ayomide Obashola (Mide Bash)</a></span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@squadco/js@latest/dist/squad.min.js"></script>
+<script>
+let categories=[], cart=[], currentCatIdx=null, voteState={}, openCats={};
+
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map={polls:0,admin:1,cart:2};
+  if(map[p]!==undefined) document.querySelectorAll('.nav-btn')[map[p]].classList.add('active');
+  if(p==='polls') renderPolls();
+  if(p==='admin') renderAdmin();
+  if(p==='cart') renderCart();
+}
+
+function addCategory(){
+  const name=document.getElementById('cat-input').value.trim().toUpperCase();
+  const price=parseInt(document.getElementById('cat-price').value)||100;
+  if(!name) return;
+  if(categories.find(c=>c.name===name)){alert('Already exists.');return;}
+  categories.push({name,price,nominees:[]});
+  document.getElementById('cat-input').value='';
+  document.getElementById('cat-price').value='100';
+  renderAdmin();renderPolls();
+}
+
+function deleteCategory(i){if(!confirm('Delete this category?'))return;categories.splice(i,1);renderAdmin();renderPolls();}
+function toggleCat(i){openCats[i]=!openCats[i];renderAdmin();}
+
+function addNominee(i){
+  const inp=document.getElementById('nin-'+i);
+  const name=inp.value.trim().toUpperCase();
+  if(!name)return;
+  if(categories[i].nominees.includes(name)){alert('Already exists.');return;}
+  categories[i].nominees.push(name);inp.value='';renderAdmin();
+}
+
+function deleteNominee(ci,ni){categories[ci].nominees.splice(ni,1);renderAdmin();}
+function updatePrice(i){categories[i].price=parseInt(document.getElementById('price-'+i).value)||0;}
+
+function renderAdmin(){
+  document.getElementById('cat-count').textContent=categories.length;
+  const el=document.getElementById('admin-list');
+  if(!categories.length){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:8px 0">No categories yet.</div>';return;}
+  el.innerHTML=categories.map((cat,i)=>{
+    const open=openCats[i];
+    const noms=cat.nominees.map((n,j)=>
+      `<div class="nom-list-item"><span>${n}</span><button class="sm-btn red" onclick="deleteNominee(${i},${j})">Remove</button></div>`
+    ).join('');
+    return `<div class="cat-item">
+      <div class="cat-header" onclick="toggleCat(${i})">
+        <div><span class="cat-title">${cat.name}</span><span class="cat-meta">${cat.nominees.length} nominees · ₦${cat.price}/vote</span></div>
+        <div class="cat-acts" onclick="event.stopPropagation()">
+          <button class="sm-btn" onclick="toggleCat(${i})">${open?'Hide':'Edit'}</button>
+          <button class="sm-btn red" onclick="deleteCategory(${i})">Delete</button>
+        </div>
+      </div>
+      ${open?`<div class="cat-body">
+        <div class="price-row">
+          <label>Price per vote (₦)</label>
+          <input type="number" id="price-${i}" value="${cat.price}" min="0" onchange="updatePrice(${i})" />
+        </div>
+        <div>${noms||'<div style="font-size:12px;color:#8b79ad;padding:4px 0">No nominees yet.</div>'}</div>
+        <div class="nom-add-row">
+          <input type="text" id="nin-${i}" placeholder="Nominee name" onkeydown="if(event.key==='Enter')addNominee(${i})" />
+          <button onclick="addNominee(${i})">Add</button>
+        </div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderPolls(){
+  const grid=document.getElementById('polls-grid');
+  if(!categories.length){grid.innerHTML='<div class="empty-st">No categories yet. Go to Admin to add some.</div>';return;}
+  grid.innerHTML=categories.map((cat,i)=>
+    `<div class="poll-card" onclick="openVote(${i})">
+      <h3>${cat.name}</h3>
+      <div class="poll-price">₦${cat.price} per vote</div>
+      <button class="vote-now-btn">Vote Now</button>
+    </div>`
+  ).join('');
+}
+
+function openVote(i){
+  currentCatIdx=i;
+  const cat=categories[i];
+  voteState={};
+  cat.nominees.forEach(n=>voteState[n]=0);
+  document.getElementById('vote-title').textContent=cat.name;
+  document.getElementById('sv-price').textContent='₦'+cat.price;
+  renderNomRows();
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-vote').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+}
+
+function renderNomRows(){
+  const cat=categories[currentCatIdx];
+  const el=document.getElementById('nom-rows');
+  if(!cat.nominees.length){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:8px 0">No nominees added yet.</div>';return;}
+  el.innerHTML=cat.nominees.map(n=>
+    `<div class="nom-row">
+      <div class="nom-avatar">${n.charAt(0)}</div>
+      <div class="nom-info"><div class="nom-name">${n}</div><div class="nom-sub">Votes</div></div>
+      <div class="counter">
+        <button class="c-btn" onclick="chgVote('${n.replace(/'/g,"\\'")}', -1)">−</button>
+        <span class="c-val" id="cv-${n.replace(/\s+/g,'_')}">${voteState[n]}</span>
+        <button class="c-btn plus" onclick="chgVote('${n.replace(/'/g,"\\'")}', 1)">+</button>
+      </div>
+    </div>`
+  ).join('');
+  updateVoteSummary();
+}
+
+function chgVote(nom,d){
+  voteState[nom]=Math.max(0,(voteState[nom]||0)+d);
+  const el=document.getElementById('cv-'+nom.replace(/\s+/g,'_'));
+  if(el) el.textContent=voteState[nom];
+  updateVoteSummary();
+}
+
+function updateVoteSummary(){
+  const total=Object.values(voteState).reduce((a,b)=>a+b,0);
+  const price=categories[currentCatIdx].price;
+  document.getElementById('sv-count').textContent=total;
+  document.getElementById('sv-sub').textContent='₦'+(total*price).toLocaleString();
+  document.getElementById('add-cart-btn').disabled=total===0;
+}
+
+function addToCart(){
+  const cat=categories[currentCatIdx];
+  const votes=Object.entries(voteState).filter(([,v])=>v>0);
+  if(!votes.length)return;
+  const sub=votes.reduce((a,[,v])=>a+(v*cat.price),0);
+  cart.push({category:cat.name,price:cat.price,votes,subtotal:sub});
+  updateCartBadge();
+  showPage('polls');
+}
+
+function updateCartBadge(){
+  const b=document.getElementById('cart-badge');
+  b.textContent=cart.length;
+  b.style.display=cart.length?'flex':'none';
+}
+
+function removeCartItem(i){cart.splice(i,1);updateCartBadge();renderCart();}
+
+function renderCart(){
+  const el=document.getElementById('cart-items');
+  const tot=document.getElementById('totals-box');
+  if(!cart.length){el.innerHTML='<div class="cart-empty">Your cart is empty.</div>';tot.innerHTML='';return;}
+  el.innerHTML=cart.map((item,i)=>
+    `<div class="cart-item">
+      <div class="cart-item-top">
+        <div><div class="cart-item-name">${item.category}</div><div class="cart-item-detail">${item.votes.map(([n,v])=>`${n}: ${v} vote${v>1?'s':''}`).join(' · ')}</div></div>
+        <div style="text-align:right"><div class="cart-item-price">₦${item.subtotal.toLocaleString()}</div><button class="rm-btn" onclick="removeCartItem(${i})">Remove</button></div>
+      </div>
+    </div>`
+  ).join('');
+  const votesTotal=cart.reduce((a,c)=>a+c.subtotal,0);
+  const grand=votesTotal+50;
+  tot.innerHTML=`
+    <div class="total-row"><span>Votes subtotal</span><span>₦${votesTotal.toLocaleString()}</span></div>
+    <div class="total-row"><span>Platform fee</span><span>₦50</span></div>
+    <div class="total-row grand"><span>Total</span><span>₦${grand.toLocaleString()}</span></div>`;
+}
+
+function initiatePayment(){
+  if(!cart.length){alert('Your cart is empty.');return;}
+  const fname=document.getElementById('cf-fname').value.trim();
+  const lname=document.getElementById('cf-lname').value.trim();
+  const email=document.getElementById('cf-email').value.trim();
+  if(!email){alert('Please enter your email address.');return;}
+  const key=document.getElementById('squad-key').value.trim();
+  if(!key){alert('Please add your Squad public key in the Admin panel.');return;}
+  const amount=cart.reduce((a,c)=>a+c.subtotal,0)+50;
+  try{
+    const s=new squad({
+      onClose:()=>console.log("closed"),
+      onLoad:()=>console.log("loaded"),
+      onSuccess:(ref)=>{alert('Payment successful! Thank you for voting.');cart=[];updateCartBadge();showPage('polls');},
+      key,email,amount:amount*100,currency_code:"NGN",
+      customer_name:(fname+' '+lname).trim()||undefined,
+      metadata:{cart:cart.map(c=>({category:c.category,votes:c.votes})),platform_fee:50}
+    });
+    s.setup();s.open();
+  }catch(e){alert('Could not load Squad. Check your API key.');console.error(e);}
+}
+
+renderPolls();renderAdmin();
+</script>
