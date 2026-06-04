@@ -580,6 +580,11 @@ async function handleStateApi(req, res) {
     return sendJson(res, 405, { success: false, message: 'Method not allowed' });
   }
 
+  const currentAdmin = await getAdminFromRequest(req);
+  if (!currentAdmin) {
+    return sendJson(res, 401, { success: false, message: 'Admin login required' });
+  }
+
   if (!hasFirebaseCredentials()) {
     return sendJson(res, 200, buildEmptyState());
   }
@@ -712,6 +717,9 @@ async function handleCategoriesApi(req, res, body, parts) {
   };
 
   if (method === 'GET' && parts.length === 2) {
+    if (!currentAdmin) {
+      return sendJson(res, 401, { success: false, message: 'Admin login required' });
+    }
     return sendJson(res, 200, await collectState());
   }
 

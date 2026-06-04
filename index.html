@@ -243,7 +243,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 </nav>
 
 <!-- POLLS -->
-<div class="page active" id="page-polls">
+<div class="page" id="page-polls">
   <div class="page-header">
     <div><h2>Active Polls</h2><p id="polls-count">Loading categories...</p></div>
     <div class="search-bar"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="poll-search" placeholder="Search categories..." oninput="renderPolls()" /></div>
@@ -307,7 +307,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 </div>
 
 <!-- ADMIN LOGIN -->
-<div class="page" id="page-admin-login">
+<div class="page active" id="page-admin-login">
   <div class="login-wrap">
     <div class="login-split">
       <div class="login-left">
@@ -416,9 +416,9 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
       </div>
       <div class="footer-col">
         <h4>Navigate</h4>
-        <a onclick="showPage('polls')">Home</a>
-        <a onclick="showPage('polls')">Polls</a>
-        <a onclick="showPage('results')">Results</a>
+        <a id="footer-home-link" onclick="showPage('polls')">Home</a>
+        <a id="footer-polls-link" onclick="showPage('polls')">Polls</a>
+        <a id="footer-results-link" onclick="showPage('results')">Results</a>
         <a onclick="showPage('cart')">Cart</a>
       </div>
       <div class="footer-col">
@@ -446,6 +446,7 @@ let adminBootstrapRequired = false;
 let voteRecords = {};
 let squadPublicKey = '';
 let refreshTimer = null;
+const RESTRICTED_PAGES = new Set(['polls', 'results', 'admin']);
 
 function apiRequest(path, options = {}) {
   return fetch(API_BASE + path, {
@@ -515,9 +516,15 @@ async function loadConfig(){
 }
 
 async function loadAdminStatus(){
-  const data = await apiRequest('/admin/status');
-  adminAuth = Boolean(data.authenticated);
-  adminBootstrapRequired = Boolean(data.bootstrapRequired);
+  try{
+    const data = await apiRequest('/admin/status');
+    adminAuth = Boolean(data.authenticated);
+    adminBootstrapRequired = Boolean(data.bootstrapRequired);
+  }catch(error){
+    adminAuth = false;
+    adminBootstrapRequired = false;
+    console.warn(error);
+  }
   const saveBtn = document.getElementById('admin-save-btn');
   const hint = document.getElementById('admin-save-hint');
   if(saveBtn){
@@ -528,6 +535,16 @@ async function loadAdminStatus(){
       ? 'Create the first admin account to unlock the dashboard.'
       : 'Update your admin username and password after logging in.';
   }
+  syncRestrictedUi();
+}
+
+function syncRestrictedUi(){
+  const locked = !adminAuth;
+  const publicNav = ['nb-polls', 'nb-results', 'footer-home-link', 'footer-polls-link', 'footer-results-link'];
+  publicNav.forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.style.display = locked ? 'none' : '';
+  });
 }
 
 function toast(msg,dur=2500){
@@ -537,6 +554,9 @@ function toast(msg,dur=2500){
 }
 
 function showPage(p){
+  if(RESTRICTED_PAGES.has(p) && !adminAuth){
+    p = 'admin-login';
+  }
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
@@ -560,9 +580,11 @@ async function doLogin(){
       body: JSON.stringify({ username: u, password: p })
     });
     adminAuth=true; err.classList.remove('show');
+    syncRestrictedUi();
     document.getElementById('login-user').value='';
     document.getElementById('login-pw').value='';
     await loadAdminStatus();
+    await refreshState();
     showPage('admin'); renderAdmin();
   }catch(error){
     err.classList.add('show');
@@ -578,8 +600,9 @@ async function doLogout(){
     console.warn(error);
   }
   adminAuth=false;
+  syncRestrictedUi();
   toast('Logged out.');
-  showPage('polls');
+  showPage('admin-login');
 }
 
 function togglePw(){
@@ -991,13 +1014,18 @@ function initiatePayment(){
 async function bootstrap(){
   await loadConfig();
   await loadAdminStatus();
-  await loadState();
   updateCartBadge();
-  renderPolls();
-  renderResults();
-  if(adminAuth) renderAdmin();
+  syncRestrictedUi();
+  showPage(adminAuth ? 'polls' : 'admin-login');
+  if(adminAuth){
+    await loadState();
+    renderPolls();
+    renderResults();
+    renderAdmin();
+  }
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer=setInterval(()=>{
+    if(!adminAuth) return;
     loadState().then(()=>{
       if(document.getElementById('page-results').classList.contains('active')) renderResults();
       if(document.getElementById('page-polls').classList.contains('active')) renderPolls();

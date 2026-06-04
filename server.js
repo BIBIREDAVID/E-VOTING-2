@@ -811,6 +811,9 @@ function handleCategoriesApi(req, res, body) {
   };
 
   if (method === 'GET' && parts.length === 2) {
+    if (!currentAdmin) {
+      return sendJson(res, 401, { success: false, message: 'Admin login required' });
+    }
     return sendJson(res, 200, collectState());
   }
 
@@ -930,6 +933,10 @@ function handleStateApi(req, res) {
   const method = req.method || 'GET';
   if (method !== 'GET') {
     return sendJson(res, 405, { success: false, message: 'Method not allowed' });
+  }
+  const currentAdmin = getAdminFromRequest(req);
+  if (!currentAdmin) {
+    return sendJson(res, 401, { success: false, message: 'Admin login required' });
   }
   return sendJson(res, 200, collectState());
 }
