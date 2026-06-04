@@ -7,6 +7,7 @@ body{font-family:var(--font-sans);background:#f7f5ff;min-height:100vh;display:fl
 nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a0a3c}
 .logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.logo-mark img,.lmark img,.logo-mark-f img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit}
 .nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .nav-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#5a4a7a;background:#fff;cursor:pointer;transition:all 0.15s;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .nav-btn:hover{border-color:var(--pu);color:var(--pu);background:var(--pu-light)}
@@ -229,7 +230,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
 <div class="main">
 <nav>
-  <div class="nav-logo"><div class="logo-mark">LA</div> NACOS-LASU AWARDS</div>
+  <div class="nav-logo"><div class="logo-mark" id="nav-logo-mark">LA</div> NACOS-LASU AWARDS</div>
   <div class="nav-right">
     <button class="nav-btn active" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-home" aria-hidden="true"></i><span>Polls</span></button>
     <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
@@ -311,7 +312,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     <div class="login-split">
       <div class="login-left">
         <div>
-          <div class="login-left-logo"><div class="lmark">LA</div><span>NACOS-LASU AWARDS</span></div>
+          <div class="login-left-logo"><div class="lmark" id="login-logo-mark">LA</div><span>NACOS-LASU AWARDS</span></div>
           <h2>Welcome back</h2>
           <p>Sign in to manage polls, nominees, results, and platform settings from one secure dashboard.</p>
         </div>
@@ -339,7 +340,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
           </div>
         </div>
         <button class="sign-in-btn" onclick="doLogin()">Sign In</button>
-        <p class="login-hint">Default: <strong>admin</strong> / <strong>nacos2026</strong></p>
+        <p class="login-hint">The server seeds a first admin automatically on startup.</p>
       </div>
     </div>
   </div>
@@ -398,9 +399,9 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <input type="text" id="new-user" placeholder="New username" />
         <input type="password" id="new-pw" placeholder="New password" />
         <input type="password" id="new-pw2" placeholder="Confirm password" />
-        <button class="a-btn" onclick="changeCredentials()">Update</button>
+        <button class="a-btn" id="admin-save-btn" onclick="changeCredentials()">Update</button>
       </div>
-      <div style="font-size:11px;color:#8b79ad;margin-top:6px">Changes apply immediately for this session.</div>
+      <div style="font-size:11px;color:#8b79ad;margin-top:6px" id="admin-save-hint">Changes apply immediately after you log in.</div>
     </div>
   </div>
 </div>
@@ -410,7 +411,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <div class="logo-mark-f">LA</div>
+        <div class="logo-mark-f" id="footer-logo-mark">LA</div>
         <h3>NACOS-LASU Awards</h3>
         <p>The official voting platform for the NACOS-LASU Awards. Cast your votes and celebrate excellence at Lagos State University.</p>
       </div>
@@ -435,9 +436,100 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
 <script src="https://cdn.jsdelivr.net/npm/@squadco/js@latest/dist/squad.min.js"></script>
 <script>
-let categories=[], cart=[], currentCatIdx=null, voteState={}, openCats={};
-let adminAuth=false, adminCreds={username:'admin',password:'nacos2026'};
-let voteRecords={};
+const API_BASE = '/api';
+let categories = [];
+let cart = [];
+let currentCatIdx = null;
+let voteState = {};
+let openCats = {};
+let adminAuth = false;
+let adminBootstrapRequired = false;
+let voteRecords = {};
+let squadPublicKey = '';
+let refreshTimer = null;
+
+function apiRequest(path, options = {}) {
+  return fetch(API_BASE + path, {
+    ...options,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {})
+    }
+  }).then(async response => {
+    const text = await response.text();
+    let data = {};
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch (error) {
+      data = { message: text };
+    }
+    if (!response.ok) {
+      throw new Error(data.message || `Request failed with status ${response.status}`);
+    }
+    return data;
+  });
+}
+
+function normalizeCategories(data){
+  categories = Array.isArray(data.categories) ? data.categories.map(category => ({
+    id: category.id,
+    name: String(category.name || '').trim().toUpperCase(),
+    price: Number(category.price) || 0,
+    open: Boolean(category.open),
+    nominees: Array.isArray(category.nominees) ? category.nominees.map(nominee => String(nominee || '').trim().toUpperCase()).filter(Boolean) : []
+  })) : [];
+  voteRecords = data.voteRecords || {};
+}
+
+async function loadState(){
+  const data = await apiRequest('/state');
+  normalizeCategories(data);
+}
+
+async function refreshState(){
+  await loadState();
+  renderPolls();
+  renderResults();
+  if(adminAuth) renderAdmin();
+}
+
+async function loadConfig(){
+  try{
+    const data = await apiRequest('/config');
+    squadPublicKey = data.squadPublicKey || '';
+    const logoUrl = data.logoUrl || '';
+    const keyInput = document.getElementById('squad-key');
+    if(keyInput && squadPublicKey && !keyInput.value.trim()){
+      keyInput.value = squadPublicKey;
+    }
+    ['nav-logo-mark','login-logo-mark','footer-logo-mark'].forEach(id=>{
+      const slot=document.getElementById(id);
+      if(!slot) return;
+      slot.innerHTML = logoUrl
+        ? `<img src="${logoUrl}" alt="NACOS logo" />`
+        : 'LA';
+    });
+  }catch(error){
+    console.warn(error);
+  }
+}
+
+async function loadAdminStatus(){
+  const data = await apiRequest('/admin/status');
+  adminAuth = Boolean(data.authenticated);
+  adminBootstrapRequired = Boolean(data.bootstrapRequired);
+  const saveBtn = document.getElementById('admin-save-btn');
+  const hint = document.getElementById('admin-save-hint');
+  if(saveBtn){
+    saveBtn.textContent = adminBootstrapRequired ? 'Create Admin' : 'Update';
+  }
+  if(hint){
+    hint.textContent = adminBootstrapRequired
+      ? 'Create the first admin account to unlock the dashboard.'
+      : 'Update your admin username and password after logging in.';
+  }
+}
 
 function toast(msg,dur=2500){
   const t=document.getElementById('toast');
@@ -459,19 +551,37 @@ function showPage(p){
 
 function handleAdminNav(){adminAuth?showPage('admin'):showPage('admin-login');}
 
-function doLogin(){
+async function doLogin(){
   const u=document.getElementById('login-user').value.trim();
   const p=document.getElementById('login-pw').value;
   const err=document.getElementById('login-error');
-  if((u===adminCreds.username||u==='admin@nacoslasu.com')&&p===adminCreds.password){
+  try{
+    await apiRequest('/admin/login', {
+      method: 'POST',
+      body: JSON.stringify({ username: u, password: p })
+    });
     adminAuth=true; err.classList.remove('show');
     document.getElementById('login-user').value='';
     document.getElementById('login-pw').value='';
+    await loadAdminStatus();
     showPage('admin'); renderAdmin();
-  } else { err.classList.add('show'); document.getElementById('login-pw').value=''; }
+  }catch(error){
+    err.classList.add('show');
+    document.getElementById('login-pw').value='';
+    toast(error.message || 'Incorrect username or password.');
+  }
 }
 
-function doLogout(){adminAuth=false; toast('Logged out.'); showPage('polls');}
+async function doLogout(){
+  try{
+    await apiRequest('/admin/logout', { method: 'POST' });
+  }catch(error){
+    console.warn(error);
+  }
+  adminAuth=false;
+  toast('Logged out.');
+  showPage('polls');
+}
 
 function togglePw(){
   const inp=document.getElementById('login-pw'), icon=document.getElementById('pw-eye');
@@ -479,84 +589,140 @@ function togglePw(){
   icon.className=inp.type==='password'?'ti ti-eye':'ti ti-eye-off';
 }
 
-function changeCredentials(){
+async function changeCredentials(){
   const u=document.getElementById('new-user').value.trim();
   const p=document.getElementById('new-pw').value;
   const p2=document.getElementById('new-pw2').value;
   if(!u||!p){toast('Please fill in username and password.');return;}
   if(p!==p2){toast('Passwords do not match.');return;}
-  adminCreds={username:u,password:p};
-  document.getElementById('new-user').value='';
-  document.getElementById('new-pw').value='';
-  document.getElementById('new-pw2').value='';
-  toast('Credentials updated successfully.');
+  try{
+    const endpoint=adminBootstrapRequired?'/admin/bootstrap':'/admin/change-credentials';
+    await apiRequest(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ username: u, password: p })
+    });
+    document.getElementById('new-user').value='';
+    document.getElementById('new-pw').value='';
+    document.getElementById('new-pw2').value='';
+    adminBootstrapRequired=false;
+    await loadAdminStatus();
+    toast(endpoint==='/admin/bootstrap'?'First admin account created.':'Credentials updated successfully.');
+  }catch(error){
+    toast(error.message || 'Could not update admin credentials.');
+  }
 }
 
-function addCategory(){
+async function addCategory(){
   const name=document.getElementById('cat-input').value.trim().toUpperCase();
   const price=parseInt(document.getElementById('cat-price').value)||100;
   if(!name){toast('Please enter a category name.');return;}
-  if(categories.find(c=>c.name===name)){toast('Category already exists.');return;}
-  categories.push({name,price,nominees:[],open:true});
-  voteRecords[name]={};
-  document.getElementById('cat-input').value='';
-  document.getElementById('cat-price').value='100';
-  renderAdmin(); renderPolls(); toast('Category added.');
+  try{
+    await apiRequest('/categories', {
+      method: 'POST',
+      body: JSON.stringify({ name, price })
+    });
+    document.getElementById('cat-input').value='';
+    document.getElementById('cat-price').value='100';
+    await refreshState();
+    toast('Category added.');
+  }catch(error){
+    toast(error.message || 'Could not add category.');
+  }
 }
 
-function deleteCategory(i){
+async function deleteCategory(i){
   if(!confirm('Delete "'+categories[i].name+'"? This cannot be undone.'))return;
-  delete voteRecords[categories[i].name];
-  categories.splice(i,1);
-  renderAdmin(); renderPolls(); toast('Category deleted.');
+  try{
+    await apiRequest('/categories/' + categories[i].id, { method: 'DELETE' });
+    await refreshState();
+    toast('Category deleted.');
+  }catch(error){
+    toast(error.message || 'Could not delete category.');
+  }
 }
 
-function toggleCat(i){openCats[i]=!openCats[i];renderAdmin();}
+function toggleCat(i){openCats[categories[i].id]=!openCats[categories[i].id];renderAdmin();}
 
-function toggleCatStatus(i){
-  categories[i].open=!categories[i].open;
-  renderAdmin(); renderPolls();
-  toast(categories[i].name+(categories[i].open?' opened for voting.'.'closed for voting.'));
+async function toggleCatStatus(i){
+  try{
+    await apiRequest('/categories/' + categories[i].id, {
+      method: 'PATCH',
+      body: JSON.stringify({ open: !categories[i].open })
+    });
+    await refreshState();
+    toast(categories[i].name + (categories[i].open ? ' opened for voting.' : ' closed for voting.'));
+  }catch(error){
+    toast(error.message || 'Could not update category status.');
+  }
 }
 
-function setAllStatus(open){
-  categories.forEach(c=>c.open=open);
-  renderAdmin(); renderPolls();
-  toast(open?'All categories opened.':'All categories closed.');
+async function setAllStatus(open){
+  try{
+    await apiRequest('/categories/bulk-status', {
+      method: 'POST',
+      body: JSON.stringify({ open })
+    });
+    await refreshState();
+    toast(open?'All categories opened.':'All categories closed.');
+  }catch(error){
+    toast(error.message || 'Could not update category statuses.');
+  }
 }
 
-function renameCat(i){
+async function renameCat(i){
   const val=document.getElementById('rename-'+i).value.trim().toUpperCase();
   if(!val){toast('Name cannot be empty.');return;}
-  if(categories.find((c,idx)=>c.name===val&&idx!==i)){toast('Name already in use.');return;}
-  const old=categories[i].name;
-  voteRecords[val]=voteRecords[old]||{};
-  delete voteRecords[old];
-  categories[i].name=val;
-  renderAdmin(); renderPolls(); toast('Category renamed.');
+  try{
+    await apiRequest('/categories/' + categories[i].id, {
+      method: 'PATCH',
+      body: JSON.stringify({ name: val })
+    });
+    await refreshState();
+    toast('Category renamed.');
+  }catch(error){
+    toast(error.message || 'Could not rename category.');
+  }
 }
 
-function addNominee(i){
+async function addNominee(i){
   const inp=document.getElementById('nin-'+i);
   const name=inp.value.trim().toUpperCase();
   if(!name)return;
-  if(categories[i].nominees.includes(name)){toast('Nominee already exists.');return;}
-  categories[i].nominees.push(name);
-  if(!voteRecords[categories[i].name]) voteRecords[categories[i].name]={};
-  voteRecords[categories[i].name][name]=0;
-  inp.value=''; renderAdmin(); toast('Nominee added.');
+  try{
+    await apiRequest('/categories/' + categories[i].id + '/nominees', {
+      method: 'POST',
+      body: JSON.stringify({ name })
+    });
+    inp.value='';
+    await refreshState();
+    toast('Nominee added.');
+  }catch(error){
+    toast(error.message || 'Could not add nominee.');
+  }
 }
 
-function deleteNominee(ci,ni){
+async function deleteNominee(ci,ni){
   const nom=categories[ci].nominees[ni];
-  delete (voteRecords[categories[ci].name]||{})[nom];
-  categories[ci].nominees.splice(ni,1);
-  renderAdmin();
+  try{
+    await apiRequest('/categories/' + categories[ci].id + '/nominees/' + encodeURIComponent(nom), { method: 'DELETE' });
+    await refreshState();
+  }catch(error){
+    toast(error.message || 'Could not delete nominee.');
+  }
 }
 
-function updatePrice(i){
-  categories[i].price=parseInt(document.getElementById('price-'+i).value)||0;
-  toast('Price updated.');
+async function updatePrice(i){
+  try{
+    const price = parseInt(document.getElementById('price-'+i).value)||0;
+    await apiRequest('/categories/' + categories[i].id, {
+      method: 'PATCH',
+      body: JSON.stringify({ price })
+    });
+    await refreshState();
+    toast('Price updated.');
+  }catch(error){
+    toast(error.message || 'Could not update price.');
+  }
 }
 
 function renderAdmin(){
@@ -573,12 +739,12 @@ function renderAdmin(){
   const el=document.getElementById('admin-list');
   if(!totalCats){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:6px 0">No categories yet.</div>';return;}
   el.innerHTML=categories.map((cat,i)=>{
-    const open=openCats[i];
+    const open=openCats[cat.id];
     const noms=cat.nominees.map((n,j)=>`
-      <div class="nom-list-item">
-        <span>${n} <span style="color:#a090c8;font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
-        <button class="sm-btn red" onclick="deleteNominee(${i},${j})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
-      </div>`).join('');
+        <div class="nom-list-item">
+          <span>${n} <span style="color:#a090c8;font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
+          <button class="sm-btn red" onclick="deleteNominee(${i},${j})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
+        </div>`).join('');
     return `<div class="cat-item">
       <div class="cat-header">
         <div class="cat-title-wrap">
@@ -688,7 +854,7 @@ function addToCart(){
   const votes=Object.entries(voteState).filter(([,v])=>v>0);
   if(!votes.length)return;
   const sub=votes.reduce((a,[,v])=>a+(v*cat.price),0);
-  cart.push({category:cat.name,price:cat.price,votes,subtotal:sub,catIdx:currentCatIdx});
+  cart.push({categoryId:cat.id,category:cat.name,price:cat.price,votes,subtotal:sub,catIdx:currentCatIdx});
   updateCartBadge(); toast('Added to cart!'); showPage('polls');
 }
 
@@ -786,26 +952,60 @@ function initiatePayment(){
   const fname=document.getElementById('cf-fname').value.trim();
   const lname=document.getElementById('cf-lname').value.trim();
   const amount=cart.reduce((a,c)=>a+c.subtotal,0)+50;
+  const customerName=(fname+' '+lname).trim();
   try{
     const s=new squad({
       onClose:()=>{},
       onLoad:()=>{},
-      onSuccess:(ref)=>{
-        cart.forEach(item=>{
-          item.votes.forEach(([n,v])=>{
-            if(!voteRecords[item.category]) voteRecords[item.category]={};
-            voteRecords[item.category][n]=(voteRecords[item.category][n]||0)+v;
+      onSuccess:async(ref)=>{
+        try{
+          toast('Verifying payment...');
+          const payload={
+            reference: ref,
+            email,
+            customerName,
+            cart: cart.map(item=>({
+              categoryId:item.categoryId,
+              category:item.category,
+              votes:item.votes.map(([name,votes])=>({name, votes}))
+            }))
+          };
+          const result=await apiRequest('/payments/verify', {
+            method: 'POST',
+            body: JSON.stringify(payload)
           });
-        });
-        cart=[]; updateCartBadge(); showPage('results'); toast('Payment successful! Votes recorded.');
+          cart=[]; updateCartBadge(); await refreshState(); showPage('results');
+          toast(result.message || 'Payment verified and votes recorded.');
+        }catch(error){
+          toast(error.message || 'Payment verification failed.');
+          console.error(error);
+        }
       },
       key,email,amount:amount*100,currency_code:'NGN',
-      customer_name:(fname+' '+lname).trim()||undefined,
-      metadata:{cart:cart.map(c=>({category:c.category,votes:c.votes})),platform_fee:50}
+      customer_name:customerName||undefined,
+      metadata:{cart:cart.map(c=>({categoryId:c.categoryId,category:c.category,votes:c.votes.map(([name,votes])=>({name, votes}))})),email,customer_name:customerName,platform_fee:50}
     });
     s.setup(); s.open();
   }catch(e){toast('Could not load Squad. Check your API key.'); console.error(e);}
 }
 
-renderPolls();
+async function bootstrap(){
+  await loadConfig();
+  await loadAdminStatus();
+  await loadState();
+  updateCartBadge();
+  renderPolls();
+  renderResults();
+  if(adminAuth) renderAdmin();
+  if(refreshTimer) clearInterval(refreshTimer);
+  refreshTimer=setInterval(()=>{
+    loadState().then(()=>{
+      if(document.getElementById('page-results').classList.contains('active')) renderResults();
+      if(document.getElementById('page-polls').classList.contains('active')) renderPolls();
+      if(document.getElementById('page-admin').classList.contains('active')&&adminAuth) renderAdmin();
+    }).catch(error=>console.warn(error));
+  },15000);
+}
+
+bootstrap();
 </script>
