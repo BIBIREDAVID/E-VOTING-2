@@ -473,6 +473,20 @@ function collectState() {
   };
 }
 
+function buildHealthPayload() {
+  const hasFirestoreCredentials =
+    Boolean(String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim()) ||
+    (Boolean(String(process.env.FIREBASE_PROJECT_ID || '').trim()) &&
+      Boolean(String(process.env.FIREBASE_CLIENT_EMAIL || '').trim()) &&
+      Boolean(String(process.env.FIREBASE_PRIVATE_KEY || '').trim()));
+
+  return {
+    ok: true,
+    firestoreConfigured: hasFirestoreCredentials,
+    squadConfigured: Boolean(PUBLIC_SQUAD_KEY)
+  };
+}
+
 function buildReceiptLines(items) {
   const grouped = new Map();
   items.forEach(item => {
@@ -1016,48 +1030,62 @@ async function serveIndex(res) {
 }
 
 const server = http.createServer(async (req, res) => {
-  const requestUrl = parseRequestPath(req.url || '/');
-  const pathname = requestUrl.pathname;
+  try {
+    const requestUrl = parseRequestPath(req.url || '/');
+    const pathname = requestUrl.pathname;
 
-  if (pathname === '/api/config') {
-    return handleConfigApi(req, res);
+    if (pathname === '/api') {
+      return sendJson(res, 200, buildHealthPayload());
+    }
+
+    if (pathname === '/api/config') {
+      return await handleConfigApi(req, res);
+    }
+
+    if (pathname.startsWith('/api/admin')) {
+      const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await readBody(req);
+      return await handleAdminApi(req, res, body);
+    }
+
+    if (pathname === '/api/state') {
+      return await handleStateApi(req, res);
+    }
+
+    if (pathname.startsWith('/api/categories')) {
+      const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await readBody(req);
+      return await handleCategoriesApi(req, res, body);
+    }
+
+    if (pathname === '/api/payments/verify' && req.method === 'POST') {
+      const body = await readBody(req);
+      return await handlePaymentVerification(req, res, body);
+    }
+
+    if (pathname === '/api/webhooks/squad' && req.method === 'POST') {
+      const body = await readBody(req);
+      return await handleWebhook(req, res, body);
+    }
+
+    if (pathname === '/' || pathname === '/index.html') {
+      return await serveIndex(res);
+    }
+
+    if (pathname === '/favicon.ico') {
+      res.writeHead(204);
+      return res.end();
+    }
+
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Not found');
+  } catch (error) {
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ success: false, message: error.message || 'Internal server error' }));
+      return;
+    }
+
+    res.end();
   }
-
-  if (pathname.startsWith('/api/admin')) {
-    const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await readBody(req);
-    return handleAdminApi(req, res, body);
-  }
-
-  if (pathname === '/api/state') {
-    return handleStateApi(req, res);
-  }
-
-  if (pathname.startsWith('/api/categories')) {
-    const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await readBody(req);
-    return handleCategoriesApi(req, res, body);
-  }
-
-  if (pathname === '/api/payments/verify' && req.method === 'POST') {
-    const body = await readBody(req);
-    return handlePaymentVerification(req, res, body);
-  }
-
-  if (pathname === '/api/webhooks/squad' && req.method === 'POST') {
-    const body = await readBody(req);
-    return handleWebhook(req, res, body);
-  }
-
-  if (pathname === '/' || pathname === '/index.html') {
-    return serveIndex(res);
-  }
-
-  if (pathname === '/favicon.ico') {
-    res.writeHead(204);
-    return res.end();
-  }
-
-  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-  res.end('Not found');
 });
 
 server.listen(PORT, () => {

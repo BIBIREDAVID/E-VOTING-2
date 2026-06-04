@@ -281,6 +281,19 @@ function buildHealthPayload() {
   };
 }
 
+function buildEmptyState() {
+  return {
+    categories: [],
+    voteRecords: {},
+    stats: {
+      categories: 0,
+      nominees: 0,
+      votes: 0,
+      openPolls: 0
+    }
+  };
+}
+
 async function getAdminFromRequest(request) {
   ensureFirebase();
   const cookies = parseCookies(request);
@@ -544,6 +557,10 @@ async function handleConfigApi(req, res) {
 async function handleStateApi(req, res) {
   if ((req.method || 'GET') !== 'GET') {
     return sendJson(res, 405, { success: false, message: 'Method not allowed' });
+  }
+
+  if (!hasFirebaseCredentials()) {
+    return sendJson(res, 200, buildEmptyState());
   }
 
   await seedAdminIfMissing().catch(() => {});
@@ -947,31 +964,31 @@ async function handleRequest(req, res) {
     }
 
     if (pathname === '/api/config') {
-      return handleConfigApi(req, res);
+      return await handleConfigApi(req, res);
     }
 
     if (pathname === '/api/state') {
-      return handleStateApi(req, res);
+      return await handleStateApi(req, res);
     }
 
     if (pathname.startsWith('/api/admin')) {
       const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await readBody(req);
-      return handleAdminApi(req, res, body, parts);
+      return await handleAdminApi(req, res, body, parts);
     }
 
     if (pathname.startsWith('/api/categories')) {
       const body = req.method === 'GET' || req.method === 'HEAD' ? '' : await readBody(req);
-      return handleCategoriesApi(req, res, body, parts);
+      return await handleCategoriesApi(req, res, body, parts);
     }
 
     if (pathname === '/api/payments/verify' && req.method === 'POST') {
       const body = await readBody(req);
-      return handlePaymentVerification(req, res, body);
+      return await handlePaymentVerification(req, res, body);
     }
 
     if (pathname === '/api/webhooks/squad' && req.method === 'POST') {
       const body = await readBody(req);
-      return handleWebhook(req, res, body);
+      return await handleWebhook(req, res, body);
     }
 
     if (pathname === '/favicon.ico') {
