@@ -373,12 +373,20 @@ function migrateTransactionsSchema() {
 migrateTransactionsSchema();
 
 function seedAdminIfMissing() {
-  const adminCount = statements.countAdmins.get().count;
-  if (adminCount > 0) return;
-
   const seedUsername = String(process.env.ADMIN_SEED_USERNAME || 'admin').trim();
-  const seedPassword = String(process.env.ADMIN_SEED_PASSWORD || 'nacos2026');
+  const seedPassword = String(process.env.ADMIN_SEED_PASSWORD || 'admin@1234');
   const { salt, hash } = createPasswordMaterial(seedPassword);
+  const adminCount = statements.countAdmins.get().count;
+  const seedAdmin = statements.findAdminByUsername.get(seedUsername);
+
+  if (!seedAdmin && adminCount > 0) return;
+
+  if (seedAdmin) {
+    statements.updateAdminCredentials.run(seedUsername, salt, hash, seedAdmin.id);
+    console.log(`Seeded admin account updated: ${seedUsername}`);
+    return;
+  }
+
   statements.insertAdmin.run(seedUsername, salt, hash);
   console.log(`Seeded first admin account: ${seedUsername}`);
 }

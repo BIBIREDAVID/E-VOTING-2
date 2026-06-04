@@ -327,8 +327,8 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <p class="login-sub">Enter your credentials to access the panel.</p>
         <div class="login-error" id="login-error"><i class="ti ti-alert-circle" aria-hidden="true" style="font-size:14px"></i> Incorrect username or password.</div>
         <div class="login-field">
-          <label for="login-user">Username or Email</label>
-          <input type="text" id="login-user" placeholder="Enter your username or email" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" />
+          <label for="login-user">Username</label>
+          <input type="text" id="login-user" placeholder="Enter your username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" />
         </div>
         <div class="login-field">
           <label for="login-pw">Password</label>
@@ -340,7 +340,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
           </div>
         </div>
         <button class="sign-in-btn" onclick="doLogin()">Sign In</button>
-        <p class="login-hint">The server seeds a first admin automatically on startup.</p>
       </div>
     </div>
   </div>

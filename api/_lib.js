@@ -9,7 +9,7 @@ const SQUAD_VERIFY_BASE =
   process.env.SQUAD_VERIFY_BASE ||
   (SQUAD_ENV === 'live' ? 'https://api-d.squadco.com' : 'https://sandbox-api-d.squadco.com');
 const ADMIN_SEED_USERNAME = String(process.env.ADMIN_SEED_USERNAME || 'admin').trim();
-const ADMIN_SEED_PASSWORD = String(process.env.ADMIN_SEED_PASSWORD || 'nacos2026');
+const ADMIN_SEED_PASSWORD = String(process.env.ADMIN_SEED_PASSWORD || 'admin@1234');
 
 const COLLECTIONS = {
   categories: 'categories',
@@ -336,13 +336,34 @@ async function issueSession(adminId, response) {
 async function seedAdminIfMissing() {
   ensureFirebase();
   const adminSnap = await firestore.collection(COLLECTIONS.admins).limit(1).get();
-  if (!adminSnap.empty) return;
-
   const { salt, hash } = createPasswordMaterial(ADMIN_SEED_PASSWORD);
+  const seedLookup = normalizeLookup(ADMIN_SEED_USERNAME);
+  const seedSnap = await firestore
+    .collection(COLLECTIONS.admins)
+    .where('usernameLower', '==', seedLookup)
+    .limit(1)
+    .get();
+
+  if (!adminSnap.empty && seedSnap.empty) return;
+
+  if (!seedSnap.empty) {
+    await seedSnap.docs[0].ref.set(
+      {
+        username: ADMIN_SEED_USERNAME,
+        usernameLower: seedLookup,
+        password_salt: salt,
+        password_hash: hash,
+        updatedAt: toTimestamp()
+      },
+      { merge: true }
+    );
+    return;
+  }
+
   const doc = firestore.collection(COLLECTIONS.admins).doc();
   await doc.set({
     username: ADMIN_SEED_USERNAME,
-    usernameLower: normalizeLookup(ADMIN_SEED_USERNAME),
+    usernameLower: seedLookup,
     password_salt: salt,
     password_hash: hash,
     createdAt: toTimestamp(),
