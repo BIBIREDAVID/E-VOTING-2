@@ -245,16 +245,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="page-header" style="max-width:760px">
-    <div>
-      <h2>Welcome to NACOS-LASU Awards</h2>
-      <p>Explore the platform, or log in as admin to unlock polls and results.</p>
-    </div>
-  </div>
-  <div style="max-width:760px;display:flex;gap:12px;flex-wrap:wrap;align-items:center">
-    <button class="sign-in-btn" style="max-width:220px" onclick="handleAdminNav()">Admin Login</button>
-    <button class="a-btn secondary" style="max-width:220px" onclick="showPage('cart')">View Cart</button>
-  </div>
+  <div class="polls-grid" id="home-grid"></div>
 </div>
 
 <!-- POLLS -->
@@ -504,9 +495,32 @@ async function loadState(){
 
 async function refreshState(){
   await loadState();
+  renderHomeCategories();
   renderPolls();
   renderResults();
   if(adminAuth) renderAdmin();
+}
+
+function renderHomeCategories(){
+  const el = document.getElementById('home-grid');
+  if(!el) return;
+  if(!categories.length){
+    el.innerHTML = '';
+    return;
+  }
+  el.innerHTML = categories.map(cat => `
+    <article class="poll-card">
+      <div class="poll-top">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="poll-icon"><i class="ti ti-award" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i></div>
+          <div>
+            <div class="poll-title">${cat.name}</div>
+            <div class="poll-sub">${cat.nominees.length} nominee${cat.nominees.length === 1 ? '' : 's'}</div>
+          </div>
+        </div>
+      </div>
+    </article>
+  `).join('');
 }
 
 async function loadConfig(){
@@ -581,6 +595,7 @@ function showPage(p){
   if(nb) nb.classList.add('active');
   if(p==='home') {
     syncRestrictedUi();
+    renderHomeCategories();
   }
   if(p==='polls') renderPolls();
   if(p==='admin'&&adminAuth) renderAdmin();
@@ -609,6 +624,7 @@ async function doLogin(){
     document.getElementById('login-user').value='';
     document.getElementById('login-pw').value='';
     await refreshState();
+    renderHomeCategories();
     showPage('admin'); renderAdmin();
   }catch(error){
     err.classList.add('show');
