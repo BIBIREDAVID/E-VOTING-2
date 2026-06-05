@@ -243,13 +243,16 @@ async function handlePublicStateApi(req, res) {
   if ((req.method || 'GET') !== 'GET')
     return sendJson(res, 405, { success: false, message: 'Method not allowed' });
   const state = await collectState();
-  return sendJson(res, 200, {
-    categories: state.categories.map(cat => ({
-      id: cat.id,
-      name: cat.name,
-      nomineeCount: cat.nominees.length,
-    })),
-  });
+ return sendJson(res, 200, {
+  categories: state.categories.map(cat => ({
+    id: cat.id,
+    name: cat.name,
+    price: cat.price,
+    open: cat.open,
+    nominees: cat.nominees,
+    nomineeCount: cat.nominees.length,
+  })),
+});
 }
 
 async function handleConfigApi(req, res) {
