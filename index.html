@@ -148,6 +148,10 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .login-status.show{display:flex}
 .login-mode{font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;text-align:center}
 .login-hint{text-align:center;font-size:11px;color:#8b79ad;margin-top:12px}
+.login-actions{display:flex;gap:8px;margin-top:10px}
+.login-actions .a-btn{flex:1;justify-content:center;padding:9px 12px}
+.login-actions .a-btn.secondary{background:#fff;color:var(--pu);border:1.5px solid var(--pu)}
+.login-actions .a-btn.secondary:hover{background:var(--pu-light)}
 
 /* ADMIN PANEL */
 .admin-inner{max-width:680px;margin:0 auto}
@@ -362,6 +366,10 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
           </div>
         </div>
         <button class="sign-in-btn" id="login-submit-btn" onclick="doLogin()">Sign In</button>
+        <div class="login-actions">
+          <button class="a-btn secondary" type="button" onclick="setLoginMode('create')">Create Account</button>
+          <button class="a-btn secondary" type="button" onclick="setLoginMode('reset')">Reset Admin</button>
+        </div>
       </div>
     </div>
   </div>
@@ -472,6 +480,11 @@ const RESTRICTED_PAGES = new Set(['polls', 'results', 'admin']);
 let loginMode = 'login';
 let loginLoading = false;
 
+function setLoginMode(mode){
+  loginMode = mode;
+  syncLoginUi();
+}
+
 function apiRequest(path, options = {}) {
   return fetch(API_BASE + path, {
     ...options,
@@ -501,6 +514,7 @@ function normalizeCategories(data){
     name: String(category.name || '').trim().toUpperCase(),
     price: Number(category.price) || 0,
     open: Boolean(category.open),
+    nomineeCount: Number(category.nomineeCount) || (Array.isArray(category.nominees) ? category.nominees.length : 0),
     nominees: Array.isArray(category.nominees) ? category.nominees.map(nominee => String(nominee || '').trim().toUpperCase()).filter(Boolean) : []
   })) : [];
   voteRecords = data.voteRecords || {};
@@ -509,6 +523,12 @@ function normalizeCategories(data){
 async function loadState(){
   const data = await apiRequest('/state');
   normalizeCategories(data);
+}
+
+async function loadPublicState(){
+  const data = await apiRequest('/public-state');
+  normalizeCategories(data);
+  voteRecords = {};
 }
 
 async function refreshState(){
@@ -533,7 +553,7 @@ function renderHomeCategories(){
           <div class="poll-icon"><i class="ti ti-award" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i></div>
           <div>
             <div class="poll-title">${cat.name}</div>
-            <div class="poll-sub">${cat.nominees.length} nominee${cat.nominees.length === 1 ? '' : 's'}</div>
+            <div class="poll-sub">${(cat.nomineeCount ?? cat.nominees.length)} nominee${(cat.nomineeCount ?? cat.nominees.length) === 1 ? '' : 's'}</div>
           </div>
         </div>
       </div>
@@ -567,7 +587,7 @@ async function loadAdminStatus(){
     const data = await apiRequest('/admin/status');
     adminAuth = Boolean(data.authenticated);
     adminBootstrapRequired = Boolean(data.bootstrapRequired);
-    loginMode = adminBootstrapRequired ? 'bootstrap' : 'login';
+    loginMode = adminBootstrapRequired ? 'create' : 'login';
   }catch(error){
     adminAuth = false;
     adminBootstrapRequired = false;
@@ -594,14 +614,19 @@ function syncLoginUi(){
   const confirmWrap = document.getElementById('bootstrap-confirm-wrap');
   const status = document.getElementById('login-status');
   const statusText = document.getElementById('login-status-text');
-  if(modeLabel) modeLabel.textContent = loginMode === 'bootstrap' ? 'First-Time Setup' : 'Admin Login';
-  if(submitBtn) submitBtn.textContent = loginMode === 'bootstrap' ? 'Create Admin' : 'Sign In';
-  if(confirmWrap) confirmWrap.style.display = loginMode === 'bootstrap' ? '' : 'none';
+  const isWriteMode = loginMode === 'create' || loginMode === 'reset';
+  if(modeLabel) modeLabel.textContent = loginMode === 'create' ? 'Create Account' : loginMode === 'reset' ? 'Reset Admin' : 'Admin Login';
+  if(submitBtn) submitBtn.textContent = loginMode === 'create' ? 'Create Account' : loginMode === 'reset' ? 'Reset Admin' : 'Sign In';
+  if(confirmWrap) confirmWrap.style.display = isWriteMode ? '' : 'none';
   if(status){
     status.classList.toggle('show', loginLoading);
   }
   if(statusText){
-    statusText.textContent = loginMode === 'bootstrap' ? 'Creating admin account...' : 'Signing in...';
+    statusText.textContent = loginMode === 'create'
+      ? 'Creating admin account...'
+      : loginMode === 'reset'
+        ? 'Resetting admin account...'
+        : 'Signing in...';
   }
 }
 
@@ -656,7 +681,7 @@ async function doLogin(){
   const err=document.getElementById('login-error');
   const submitBtn=document.getElementById('login-submit-btn');
   if(loginLoading) return;
-  if(loginMode === 'bootstrap' && p !== p2){
+  if((loginMode === 'create' || loginMode === 'reset') && p !== p2){
     err.classList.add('show');
     err.textContent = 'Passwords do not match.';
     toast('Passwords do not match.');
@@ -666,10 +691,14 @@ async function doLogin(){
     loginLoading = true;
     syncLoginUi();
     if(submitBtn) submitBtn.disabled = true;
-    const endpoint = loginMode === 'bootstrap' ? '/admin/bootstrap' : '/admin/login';
+    const endpoint = loginMode === 'create'
+      ? '/admin/create-account'
+      : loginMode === 'reset'
+        ? '/admin/reset'
+        : '/admin/login';
     await apiRequest(endpoint, {
       method: 'POST',
-      body: JSON.stringify({ username: u, password: p })
+      body: JSON.stringify({ username: u, password: p, confirmPassword: p2 })
     });
     adminAuth=true; err.classList.remove('show');
     err.textContent = 'Incorrect username or password.';
@@ -701,6 +730,8 @@ async function doLogout(){
   }
   adminAuth=false;
   syncRestrictedUi();
+  await loadPublicState().catch(error=>console.warn(error));
+  renderHomeCategories();
   toast('Logged out.');
   showPage('home');
 }
@@ -725,7 +756,7 @@ async function changeCredentials(){
   if(!u||!p){toast('Please fill in username and password.');return;}
   if(p!==p2){toast('Passwords do not match.');return;}
   try{
-    const endpoint=adminBootstrapRequired?'/admin/bootstrap':'/admin/change-credentials';
+    const endpoint=adminBootstrapRequired?'/admin/create-account':'/admin/change-credentials';
     await apiRequest(endpoint, {
       method: 'POST',
       body: JSON.stringify({ username: u, password: p })
@@ -735,7 +766,7 @@ async function changeCredentials(){
     document.getElementById('new-pw2').value='';
     adminBootstrapRequired=false;
     await loadAdminStatus();
-    toast(endpoint==='/admin/bootstrap'?'First admin account created.':'Credentials updated successfully.');
+    toast(endpoint==='/admin/create-account'?'Admin account created.':'Credentials updated successfully.');
   }catch(error){
     toast(error.message || 'Could not update admin credentials.');
   }
@@ -1120,6 +1151,7 @@ function initiatePayment(){
 
 async function bootstrap(){
   await loadConfig();
+  await loadPublicState().catch(error=>console.warn(error));
   await loadAdminStatus();
   updateCartBadge();
   syncRestrictedUi();

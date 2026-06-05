@@ -941,11 +941,40 @@ function handleStateApi(req, res) {
   return sendJson(res, 200, collectState());
 }
 
+function handlePublicStateApi(req, res) {
+  const method = req.method || 'GET';
+  if (method !== 'GET') {
+    return sendJson(res, 405, { success: false, message: 'Method not allowed' });
+  }
+
+  const state = collectState();
+  return sendJson(res, 200, {
+    categories: state.categories.map(category => ({
+      id: category.id,
+      name: category.name,
+      nomineeCount: Array.isArray(category.nominees) ? category.nominees.length : 0
+    }))
+  });
+}
+
 function handleAdminApi(req, res, body) {
   const parts = parseRequestPath(req.url).pathname.split('/').filter(Boolean);
   const method = req.method || 'GET';
   const currentAdmin = getAdminFromRequest(req);
   const action = parts[2] || '';
+  const parseAdminCredentials = () => {
+    const payload = parseJson(body);
+    const username = String(payload.username || '').trim();
+    const password = String(payload.password || '');
+    const confirmPassword = String(payload.confirmPassword || '').trim();
+    if (!username || !password) {
+      return { error: 'Username and password are required' };
+    }
+    if (confirmPassword && password !== confirmPassword) {
+      return { error: 'Passwords do not match' };
+    }
+    return { username, password };
+  };
 
   if (method === 'GET' && action === 'status') {
     const adminCount = statements.countAdmins.get().count;
@@ -962,17 +991,57 @@ function handleAdminApi(req, res, body) {
       return sendJson(res, 409, { success: false, message: 'Admin account already exists' });
     }
 
-    const payload = parseJson(body);
-    const username = String(payload.username || '').trim();
-    const password = String(payload.password || '');
-    if (!username || !password) {
-      return sendJson(res, 400, { success: false, message: 'Username and password are required' });
+    const credentials = parseAdminCredentials();
+    if (credentials.error) {
+      return sendJson(res, 400, { success: false, message: credentials.error });
     }
 
-    const { salt, hash } = createPasswordMaterial(password);
-    const created = statements.insertAdmin.run(username, salt, hash);
+    const { salt, hash } = createPasswordMaterial(credentials.password);
+    const created = statements.insertAdmin.run(credentials.username, salt, hash);
     issueSession(created.lastInsertRowid, res);
     return sendJson(res, 201, { success: true, message: 'Admin account created' });
+  }
+
+  if (method === 'POST' && action === 'create-account') {
+    const credentials = parseAdminCredentials();
+    if (credentials.error) {
+      return sendJson(res, 400, { success: false, message: credentials.error });
+    }
+
+    const duplicate = statements.findAdminByUsername.get(credentials.username);
+    if (duplicate) {
+      return sendJson(res, 409, { success: false, message: 'Username already exists' });
+    }
+
+    const { salt, hash } = createPasswordMaterial(credentials.password);
+    const created = statements.insertAdmin.run(credentials.username, salt, hash);
+    issueSession(created.lastInsertRowid, res);
+    return sendJson(res, 201, { success: true, message: 'Admin account created' });
+  }
+
+  if (method === 'POST' && action === 'reset') {
+    const credentials = parseAdminCredentials();
+    if (credentials.error) {
+      return sendJson(res, 400, { success: false, message: credentials.error });
+    }
+
+    const firstAdmin = db.prepare(`SELECT id, username FROM admins ORDER BY id ASC LIMIT 1`).get();
+    if (!firstAdmin) {
+      const { salt, hash } = createPasswordMaterial(credentials.password);
+      const created = statements.insertAdmin.run(credentials.username, salt, hash);
+      issueSession(created.lastInsertRowid, res);
+      return sendJson(res, 201, { success: true, message: 'Admin account created' });
+    }
+
+    const duplicate = statements.findAdminByUsername.get(credentials.username);
+    if (duplicate && duplicate.id !== firstAdmin.id) {
+      return sendJson(res, 409, { success: false, message: 'Username already exists' });
+    }
+
+    const { salt, hash } = createPasswordMaterial(credentials.password);
+    statements.updateAdminCredentials.run(credentials.username, salt, hash, firstAdmin.id);
+    issueSession(firstAdmin.id, res);
+    return sendJson(res, 200, { success: true, message: 'Admin account reset' });
   }
 
   if (method === 'POST' && action === 'login') {
@@ -1064,6 +1133,10 @@ const server = http.createServer(async (req, res) => {
 
     if (pathname === '/api/state') {
       return await handleStateApi(req, res);
+    }
+
+    if (pathname === '/api/public-state') {
+      return await handlePublicStateApi(req, res);
     }
 
     if (pathname.startsWith('/api/categories')) {

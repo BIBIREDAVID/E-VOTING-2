@@ -593,11 +593,44 @@ async function handleStateApi(req, res) {
   return sendJson(res, 200, await collectState());
 }
 
+async function handlePublicStateApi(req, res) {
+  if ((req.method || 'GET') !== 'GET') {
+    return sendJson(res, 405, { success: false, message: 'Method not allowed' });
+  }
+
+  if (!hasFirebaseCredentials()) {
+    return sendJson(res, 200, { categories: [] });
+  }
+
+  await seedAdminIfMissing().catch(() => {});
+  const state = await collectState();
+  return sendJson(res, 200, {
+    categories: state.categories.map(category => ({
+      id: category.id,
+      name: category.name,
+      nomineeCount: Array.isArray(category.nominees) ? category.nominees.length : 0
+    }))
+  });
+}
+
 async function handleAdminApi(req, res, body, parts) {
   await seedAdminIfMissing();
   const method = req.method || 'GET';
   const action = parts[2] || '';
   const currentAdmin = await getAdminFromRequest(req);
+  const parseAdminCredentials = () => {
+    const payload = parseJson(body);
+    const username = String(payload.username || '').trim();
+    const password = String(payload.password || '');
+    const confirmPassword = String(payload.confirmPassword || '').trim();
+    if (!username || !password) {
+      return { error: 'Username and password are required' };
+    }
+    if (confirmPassword && password !== confirmPassword) {
+      return { error: 'Passwords do not match' };
+    }
+    return { username, password };
+  };
 
   if (method === 'GET' && action === 'status') {
     const adminSnap = await firestore.collection(COLLECTIONS.admins).limit(1).get();
@@ -614,18 +647,16 @@ async function handleAdminApi(req, res, body, parts) {
       return sendJson(res, 409, { success: false, message: 'Admin account already exists' });
     }
 
-    const payload = parseJson(body);
-    const username = String(payload.username || '').trim();
-    const password = String(payload.password || '');
-    if (!username || !password) {
-      return sendJson(res, 400, { success: false, message: 'Username and password are required' });
+    const credentials = parseAdminCredentials();
+    if (credentials.error) {
+      return sendJson(res, 400, { success: false, message: credentials.error });
     }
 
-    const { salt, hash } = createPasswordMaterial(password);
+    const { salt, hash } = createPasswordMaterial(credentials.password);
     const adminRef = firestore.collection(COLLECTIONS.admins).doc();
     await adminRef.set({
-      username,
-      usernameLower: normalizeLookup(username),
+      username: credentials.username,
+      usernameLower: normalizeLookup(credentials.username),
       password_salt: salt,
       password_hash: hash,
       createdAt: toTimestamp(),
@@ -633,6 +664,83 @@ async function handleAdminApi(req, res, body, parts) {
     });
     await issueSession(adminRef.id, res);
     return sendJson(res, 201, { success: true, message: 'Admin account created' });
+  }
+
+  if (method === 'POST' && action === 'create-account') {
+    const credentials = parseAdminCredentials();
+    if (credentials.error) {
+      return sendJson(res, 400, { success: false, message: credentials.error });
+    }
+
+    const duplicateSnap = await firestore
+      .collection(COLLECTIONS.admins)
+      .where('usernameLower', '==', normalizeLookup(credentials.username))
+      .limit(1)
+      .get();
+    if (!duplicateSnap.empty) {
+      return sendJson(res, 409, { success: false, message: 'Username already exists' });
+    }
+
+    const { salt, hash } = createPasswordMaterial(credentials.password);
+    const adminRef = firestore.collection(COLLECTIONS.admins).doc();
+    await adminRef.set({
+      username: credentials.username,
+      usernameLower: normalizeLookup(credentials.username),
+      password_salt: salt,
+      password_hash: hash,
+      createdAt: toTimestamp(),
+      updatedAt: toTimestamp()
+    });
+    await issueSession(adminRef.id, res);
+    return sendJson(res, 201, { success: true, message: 'Admin account created' });
+  }
+
+  if (method === 'POST' && action === 'reset') {
+    const credentials = parseAdminCredentials();
+    if (credentials.error) {
+      return sendJson(res, 400, { success: false, message: credentials.error });
+    }
+
+    const adminSnap = await firestore.collection(COLLECTIONS.admins).orderBy('createdAt', 'asc').limit(1).get();
+    if (adminSnap.empty) {
+      const { salt, hash } = createPasswordMaterial(credentials.password);
+      const adminRef = firestore.collection(COLLECTIONS.admins).doc();
+      await adminRef.set({
+        username: credentials.username,
+        usernameLower: normalizeLookup(credentials.username),
+        password_salt: salt,
+        password_hash: hash,
+        createdAt: toTimestamp(),
+        updatedAt: toTimestamp()
+      });
+      await issueSession(adminRef.id, res);
+      return sendJson(res, 201, { success: true, message: 'Admin account created' });
+    }
+
+    const targetAdmin = adminSnap.docs[0];
+    const duplicateSnap = await firestore
+      .collection(COLLECTIONS.admins)
+      .where('usernameLower', '==', normalizeLookup(credentials.username))
+      .limit(1)
+      .get();
+    const duplicateDoc = duplicateSnap.docs[0];
+    if (duplicateDoc && duplicateDoc.id !== targetAdmin.id) {
+      return sendJson(res, 409, { success: false, message: 'Username already exists' });
+    }
+
+    const { salt, hash } = createPasswordMaterial(credentials.password);
+    await targetAdmin.ref.set(
+      {
+        username: credentials.username,
+        usernameLower: normalizeLookup(credentials.username),
+        password_salt: salt,
+        password_hash: hash,
+        updatedAt: toTimestamp()
+      },
+      { merge: true }
+    );
+    await issueSession(targetAdmin.id, res);
+    return sendJson(res, 200, { success: true, message: 'Admin account reset' });
   }
 
   if (method === 'POST' && action === 'login') {
@@ -998,6 +1106,10 @@ async function handleRequest(req, res) {
 
     if (pathname === '/api/state') {
       return await handleStateApi(req, res);
+    }
+
+    if (pathname === '/api/public-state') {
+      return await handlePublicStateApi(req, res);
     }
 
     if (pathname.startsWith('/api/admin')) {
