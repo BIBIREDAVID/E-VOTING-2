@@ -728,7 +728,7 @@ async function doLogout(){
   await loadPublicState().catch(error=>console.warn(error));
   renderHomeCategories();
   toast('Logged out.');
-  showPage('home');
+  showPage('polls');
 }
 
 function togglePw(){
