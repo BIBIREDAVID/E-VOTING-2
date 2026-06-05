@@ -241,7 +241,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 <nav>
   <div class="nav-logo"><div class="logo-mark" id="nav-logo-mark">LA</div> NACOS-LASU AWARDS</div>
   <div class="nav-right">
-    <button class="nav-btn active" id="nb-home" onclick="showPage('home')"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></button>
     <button class="nav-btn" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-chart-pie" aria-hidden="true"></i><span>Polls</span></button>
     <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
     <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()"><i class="ti ti-settings" aria-hidden="true"></i><span>Admin</span></button>
@@ -632,14 +631,11 @@ function syncLoginUi(){
 
 function syncRestrictedUi(){
   const locked = !adminAuth;
-  const publicNav = ['nb-polls', 'nb-results', 'footer-polls-link', 'footer-results-link'];
-  publicNav.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = locked ? 'none' : '';
-  });
-  const home = document.getElementById('nb-home');
-  if(home) home.classList.toggle('active', !adminAuth);
-}
+  const adminNav = ['nb-polls', 'nb-results', 'footer-results-link'];
+  adminNav.forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.style.display = locked ? 'none' : '';
+});
 
 function toast(msg,dur=2500){
   const t=document.getElementById('toast');
@@ -657,8 +653,7 @@ function showPage(p){
   const nb=document.getElementById('nb-'+p)||document.getElementById('nb-admin');
   if(nb) nb.classList.add('active');
   if(p==='home') {
-    syncRestrictedUi();
-    renderHomeCategories();
+    showPage('polls');
   }
   if(p==='polls') renderPolls();
   if(p==='admin'&&adminAuth) renderAdmin();
@@ -1156,7 +1151,7 @@ async function bootstrap(){
   updateCartBadge();
   syncRestrictedUi();
   syncLoginUi();
-  showPage('home');
+  showPage('polls');
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer=setInterval(()=>{
     if(!adminAuth) return;
