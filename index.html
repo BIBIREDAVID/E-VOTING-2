@@ -633,9 +633,10 @@ function syncRestrictedUi(){
   const locked = !adminAuth;
   const adminNav = ['nb-polls', 'nb-results', 'footer-results-link'];
   adminNav.forEach(id=>{
-  const el = document.getElementById(id);
-  if(el) el.style.display = locked ? 'none' : '';
-});
+    const el = document.getElementById(id);
+    if(el) el.style.display = locked ? 'none' : '';
+  });
+}
 
 function toast(msg,dur=2500){
   const t=document.getElementById('toast');
