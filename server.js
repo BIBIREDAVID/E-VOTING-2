@@ -616,6 +616,20 @@ async function recordVerifiedPayment({ transactionRef, email, amount, customerNa
   if (!email) throw new Error('No email in verified transaction');
   if (!Array.isArray(cart) || !cart.length) throw new Error('No vote selections supplied');
 
+  // Recalculate expected amount from DB prices
+  let expectedKobo = 50 * 100; // platform fee in kobo
+  for (const item of cart) {
+  const catDoc = await db.collection(COL.categories).doc(item.categoryId).get();
+  if (!catDoc.exists) throw new Error(`Category ${item.categoryId} not found`);
+  const totalVotes = item.votes.reduce((sum, v) => sum + v.votes, 0);
+  expectedKobo += (Number(catDoc.data().price) || 0) * totalVotes * 100;
+}
+  if (Number(amount) !== expectedKobo) {
+    throw new Error(`Amount mismatch. Expected ₦${expectedKobo/100}, received ₦${Number(amount)/100}`);
+}
+
+// Check duplicate
+if (!existingSnap.empty) {
   // Check duplicate
   const existingSnap = await db.collection(COL.transactions).where('reference', '==', transactionRef).limit(1).get();
   if (!existingSnap.empty) {

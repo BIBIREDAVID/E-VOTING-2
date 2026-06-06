@@ -239,7 +239,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
 <div class="main">
 <nav>
-  <div class="nav-logo"><div class="logo-mark" id="nav-logo-mark">LA</div> NACOS-LASU AWARDS</div>
+  <div class="nav-logo"><div class="logo-mark" id="nav-logo-mark">LA</div> <a href="nacoslasuawards.vercel.app">NACOS-LASU AWARDS</a></div>
   <div class="nav-right">
     <button class="nav-btn" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-chart-pie" aria-hidden="true"></i><span>Polls</span></button>
     <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
@@ -1103,8 +1103,8 @@ function initiatePayment(){
   if(!cart.length){toast('Your cart is empty.');return;}
   const email=document.getElementById('cf-email').value.trim();
   if(!email){toast('Please enter your email address.');return;}
-  const key=document.getElementById('squad-key').value.trim();
-  if(!key){toast('Please add your Squad public key in Admin.');return;}
+  const key = squadPublicKey;
+if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
   const fname=document.getElementById('cf-fname').value.trim();
   const lname=document.getElementById('cf-lname').value.trim();
   const amount=cart.reduce((a,c)=>a+c.subtotal,0)+50;
