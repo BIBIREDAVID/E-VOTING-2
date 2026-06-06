@@ -628,8 +628,6 @@ async function recordVerifiedPayment({ transactionRef, email, amount, customerNa
     throw new Error(`Amount mismatch. Expected ₦${expectedKobo/100}, received ₦${Number(amount)/100}`);
 }
 
-// Check duplicate
-if (!existingSnap.empty) {
   // Check duplicate
   const existingSnap = await db.collection(COL.transactions).where('reference', '==', transactionRef).limit(1).get();
   if (!existingSnap.empty) {
