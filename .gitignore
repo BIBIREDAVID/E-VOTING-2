@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# SQLite database (old, no longer used)
+data/
+*.sqlite
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Firebase service account keys
+*firebase-adminsdk*.json
+*service-account*.json
