@@ -706,8 +706,7 @@ async function handlePaymentVerification(req, res, body) {
     return sendJson(res, 200, {
       success: true,
       message: receipt.duplicate ? 'Payment already processed' : 'Payment verified and votes recorded',
-      data: { transactionRef: verified.transactionRef || reference, duplicate: receipt.duplicate },
-    });
+    data: { transactionRef: verified.transactionRef || reference, duplicate: receipt.duplicate, items: receipt.items },    });
   } catch (error) {
     return sendJson(res, 400, { success: false, message: error.message || 'Payment verification failed' });
   }

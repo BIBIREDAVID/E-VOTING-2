@@ -250,12 +250,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     </div>
   </div>
 </nav>
-
-<!-- HOME -->
-<div class="page active" id="page-home">
-  <div class="polls-grid" id="home-grid"></div>
-</div>
-
 <!-- POLLS -->
 <div class="page" id="page-polls">
   <div class="page-header">
@@ -306,6 +300,23 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <i class="ti ti-lock" aria-hidden="true"></i> Pay with Squad
       </button>
       <div class="squad-badge">Secured by Squad · GTBank (HabariPay)</div>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT -->
+<div class="page" id="page-receipt">
+  <div class="vote-inner">
+    <div class="vote-box" style="text-align:center">
+      <div style="width:56px;height:56px;border-radius:50%;background:#e6f9f2;border:2px solid #1d9e75;display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <i class="ti ti-check" style="font-size:26px;color:#1d9e75"></i>
+      </div>
+      <h2 style="margin-bottom:6px">Payment Successful!</h2>
+      <p style="font-size:13px;color:#8b79ad;margin-bottom:18px">Your votes have been recorded.</p>
+      <div id="receipt-body" style="text-align:left;margin-bottom:16px"></div>
+      <button class="add-cart-btn" onclick="showPage('polls')" style="margin-top:0">
+        <i class="ti ti-chart-pie"></i> Back to Polls
+      </button>
     </div>
   </div>
 </div>
@@ -385,14 +396,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     <div class="a-box">
       <h2><i class="ti ti-chart-pie" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Overview</h2>
       <div class="stats-grid" id="admin-stats"></div>
-    </div>
-
-    <div class="a-box">
-      <h2><i class="ti ti-credit-card" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Squad API Key</h2>
-      <div class="a-key-row" style="display:flex;gap:8px">
-        <input type="text" id="squad-key" placeholder="Paste your Squad public key (e.g. test_pk_...)" />
-      </div>
-      <div class="key-hint">Get your key from <strong>sandbox.squadco.com</strong> (test) or <strong>dashboard.squadco.com</strong> (live)</div>
     </div>
 
     <div class="a-box">
@@ -536,28 +539,6 @@ async function refreshState(){
   renderPolls();
   renderResults();
   if(adminAuth) renderAdmin();
-}
-
-function renderHomeCategories(){
-  const el = document.getElementById('home-grid');
-  if(!el) return;
-  if(!categories.length){
-    el.innerHTML = '';
-    return;
-  }
-  el.innerHTML = categories.map(cat => `
-    <article class="poll-card">
-      <div class="poll-top">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="poll-icon"><i class="ti ti-award" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i></div>
-          <div>
-            <div class="poll-title">${cat.name}</div>
-            <div class="poll-sub">${(cat.nomineeCount ?? cat.nominees.length)} nominee${(cat.nomineeCount ?? cat.nominees.length) === 1 ? '' : 's'}</div>
-          </div>
-        </div>
-      </div>
-    </article>
-  `).join('');
 }
 
 async function loadConfig(){
@@ -1050,6 +1031,30 @@ function renderCart(){
     <div class="total-row grand"><span>Total</span><span>₦${(votesTotal+50).toLocaleString()}</span></div>`;
 }
 
+function renderReceipt(items, transactionRef, email){
+  const el = document.getElementById('receipt-body');
+  if(!el) return;
+  const grouped = items.reduce((acc, item) => {
+    if(!acc[item.category]) acc[item.category] = [];
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+  el.innerHTML = `
+    <div style="background:#f7f5ff;border:1.5px solid #e5dff7;border-radius:10px;padding:13px 15px;margin-bottom:12px;font-size:12px;color:#8b79ad">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Reference</span><span style="color:#1a0a3c;font-weight:600">${transactionRef}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Email</span><span style="color:#1a0a3c;font-weight:600">${email}</span></div>
+    </div>
+    ${Object.entries(grouped).map(([cat, votes]) => `
+      <div style="margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:#8b79ad;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${cat}</div>
+        ${votes.map(v => `
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #f0ebfa">
+            <span style="font-weight:600;color:#1a0a3c">${v.nominee}</span>
+            <span style="color:var(--pu);font-weight:700">${v.votes} vote${v.votes!==1?'s':''}</span>
+          </div>`).join('')}
+      </div>`).join('')}`;
+}
+
 function renderResults(){
   const el=document.getElementById('results-body');
   if(!categories.length){el.innerHTML='<div class="results-empty"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px"></i>No categories yet.</div>';return;}
@@ -1130,8 +1135,13 @@ if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
             method: 'POST',
             body: JSON.stringify(payload)
           });
-          cart=[]; updateCartBadge(); await refreshState(); showPage('results');
-          toast(result.message || 'Payment verified and votes recorded.');
+          const receiptItems = result.data?.items || [];
+          const ref = result.data?.transactionRef || ref;
+          const userEmail = email;
+          cart=[]; updateCartBadge(); await loadPublicState(); renderPolls();
+          renderReceipt(receiptItems, ref, userEmail);
+          showPage('receipt');
+          toast('Payment verified and votes recorded!');
         }catch(error){
           toast(error.message || 'Payment verification failed.');
           console.error(error);
