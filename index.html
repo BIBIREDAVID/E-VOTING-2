@@ -1,3 +1,12 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NACOS-LASU Awards</title>
+  <link rel="icon" type="image/png" href="https://i.imgur.com/l0UUSyA.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -5,7 +14,7 @@
 body{font-family:var(--font-sans);background:#f7f5ff;min-height:100vh;display:flex;flex-direction:column}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
-.nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a0a3c}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a0a3c;text-decoration:none;cursor:default}
 .logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
 .logo-mark img,.lmark img,.logo-mark-f img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit}
 .nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -239,8 +248,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
 <div class="main">
 <nav>
-  <div class="nav-logo"><div class="logo-mark" id="nav-logo-mark">LA</div> <a href="nacoslasuawards.vercel.app">NACOS-LASU AWARDS</a></div>
-  <div class="nav-right">
+<div class="nav-logo"><div class="logo-mark" id="nav-logo-mark">LA</div> NACOS-LASU Awards</div>  <div class="nav-right">
     <button class="nav-btn" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-chart-pie" aria-hidden="true"></i><span>Polls</span></button>
     <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
     <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()"><i class="ti ti-settings" aria-hidden="true"></i><span>Admin</span></button>
@@ -376,10 +384,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
           </div>
         </div>
         <button class="sign-in-btn" id="login-submit-btn" onclick="doLogin()">Sign In</button>
-        <div class="login-actions">
-          <button class="a-btn secondary" type="button" onclick="setLoginMode('create')">Create Account</button>
-          <button class="a-btn secondary" type="button" onclick="setLoginMode('reset')">Reset Admin</button>
-        </div>
       </div>
     </div>
   </div>
