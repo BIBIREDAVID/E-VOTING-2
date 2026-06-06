@@ -234,12 +234,26 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 .footer-credit{font-size:11px;color:#6b5a9a}
 .footer-credit a{color:#a090c8;text-decoration:none}
 .footer-credit a:hover{color:#fff}
+
 @media(max-width:580px){
   .login-split{grid-template-columns:1fr}
   .login-left{padding:24px 20px}
   .login-right{padding:24px 20px}
   .footer-top{grid-template-columns:1fr}
   .nav-btn span{display:none}
+  .nav-btn{padding:6px 10px}
+  .page{padding:14px 10px}
+  .polls-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .page-header{flex-direction:column;align-items:flex-start;gap:8px}
+  .search-bar{width:100%;min-width:unset}
+  .poll-card{padding:16px 10px}
+  .poll-card h3{font-size:11px}
+  .vote-inner{padding:0}
+  .vote-box{padding:16px}
+  .cart-inner{padding:0}
+  .cf-row{flex-direction:column}
+  .footer-top{grid-template-columns:1fr}
+  .nav-logo span{display:none}
 }
 </style>
 
@@ -539,7 +553,6 @@ async function loadPublicState(){
 
 async function refreshState(){
   await loadState();
-  renderHomeCategories();
   renderPolls();
   renderResults();
   if(adminAuth) renderAdmin();
@@ -690,7 +703,6 @@ async function doLogin(){
     if(pw2) pw2.value='';
     loginMode='login';
     await refreshState();
-    renderHomeCategories();
     showPage('admin'); renderAdmin();
   }catch(error){
     err.classList.add('show');
@@ -712,7 +724,6 @@ async function doLogout(){
   adminAuth=false;
   syncRestrictedUi();
   await loadPublicState().catch(error=>console.warn(error));
-  renderHomeCategories();
   toast('Logged out.');
   showPage('polls');
 }
