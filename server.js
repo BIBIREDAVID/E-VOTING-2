@@ -716,6 +716,7 @@ async function handleWebhook(req, res, rawBody) {
       return sendJson(res, 401, { success: false, message: 'Invalid webhook signature' });
 
     const payload = parseJson(rawBody);
+    console.log('WEBHOOK PAYLOAD:', JSON.stringify(payload));
     const verified = getVerifiedPayloadShape(payload);
     const cart = extractCart(verified.metadata || payload);
     if (!verified.transactionRef) return sendJson(res, 400, { success: false, message: 'Missing transaction reference' });
