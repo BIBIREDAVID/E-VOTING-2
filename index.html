@@ -640,20 +640,18 @@ function toast(msg,dur=2500){
 
 function showPage(p){
   if(RESTRICTED_PAGES.has(p) && !adminAuth){
-    p = 'home';
+    p = 'polls';
   }
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   const nb=document.getElementById('nb-'+p)||document.getElementById('nb-admin');
   if(nb) nb.classList.add('active');
-  if(p==='home') {
-    showPage('polls');
-  }
   if(p==='polls') renderPolls();
   if(p==='admin'&&adminAuth) renderAdmin();
   if(p==='cart') renderCart();
   if(p==='results') renderResults();
+  history.pushState({page:p}, '', '#'+p);
 }
 
 async function handleAdminNav(){
@@ -1216,5 +1214,9 @@ async function bootstrap(){
   },15000);
 }
 
+window.addEventListener('popstate', (e)=>{
+  const p = e.state?.page || 'polls';
+  showPage(p);
+});
 bootstrap();
 </script>
