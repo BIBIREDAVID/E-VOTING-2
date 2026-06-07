@@ -108,6 +108,34 @@ const COL = {
   sessions: 'sessions',
 };
 
+// ── Rate Limiting ────────────────────────────────────────────────────────────
+async function checkRateLimit(ip, endpoint, maxRequests, windowSeconds) {
+  const key = `${endpoint}_${ip.replace(/[^a-zA-Z0-9]/g, '_')}`;
+  const now = Date.now();
+  const windowStart = now - (windowSeconds * 1000);
+  
+  const ref = db.collection('rateLimits').doc(key);
+  const doc = await ref.get();
+  
+  if (!doc.exists) {
+    await ref.set({ requests: [now], endpoint, ip });
+    return { allowed: true, remaining: maxRequests - 1 };
+  }
+  
+  const data = doc.data();
+  const requests = (data.requests || []).filter(t => t > windowStart);
+  
+  if (requests.length >= maxRequests) {
+    return { allowed: false, remaining: 0 };
+  }
+  
+  requests.push(now);
+  await ref.set({ requests, endpoint, ip, updatedAt: now });
+  return { allowed: true, remaining: maxRequests - requests.length };
+}
+
+
+
 // ── State collector ──────────────────────────────────────────────────────────
 async function collectState() {
   const catsSnap = await db.collection(COL.categories).orderBy('createdAt', 'asc').get();
@@ -751,16 +779,29 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/public-state') return handlePublicStateApi(req, res);
 
     if (pathname.startsWith('/api/admin')) {
-      const body = req.method === 'GET' ? '' : await readBody(req);
-      return handleAdminApi(req, res, body);
+  if (pathname === '/api/admin/login' && req.method === 'POST') {
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const limit = await checkRateLimit(ip, 'admin_login', 5, 60);
+    if (!limit.allowed) {
+      return sendJson(res, 429, { success: false, message: 'Too many login attempts. Please wait 1 minute.' });
     }
+  }
+  const body = req.method === 'GET' ? '' : await readBody(req);
+  return handleAdminApi(req, res, body);
+}
     if (pathname.startsWith('/api/categories')) {
       const body = req.method === 'GET' ? '' : await readBody(req);
       return handleCategoriesApi(req, res, body);
     }
-    if (pathname === '/api/payments/verify' && req.method === 'POST') {
-      return handlePaymentVerification(req, res, await readBody(req));
-    }
+   if (pathname === '/api/payments/verify' && req.method === 'POST') {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+  const limit = await checkRateLimit(ip, 'payment_verify', 10, 60);
+  if (!limit.allowed) {
+    return sendJson(res, 429, { success: false, message: 'Too many requests. Please wait a moment.' });
+  }
+  return handlePaymentVerification(req, res, await readBody(req));
+}
+if (Math.random() < 0.01) cleanupRateLimits().catch(console.error);
     if (pathname === '/api/webhooks/squad' && req.method === 'POST') {
       return handleWebhook(req, res, await readBody(req));
     }
