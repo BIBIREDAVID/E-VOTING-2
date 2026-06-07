@@ -282,10 +282,10 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   <div style="background:linear-gradient(135deg,#0a0520 0%,#1a0a3c 50%,#2d1666 100%);min-height:70vh;display:flex;align-items:center;padding:60px 40px;margin:-20px -16px 0">
   <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:40px">
     <div style="flex:1;display:flex;align-items:center;justify-content:center">
-      <img src="https://i.imgur.com/l0UUSyA.png" alt="NACOS Logo" style="width:320px;height:320px;object-fit:contain;filter:drop-shadow(0 8px 40px rgba(108,63,197,0.5))" />
+      <img src="https://i.imgur.com/l0UUSyA.png" alt="NACOS Logo" style="width:clamp(180px,40vw,320px);height:clamp(180px,40vw,320px);object-fit:contain;filter:drop-shadow(0 8px 40px rgba(108,63,197,0.5))" />
     </div>
-    <div style="flex:1;min-width:280px">
-      <h1 style="font-size:48px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:16px">Vote with confidence.</h1>
+    <div style="flex:1;min-width:280px;text-align:left">
+     <h1 style="font-size:clamp(28px,5vw,48px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:16px">Vote with confidence.</h1>
       <p style="font-size:15px;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:32px;max-width:400px">A modern voting experience built for secure participation, transparent results, and smooth access across mobile and desktop.</p>
       <button onclick="showPage('polls')" style="padding:13px 32px;background:#fff;color:#1a0a3c;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer">Start Voting</button>
     </div>
@@ -1201,8 +1201,8 @@ function initiatePayment(){
   if(!email){toast('Please enter your email address.');return;}
   const key = squadPublicKey;
 if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
-  const fname=document.getElementById('cf-fname').value.trim();
-  const lname=document.getElementById('cf-lname').value.trim();
+  const fname='';
+  const lname='';
   const amount=cart.reduce((a,c)=>a+c.subtotal,0)+50;
   const customerName=(fname+' '+lname).trim();
   try{
