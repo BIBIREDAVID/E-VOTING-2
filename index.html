@@ -936,19 +936,17 @@ function renderPolls(){
     return;
   }
   if(count) count.textContent=filtered.length+' poll'+(filtered.length!==1?'s':'')+' · '+categories.filter(c=>c.open).length+' open';
-  const icons=['ti-music','ti-star','ti-trophy','ti-award','ti-microphone','ti-camera','ti-palette','ti-device-gamepad'];
-  grid.innerHTML=filtered.map((cat,ri)=>{
-    const i=categories.indexOf(cat);
-    const icon=icons[i%icons.length];
-    return `<div class="poll-card${cat.open?'':' closed'}" onclick="${cat.open?'openVote('+i+')':'\"\"'}">
-      ${!cat.open?'<span class="closed-badge"><i class="ti ti-lock" aria-hidden="true" style="font-size:9px"></i> Closed</span>':''}
-      <div class="poll-icon"><i class="ti ${icon}" aria-hidden="true"></i></div>
-      <h3>${cat.name}</h3>
-      <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
-      <div class="poll-nominees">${cat.nominees.length} nominee${cat.nominees.length!==1?'s':''}</div>
-      ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:#8b79ad;font-weight:600">Voting closed</span>'}
-    </div>`;
-  }).join('');
+
+grid.innerHTML=filtered.map((cat,ri)=>{
+  const i=categories.indexOf(cat);
+  return `<div class="poll-card${cat.open?'':' closed'}" onclick="${cat.open?'openVote('+i+')':''}">
+    ${!cat.open?'<span class="closed-badge">Closed</span>':''}
+    <h3>${cat.name}</h3>
+    <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
+    <div class="poll-nominees">${cat.nominees.length} nominee${cat.nominees.length!==1?'s':''}</div>
+    ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:#8b79ad;font-weight:600">Voting closed</span>'}
+  </div>`;
+}).join('');
   if(!filtered.length&&q) grid.innerHTML='<div class="empty-st">No results for "'+q+'"</div>';
 }
 
