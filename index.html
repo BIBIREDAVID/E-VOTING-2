@@ -10,15 +10,34 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--pu:#6c3fc5;--pu-dark:#4a2a8a;--pu-light:#ede8fa;--pu-mid:#8b5cf6}
-body{font-family:var(--font-sans);background:#f7f5ff;min-height:100vh;display:flex;flex-direction:column}
+:root{
+  --pu:#6c3fc5;--pu-dark:#4a2a8a;--pu-light:#ede8fa;--pu-mid:#8b5cf6;
+  --bg:#f7f5ff;--surface:#fff;--surface-alt:#f7f5ff;--border:#e5dff7;
+  --border-soft:#f0ebfa;--border-mid:#ede8fa;--border-avatar:#d4c5f5;
+  --text:#1a0a3c;--text-muted:#8b79ad;--text-faint:#a090c8;--text-nav:#5a4a7a;
+  --toast-bg:#1a0a3c;--vote-now-bg:#1a0a3c;--vote-now-hover:#2d1666;
+  --input-bg:#fff;--bar-bg:#f0ebfa;--stat-bg:#f7f5ff;--cat-body-bg:#f7f5ff;
+  --closed-bg:#faeeda;--closed-color:#854f0b;--winner-bg:#ede8fa;--winner-color:#4a2a8a;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#0e0820;--surface:#1a1030;--surface-alt:#130d27;--border:#2e2050;
+    --border-soft:#251840;--border-mid:#2e2050;--border-avatar:#3d2a70;
+    --text:#e8e0ff;--text-muted:#9a8bc0;--text-faint:#7a6baa;--text-nav:#b8a8e0;
+    --toast-bg:#2d1f55;--vote-now-bg:#3d2a70;--vote-now-hover:#4a3380;
+    --input-bg:#1a1030;--bar-bg:#251840;--stat-bg:#130d27;--cat-body-bg:#130d27;
+    --pu-light:#2d1f55;--closed-bg:#3a2500;--closed-color:#ffb347;
+    --winner-bg:#2d1f55;--winner-color:#c4a8ff;
+  }
+}
+body{font-family:var(--font-sans);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;color:var(--text)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
-nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
-.nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:#1a0a3c;text-decoration:none;cursor:default}
+nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
+.nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--text);text-decoration:none;cursor:default}
 .logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
 .logo-mark img,.lmark img,.logo-mark-f img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit}
 .nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.nav-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#5a4a7a;background:#fff;cursor:pointer;transition:all 0.15s;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.nav-btn{padding:6px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-nav);background:var(--surface);cursor:pointer;transition:all 0.15s;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .nav-btn:hover{border-color:var(--pu);color:var(--pu);background:var(--pu-light)}
 .nav-btn.active{background:var(--pu);color:#fff;border-color:var(--pu)}
 .cart-wrap{position:relative}
@@ -28,198 +47,116 @@ nav{background:#fff;border-bottom:1.5px solid #e5dff7;padding:0 20px;display:fle
 .page.active{display:block}
 
 /* TOAST */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a0a3c;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transition:transform 0.3s ease;pointer-events:none;white-space:nowrap}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--toast-bg);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;transition:transform 0.3s ease;pointer-events:none;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* POLLS */
-.page-header{max-width:1100px;margin:0 auto 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
-.page-header h2{font-size:16px;font-weight:700;color:#1a0a3c}
-.page-header p{font-size:12px;color:#8b79ad;margin-top:2px}
-.search-bar{display:flex;align-items:center;gap:8px;background:#fff;border:1.5px solid #e5dff7;border-radius:9px;padding:6px 12px;min-width:200px}
-.search-bar input{border:none;outline:none;font-size:13px;color:#1a0a3c;background:transparent;width:100%}
-.search-bar i{color:#8b79ad;font-size:16px}
+.page-header h2{font-size:16px;font-weight:700;color:var(--text)}
+.page-header p{font-size:12px;color:var(--text-muted);margin-top:2px}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:6px 12px;min-width:200px}
+.search-bar input{border:none;outline:none;font-size:13px;color:var(--text);background:transparent;width:100%}
+.search-bar i{color:var(--text-muted);font-size:16px}
 .polls-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:1100px;margin:0 auto}
-.poll-card{background:#fff;border-radius:12px;padding:24px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;cursor:pointer;transition:all 0.18s;position:relative;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:none}
-.poll-card:hover{box-shadow:0 6px 24px rgba(0,0,0,0.13);transform:translateY(-2px)}
-.poll-card.closed{opacity:0.6;cursor:not-allowed}
-.poll-card.closed:hover{transform:none;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
-.closed-badge{position:absolute;top:12px;right:12px;background:#faeeda;color:#854f0b;font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.04em}
-.poll-card h3{font-size:13px;font-weight:700;color:#1a0a3c;letter-spacing:0.02em;line-height:1.5;margin:0}
-.poll-price{font-size:11px;color:#8b79ad;font-weight:500}
-.poll-nominees{font-size:11px;color:#a090c8}
-.vote-now-btn{width:100%;padding:10px;background:#1a0a3c;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:center;margin-top:4px}
-.vote-now-btn:hover{background:#2d1666}
-.poll-icon{display:none}
-.empty-st{grid-column:1/-1;text-align:center;padding:60px;color:#8b79ad;font-size:14px}
+.poll-card{background:var(--surface);border-radius:12px;padding:24px 20px;display:flex;flex-direction:column;align-items:flex-start;gap:12px;cursor:pointer;transition:all 0.18s;position:relative;box-shadow:0 2px 12px rgba(0,0,0,0.08);border:none}
+.closed-badge{position:absolute;top:12px;right:12px;background:var(--closed-bg);color:var(--closed-color);font-size:9px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.04em}
+.poll-card h3{font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.02em;line-height:1.5;margin:0}
+.poll-price{font-size:11px;color:var(--text-muted);font-weight:500}
+.poll-nominees{font-size:11px;color:var(--text-faint)}
+.vote-now-btn{width:100%;padding:10px;background:var(--vote-now-bg);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.15s;text-align:center;margin-top:4px}
+.vote-now-btn:hover{background:var(--vote-now-hover)}
+.empty-st{grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);font-size:14px}
 @media(max-width:768px){.polls-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.polls-grid{grid-template-columns:1fr}}
 
 /* VOTE */
 .vote-inner{max-width:560px;margin:0 auto}
-.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#5a4a7a;background:#fff;cursor:pointer;margin-bottom:16px;font-weight:500}
-.back-btn:hover{border-color:var(--pu);color:var(--pu)}
-.vote-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:22px}
-.vote-box h2{font-size:17px;font-weight:700;color:#1a0a3c;margin-bottom:3px}
-.nominees-lbl{font-size:11px;color:#8b79ad;margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
-.nom-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1.5px solid #ede8fa;border-radius:10px;margin-bottom:7px;background:#fff;transition:border-color 0.15s}
-.nom-row:hover{border-color:#c4adf0}
-.nom-avatar{width:36px;height:36px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--pu);flex-shrink:0;border:1.5px solid #d4c5f5}
-.nom-info{flex:1}
-.nom-name{font-size:13px;font-weight:600;color:#1a0a3c}
-.nom-sub{font-size:11px;color:#8b79ad}
-.counter{display:flex;align-items:center;gap:6px}
-.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid #d4c5f5;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:#5a4a7a;transition:all 0.1s}
-.c-btn:hover{border-color:var(--pu);color:var(--pu)}
-.c-btn.plus{background:var(--pu);color:#fff;border-color:var(--pu)}
-.c-btn.plus:hover{background:var(--pu-dark)}
-.c-val{width:30px;text-align:center;font-size:13px;font-weight:700;color:#1a0a3c}
-.vote-summary{background:#f7f5ff;border:1.5px solid #e5dff7;border-radius:10px;padding:13px 15px;margin-top:14px}
-.summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:#8b79ad}
-.summary-row span:last-child{color:#1a0a3c;font-weight:600}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-nav);background:var(--surface);cursor:pointer;margin-bottom:16px;font-weight:500}
+.vote-box{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:22px}
+.vote-box h2{font-size:17px;font-weight:700;color:var(--text);margin-bottom:3px}
+.nominees-lbl{font-size:11px;color:var(--text-muted);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.nom-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1.5px solid var(--border-mid);border-radius:10px;margin-bottom:7px;background:var(--surface);transition:border-color 0.15s}
+.nom-avatar{width:36px;height:36px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--pu);flex-shrink:0;border:1.5px solid var(--border-avatar)}
+.nom-name{font-size:13px;font-weight:600;color:var(--text)}
+.nom-sub{font-size:11px;color:var(--text-muted)}
+.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--border-avatar);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-nav);transition:all 0.1s}
+.c-val{width:30px;text-align:center;font-size:13px;font-weight:700;color:var(--text)}
+.vote-summary{background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;margin-top:14px}
+.summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:var(--text-muted)}
+.summary-row span:last-child{color:var(--text);font-weight:600}
 .add-cart-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-top:11px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:7px}
 .add-cart-btn:hover{background:var(--pu-dark)}
 .add-cart-btn:disabled{opacity:0.35;cursor:not-allowed}
 
 /* CART */
 .cart-inner{max-width:540px;margin:0 auto}
-.cart-box{background:#fff;border:1.5px solid #e5dff7;border-radius:16px;padding:20px;margin-bottom:12px}
-.cart-box h2{font-size:15px;font-weight:700;color:#1a0a3c;margin-bottom:14px}
-.cart-item{padding:11px 0;border-bottom:1px solid #f0ebfa}
-.cart-item:last-of-type{border-bottom:none}
-.cart-item-top{display:flex;justify-content:space-between;align-items:flex-start}
-.cart-item-name{font-size:13px;font-weight:600;color:#1a0a3c}
-.cart-item-detail{font-size:11px;color:#8b79ad;margin-top:2px}
-.cart-item-price{font-size:13px;font-weight:700;color:var(--pu)}
-.rm-btn{font-size:11px;color:#e24b4a;background:none;border:none;cursor:pointer;display:block;margin-top:2px;text-align:right}
-.cart-empty{text-align:center;padding:36px 20px}
-.cart-empty i{font-size:40px;color:#d4c5f5;display:block;margin-bottom:10px}
-.cart-empty p{font-size:14px;color:#8b79ad;margin-bottom:14px}
-.cart-empty-btn{padding:9px 22px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer}
-.totals-box{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:14px 20px;margin-bottom:12px}
-.total-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:#8b79ad}
-.total-row span:last-child{color:#1a0a3c;font-weight:600}
-.total-row.grand{border-top:1.5px solid #e5dff7;margin-top:8px;padding-top:11px;font-size:15px;font-weight:700;color:#1a0a3c}
-.total-row.grand span:last-child{color:var(--pu);font-size:17px}
-.checkout-form{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:16px 20px;margin-bottom:12px}
-.checkout-form h3{font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:11px}
-.cf-row{display:flex;gap:9px;margin-bottom:9px}
-.cf-row input{flex:1;padding:9px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#1a0a3c;background:#fff;min-width:0}
-.cf-row input:focus{outline:none;border-color:var(--pu)}
-.pay-btn{width:100%;padding:12px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
-.pay-btn:hover{background:var(--pu-dark)}
-.squad-badge{font-size:11px;color:#8b79ad;text-align:center;margin-top:7px}
+.cart-box{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px}
+.cart-box h2{font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px}
+.cart-item{padding:11px 0;border-bottom:1px solid var(--border-soft)}
+.cart-item-name{font-size:13px;font-weight:600;color:var(--text)}
+.cart-item-detail{font-size:11px;color:var(--text-muted);margin-top:2px}
+.cart-empty i{font-size:40px;color:var(--border-avatar);display:block;margin-bottom:10px}
+.cart-empty p{font-size:14px;color:var(--text-muted);margin-bottom:14px}
+.totals-box{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:14px 20px;margin-bottom:12px}
+.total-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;color:var(--text-muted)}
+.total-row span:last-child{color:var(--text);font-weight:600}
+.total-row.grand{border-top:1.5px solid var(--border);margin-top:8px;padding-top:11px;font-size:15px;font-weight:700;color:var(--text)}
+.checkout-form{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:16px 20px;margin-bottom:12px}
+.checkout-form h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:11px}
+.cf-row input{flex:1;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--input-bg);min-width:0}
+.squad-badge{font-size:11px;color:var(--text-muted);text-align:center;margin-top:7px}
 
 /* RESULTS PAGE */
 .results-inner{max-width:680px;margin:0 auto}
-.results-cat{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:18px 20px;margin-bottom:12px}
-.results-cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.results-cat-head h3{font-size:14px;font-weight:700;color:#1a0a3c}
-.results-cat-head span{font-size:11px;color:#8b79ad}
-.result-bar-row{margin-bottom:10px}
-.result-bar-top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
-.result-bar-top .rbn{font-weight:600;color:#1a0a3c}
-.result-bar-top .rbv{color:#8b79ad}
-.result-bar-bg{background:#f0ebfa;border-radius:99px;height:8px;overflow:hidden}
-.result-bar-fill{height:8px;border-radius:99px;background:var(--pu);transition:width 0.6s ease}
-.result-bar-fill.top{background:#6c3fc5}
-.winner-badge{display:inline-flex;align-items:center;gap:4px;background:#ede8fa;color:#4a2a8a;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:7px}
-.results-empty{text-align:center;padding:50px;color:#8b79ad;font-size:13px}
+.results-cat{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.results-cat-head h3{font-size:14px;font-weight:700;color:var(--text)}
+.results-cat-head span{font-size:11px;color:var(--text-muted)}
+.result-bar-top .rbn{font-weight:600;color:var(--text)}
+.result-bar-top .rbv{color:var(--text-muted)}
+.result-bar-bg{background:var(--bar-bg);border-radius:99px;height:8px;overflow:hidden}
+.winner-badge{display:inline-flex;align-items:center;gap:4px;background:var(--winner-bg);color:var(--winner-color);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:7px}
+.results-empty{text-align:center;padding:50px;color:var(--text-muted);font-size:13px}
 
 /* ADMIN LOGIN */
 .login-wrap{min-height:calc(100vh - 100px);display:flex;align-items:center;justify-content:center;padding:24px 16px}
-.login-split{display:grid;grid-template-columns:1fr 1fr;max-width:740px;width:100%;border-radius:18px;overflow:hidden;border:1.5px solid #e5dff7}
-.login-left{background:linear-gradient(145deg,#2d1666 0%,#4a2a8a 60%,#6c3fc5 100%);padding:40px 32px;display:flex;flex-direction:column;justify-content:space-between}
-.login-left-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
-.login-left-logo .lmark{width:34px;height:34px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;border:1.5px solid rgba(255,255,255,0.25);flex-shrink:0}
-.login-left-logo span{color:#fff;font-size:13px;font-weight:700}
-.login-left h2{font-size:22px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:11px}
-.login-left p{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:28px}
-.login-secure-box{background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.18);border-radius:11px;padding:14px 16px}
-.login-secure-box .sb-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.login-secure-box p{font-size:11px;color:rgba(255,255,255,0.55);line-height:1.6}
-.login-right{background:#fff;padding:40px 32px;display:flex;flex-direction:column;justify-content:center}
-.login-avatar{width:50px;height:50px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:2px solid #d4c5f5}
-.login-right h3{text-align:center;font-size:18px;font-weight:700;color:#1a0a3c;margin-bottom:4px}
-.login-sub{text-align:center;font-size:12px;color:#8b79ad;margin-bottom:22px}
-.login-field{margin-bottom:12px}
-.login-field label{display:block;font-size:11px;font-weight:700;color:#5a4a7a;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
-.login-field input{width:100%;padding:9px 12px;border:1.5px solid #e5dff7;border-radius:9px;font-size:13px;color:#1a0a3c;background:#fff;transition:border-color 0.15s}
-.login-field input:focus{outline:none;border-color:var(--pu)}
-.pw-wrap{position:relative}
-.pw-wrap input{padding-right:44px}
-.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:#fff;border:1px solid #e5dff7;border-radius:8px;cursor:pointer;color:#8b79ad;padding:4px 6px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 2px 8px rgba(26,10,60,.06)}
-.pw-toggle:hover{color:var(--pu)}
-.pw-toggle:focus{outline:none;border-color:var(--pu);color:var(--pu)}
-.login-error{background:#fff0f0;border:1.5px solid #f5c4c4;border-radius:8px;padding:8px 12px;font-size:12px;color:#a32d2d;margin-bottom:12px;display:none;align-items:center;gap:6px}
-.login-error.show{display:flex}
-.sign-in-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.15s;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
-.sign-in-btn:hover{background:var(--pu-dark)}
-.sign-in-btn:disabled{opacity:0.6;cursor:not-allowed}
-.login-status{display:none;align-items:center;gap:7px;font-size:12px;color:#8b79ad;margin-bottom:12px}
-.login-status.show{display:flex}
-.login-mode{font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;text-align:center}
-.login-hint{text-align:center;font-size:11px;color:#8b79ad;margin-top:12px}
-.login-actions{display:flex;gap:8px;margin-top:10px}
-.login-actions .a-btn{flex:1;justify-content:center;padding:9px 12px}
-.login-actions .a-btn.secondary{background:#fff;color:var(--pu);border:1.5px solid var(--pu)}
+.login-split{display:grid;grid-template-columns:1fr 1fr;max-width:740px;width:100%;border-radius:18px;overflow:hidden;border:1.5px solid var(--border)}
+.login-right{background:var(--surface);padding:40px 32px;display:flex;flex-direction:column;justify-content:center}
+.login-avatar{width:50px;height:50px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:2px solid var(--border-avatar)}
+.login-right h3{text-align:center;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
+.login-sub{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:22px}
+.login-field label{display:block;font-size:11px;font-weight:700;color:var(--text-nav);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
+.login-field input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;color:var(--text);background:var(--input-bg);transition:border-color 0.15s}
+.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-muted);padding:4px 6px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 2px 8px rgba(26,10,60,.06)}
+.login-status{display:none;align-items:center;gap:7px;font-size:12px;color:var(--text-muted);margin-bottom:12px}
+.login-hint{text-align:center;font-size:11px;color:var(--text-muted);margin-top:12px}
+.login-actions .a-btn.secondary{background:var(--surface);color:var(--pu);border:1.5px solid var(--pu)}
 .login-actions .a-btn.secondary:hover{background:var(--pu-light)}
 
 /* ADMIN PANEL */
 .admin-inner{max-width:680px;margin:0 auto}
-.admin-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
-.admin-topbar-left{font-size:14px;font-weight:700;color:#1a0a3c;display:flex;align-items:center;gap:8px}
-.a-pill{background:var(--pu-light);color:var(--pu);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
-.logout-btn{padding:6px 13px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;color:#e24b4a;background:#fff;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all 0.15s}
-.logout-btn:hover{border-color:#e24b4a;background:#fff0f0}
-.a-box{background:#fff;border:1.5px solid #e5dff7;border-radius:14px;padding:18px 20px;margin-bottom:14px}
-.a-box h2{font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:12px;display:flex;align-items:center;gap:7px}
-.a-form-row{display:flex;gap:7px;flex-wrap:wrap}
-.a-form-row input{flex:1;min-width:110px;padding:8px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:13px;color:#1a0a3c;background:#fff}
-.a-form-row input:focus{outline:none;border-color:var(--pu)}
-.a-btn{padding:8px 16px;background:var(--pu);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}
-.a-btn:hover{background:var(--pu-dark)}
-.a-btn.secondary{background:#fff;color:var(--pu);border:1.5px solid var(--pu)}
-.a-btn.secondary:hover{background:var(--pu-light)}
-.a-btn.danger{background:#fff;color:#e24b4a;border:1.5px solid #e5dff7}
-.a-btn.danger:hover{border-color:#e24b4a;background:#fff0f0}
-.a-key-row input{flex:1;padding:8px 11px;border:1.5px solid #e5dff7;border-radius:8px;font-size:12px;font-family:var(--font-mono);background:#f7f5ff;color:#1a0a3c;width:100%}
-.a-key-row input:focus{outline:none;border-color:var(--pu)}
-.key-hint{font-size:11px;color:#8b79ad;margin-top:5px}
-.cat-item{border:1.5px solid #e5dff7;border-radius:10px;margin-bottom:8px;overflow:hidden}
-.cat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:#fff;gap:8px}
-.cat-title-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
-.cat-title{font-size:13px;font-weight:700;color:#1a0a3c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cat-meta{font-size:11px;color:#8b79ad;white-space:nowrap}
-.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.status-dot.open{background:#1d9e75}
-.status-dot.closed{background:#e24b4a}
-.cat-acts{display:flex;gap:4px;flex-shrink:0}
-.sm-btn{padding:4px 9px;border:1.5px solid #e5dff7;border-radius:6px;font-size:11px;color:#5a4a7a;background:#fff;cursor:pointer;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px}
-.sm-btn:hover{border-color:var(--pu);color:var(--pu)}
-.sm-btn.red{color:#e24b4a}
-.sm-btn.red:hover{border-color:#e24b4a;background:#fff0f0}
-.sm-btn.green{color:#0f6e56}
-.sm-btn.green:hover{border-color:#0f6e56;background:#e1f5ee}
-.cat-body{padding:13px;background:#f7f5ff;border-top:1.5px solid #e5dff7}
-.nom-list-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#1a0a3c;padding:5px 0;border-bottom:1px solid #ede8fa}
-.nom-list-item:last-of-type{border-bottom:none}
-.nom-add-row{display:flex;gap:6px;margin-top:9px}
-.nom-add-row input{flex:1;padding:7px 10px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
-.nom-add-row input:focus{outline:none;border-color:var(--pu)}
-.nom-add-row button{padding:7px 13px;background:var(--pu);color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer}
-.price-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;gap:7px}
-.price-row label{font-size:12px;color:#8b79ad;font-weight:600}
-.price-row input{width:85px;padding:6px 9px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
-.price-row input:focus{outline:none;border-color:var(--pu)}
-.edit-name-row{display:flex;gap:6px;margin-bottom:10px}
-.edit-name-row input{flex:1;padding:7px 10px;border:1.5px solid #e5dff7;border-radius:7px;font-size:12px;color:#1a0a3c;background:#fff}
-.edit-name-row input:focus{outline:none;border-color:var(--pu)}
-.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:#ede8fa;color:var(--pu);font-weight:700}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
-.stat-card{background:#f7f5ff;border-radius:9px;padding:12px 14px}
-.stat-card .sc-label{font-size:11px;color:#8b79ad;font-weight:600;margin-bottom:4px}
-.stat-card .sc-val{font-size:22px;font-weight:700;color:#1a0a3c}
-.export-row{display:flex;gap:7px;flex-wrap:wrap}
+.admin-topbar-left{font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.logout-btn{padding:6px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;color:#e24b4a;background:var(--surface);cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all 0.15s}
+.a-box{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:14px}
+.a-box h2{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.a-form-row input{flex:1;min-width:110px;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--input-bg)}
+.a-btn.secondary{background:var(--surface);color:var(--pu);border:1.5px solid var(--pu)}
+.a-btn.danger{background:var(--surface);color:#e24b4a;border:1.5px solid var(--border)}
+.a-key-row input{flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:var(--font-mono);background:var(--surface-alt);color:var(--text);width:100%}
+.key-hint{font-size:11px;color:var(--text-muted);margin-top:5px}
+.cat-item{border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.cat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--surface);gap:8px}
+.cat-title{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-meta{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.sm-btn{padding:4px 9px;border:1.5px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-nav);background:var(--surface);cursor:pointer;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px}
+.cat-body{padding:13px;background:var(--cat-body-bg);border-top:1.5px solid var(--border)}
+.nom-list-item{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text);padding:5px 0;border-bottom:1px solid var(--border-mid)}
+.nom-add-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);background:var(--input-bg)}
+.price-row label{font-size:12px;color:var(--text-muted);font-weight:600}
+.price-row input{width:85px;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);background:var(--input-bg)}
+.edit-name-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);background:var(--input-bg)}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:var(--pu-light);color:var(--pu);font-weight:700}
+.stat-card{background:var(--stat-bg);border-radius:9px;padding:12px 14px}
+.stat-card .sc-label{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:4px}
+.stat-card .sc-val{font-size:22px;font-weight:700;color:var(--text)}.export-row{display:flex;gap:7px;flex-wrap:wrap}
 
 /* FOOTER */
 footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
@@ -274,15 +211,15 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
     <div class="admin-avatar-wrap" id="admin-avatar-wrap" style="display:none;position:relative">
   <button onclick="toggleAdminMenu()" style="width:36px;height:36px;border-radius:50%;background:var(--pu);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center" id="admin-avatar-btn"></button>
-  <div id="admin-menu" style="display:none;position:absolute;top:46px;right:0;background:#fff;border:1.5px solid #e5dff7;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);min-width:200px;z-index:200;overflow:hidden">
-    <div style="padding:12px 16px;border-bottom:1px solid #f0ebfa;font-size:12px;color:#8b79ad">Logged in as</div>
-    <div style="padding:4px 16px 12px;font-size:13px;font-weight:700;color:#1a0a3c" id="admin-menu-username"></div>
-    <a onclick="showPage('admin');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer;border-top:1px solid #f0ebfa">Dashboard</a>
-    <a onclick="showPage('results');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer">Results</a>
-    <a onclick="showPage('admin-logs');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer">Activity Logs</a>
-    <a onclick="showPage('admin-team');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer">Manage Admins</a>
-    <a onclick="doLogout();closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#e24b4a;cursor:pointer;border-top:1px solid #f0ebfa">Logout</a>
-  </div>
+<div id="admin-menu" style="display:none;position:absolute;top:46px;right:0;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);min-width:200px;z-index:200;overflow:hidden">
+  <div style="padding:12px 16px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-muted)">Logged in as</div>
+  <div style="padding:4px 16px 12px;font-size:13px;font-weight:700;color:var(--text)" id="admin-menu-username"></div>
+  <a onclick="showPage('admin');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer;border-top:1px solid var(--border-soft)">Dashboard</a>
+  <a onclick="showPage('results');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Results</a>
+  <a onclick="showPage('admin-logs');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Activity Logs</a>
+  <a onclick="showPage('admin-team');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Manage Admins</a>
+  <a onclick="doLogout();closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#e24b4a;cursor:pointer;border-top:1px solid var(--border-soft)">Logout</a>
+</div>
 </div>
 <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()" style="display:none"><i class="ti ti-user" aria-hidden="true"></i><span>Admin</span></button>
 
@@ -309,7 +246,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 </div>
   <div style="max-width:1100px;margin:48px auto;padding:0 16px">
     <div style="font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Quick Access</div>
-    <h2 style="font-size:24px;font-weight:700;color:#1a0a3c;margin-bottom:24px">Everything you need</h2>
+    <h2 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:24px">Everything you need</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" id="quick-access-grid">
       <div onclick="showPage('polls')" style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
         <div style="width:40px;height:40px;background:#ede8fa;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
@@ -379,9 +316,9 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     <div class="totals-box" id="totals-box"></div>
     <div class="checkout-form" id="checkout-form-wrap">
   <div class="cf-row" style="margin-bottom:9px">
-    <input type="email" id="cf-email" placeholder="you@mail.com" style="border-radius:8px;border:1.5px solid #e5e5e5;padding:11px 14px;font-size:13px;width:100%;outline:none" />
+    <input type="email" id="cf-email" placeholder="you@mail.com" style="border-radius:8px;border:1.5px solid var(--border);padding:11px 14px;font-size:13px;width:100%;outline:none;background:var(--input-bg);color:var(--text)" />
   </div>
-  <button class="pay-btn" onclick="initiatePayment()" style="background:#1a0a3c;border-radius:8px;font-size:14px">
+  <button class="pay-btn" onclick="initiatePayment()" style="background:var(--vote-now-bg);border-radius:8px;font-size:14px">
     Pay with Squad
   </button>
 </div>
@@ -396,7 +333,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <i class="ti ti-check" style="font-size:26px;color:#1d9e75"></i>
       </div>
       <h2 style="margin-bottom:6px">Payment Successful!</h2>
-      <p style="font-size:13px;color:#8b79ad;margin-bottom:18px">Your votes have been recorded.</p>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:18px">Your votes have been recorded.</p>
       <div id="receipt-body" style="text-align:left;margin-bottom:16px"></div>
       <button class="add-cart-btn" onclick="showPage('polls')" style="margin-top:0">
         <i class="ti ti-chart-pie"></i> Back to Polls
@@ -512,7 +449,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <input type="password" id="new-pw2" placeholder="Confirm password" />
         <button class="a-btn" id="admin-save-btn" onclick="changeCredentials()">Update</button>
       </div>
-      <div style="font-size:11px;color:#8b79ad;margin-top:6px" id="admin-save-hint">Changes apply immediately after you log in.</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:6px" id="admin-save-hint">Changes apply immediately after you log in.</div>
     </div>
   </div>
 </div>
@@ -1000,12 +937,12 @@ function renderAdmin(){
      <div class="stat-card"><div class="sc-label">Open Polls</div><div class="sc-val">${openCount}</div></div>`;
   document.getElementById('cat-count').textContent=totalCats;
   const el=document.getElementById('admin-list');
-  if(!totalCats){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:6px 0">No categories yet.</div>';return;}
+if(!totalCats){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:6px 0">No categories yet.</div>';return;}
   el.innerHTML=categories.map((cat,i)=>{
     const open=openCats[cat.id];
     const noms=cat.nominees.map((n,j)=>`
         <div class="nom-list-item">
-          <span>${n} <span style="color:#a090c8;font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
+          <span>${n} <span style="color:var(--text-faint);font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
           <button class="sm-btn red" onclick="deleteNominee(${i},${j})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
         </div>`).join('');
     return `<div class="cat-item">
@@ -1030,7 +967,7 @@ function renderAdmin(){
           <label>Price per vote (₦)</label>
           <input type="number" id="price-${i}" value="${cat.price}" min="0" onchange="updatePrice(${i})" />
         </div>
-        <div>${noms||'<div style="font-size:12px;color:#8b79ad;padding:4px 0">No nominees yet.</div>'}</div>
+        <div>${noms||'<div style="font-size:12px;color:var(--text-muted);padding:4px 0">No nominees yet.</div>'}</div>
         <div class="nom-add-row">
           <input type="text" id="nin-${i}" placeholder="Nominee name" onkeydown="if(event.key==='Enter')addNominee(${i})" />
           <button onclick="addNominee(${i})"><i class="ti ti-plus" aria-hidden="true" style="font-size:12px"></i> Add</button>
@@ -1046,7 +983,7 @@ function renderPolls(){
   const grid=document.getElementById('polls-grid');
   const count=document.getElementById('polls-count');
   if(!categories.length){
-    grid.innerHTML='<div class="empty-st"><i class="ti ti-mood-empty" aria-hidden="true" style="font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px"></i>No categories yet. Go to Admin to add some.</div>';
+    grid.innerHTML='<div class="empty-st"><i class="ti ti-mood-empty" aria-hidden="true" style="font-size:36px;color:var(--border-avatar);display:block;margin-bottom:10px"></i>No categories yet. Go to Admin to add some.</div>';
     if(count) count.textContent='No polls available';
     return;
   }
@@ -1059,7 +996,7 @@ grid.innerHTML=filtered.map((cat,ri)=>{
     <h3>${cat.name}</h3>
     <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
     <div class="poll-nominees">${cat.nominees.length} nominee${cat.nominees.length!==1?'s':''}</div>
-    ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:#8b79ad;font-weight:600">Voting closed</span>'}
+    ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:var(--text-muted);font-weight:600">Voting closed</span>'}
   </div>`;
 }).join('');
   if(!filtered.length&&q) grid.innerHTML='<div class="empty-st">No results for "'+q+'"</div>';
@@ -1080,7 +1017,7 @@ function openVote(i){
 function renderNomRows(){
   const cat=categories[currentCatIdx];
   const el=document.getElementById('nom-rows');
-  if(!cat.nominees.length){el.innerHTML='<div style="font-size:13px;color:#8b79ad;padding:8px 0">No nominees added yet.</div>';return;}
+  if(!cat.nominees.length){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No nominees added yet.</div>';return;}
   el.innerHTML=cat.nominees.map(n=>
     `<div class="nom-row">
       <div class="nom-avatar">${n.charAt(0)}</div>
@@ -1142,27 +1079,27 @@ function renderCart(){
   form.style.display='block';
   el.innerHTML=cart.map((item,i)=>`
     <div style="margin-bottom:18px">
-      <div style="font-size:11px;font-weight:700;color:#8b79ad;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">${item.category}</div>
+      <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">${item.category}</div>
       ${item.votes.map(([nom,v])=>`
-        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid #e5e5e5;border-radius:10px;margin-bottom:6px;background:#fff">
-          <div style="width:36px;height:36px;border-radius:50%;background:#1a0a3c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${nom.charAt(0)}</div>
-          <div style="flex:1;font-size:13px;font-weight:600;color:#1a0a3c">${nom}</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;background:var(--surface)">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--vote-now-bg);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${nom.charAt(0)}</div>
+          <div style="flex:1;font-size:13px;font-weight:600;color:var(--text)">${nom}</div>
           <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="chgCartVote(${i},'${nom}',-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid #e5e5e5;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">−</button>
+            <button onclick="chgCartVote(${i},'${nom}',-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">−</button>
             <span style="font-size:13px;font-weight:700;min-width:20px;text-align:center">${v}</span>
-            <button onclick="chgCartVote(${i},'${nom}',1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid #e5e5e5;background:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">+</button>
+            <button onclick="chgCartVote(${i},'${nom}',1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">+</button>
           </div>
-          <div style="font-size:13px;font-weight:700;color:#1a0a3c;min-width:50px;text-align:right">₦${(v*item.price).toLocaleString()}</div>
+          <div style="font-size:14px;font-weight:700;color:#1a0a3c;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface)">₦${(v*item.price).toLocaleString()}</div>
           <button onclick="removeNomFromCart(${i},'${nom}')" style="font-size:11px;color:#e24b4a;background:none;border:none;cursor:pointer;font-weight:600">Remove</button>
         </div>`).join('')}
     </div>`).join('');
 
   const votesTotal=cart.reduce((a,c)=>a+c.subtotal,0);
   tot.innerHTML=`
-    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#1a0a3c;padding:14px 16px;border:1.5px solid #e5e5e5;border-radius:10px;background:#fff">
+    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#1a0a3c;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface)">
       <span>Total</span><span>₦${(votesTotal+50).toLocaleString()}</span>
     </div>
-    <button onclick="clearCart()" style="width:100%;padding:11px;background:#fff;color:#e24b4a;border:1.5px solid #e24b4a;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px">Clear Cart</button>`;
+    <button onclick="clearCart()" style="width:100%;padding:11px;background:var(--surface);color:#e24b4a;border:1.5px solid #e24b4a;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px">Clear Cart</button>`;
 }
 
 function chgCartVote(cartIdx, nom, d){
@@ -1198,23 +1135,23 @@ function renderReceipt(items, transactionRef, email){
   }, {});
   el.innerHTML = `
     <div style="background:#f7f5ff;border:1.5px solid #e5dff7;border-radius:10px;padding:13px 15px;margin-bottom:12px;font-size:12px;color:#8b79ad">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Reference</span><span style="color:#1a0a3c;font-weight:600">${transactionRef}</span></div>
-      <div style="display:flex;justify-content:space-between"><span>Email</span><span style="color:#1a0a3c;font-weight:600">${email}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Reference</span><span style="color:var(--text);font-weight:600">${transactionRef}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Email</span><span style="color:var(--text);font-weight:600">${email}</span></div>
     </div>
     ${Object.entries(grouped).map(([cat, votes]) => `
       <div style="margin-bottom:10px">
-        <div style="font-size:11px;font-weight:700;color:#8b79ad;text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${cat}</div>
+        <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${cat}</div>
         ${votes.map(v => `
-          <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #f0ebfa">
-            <span style="font-weight:600;color:#1a0a3c">${v.nominee}</span>
-            <span style="color:var(--pu);font-weight:700">${v.votes} vote${v.votes!==1?'s':''}</span>
+          <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border-soft)">
+            <span style="font-weight:600;color:var(--text)">${v.nominee}</span>
+            <span style="color:var(--primary);font-weight:700">${v.votes} vote${v.votes!==1?'s':''}</span>
           </div>`).join('')}
       </div>`).join('')}`;
 }
 
 function renderResults(){
   const el=document.getElementById('results-body');
-  if(!categories.length){el.innerHTML='<div class="results-empty"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:36px;color:#d4c5f5;display:block;margin-bottom:10px"></i>No categories yet.</div>';return;}
+  if(!categories.length){el.innerHTML='<div class="results-empty"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:36px;color:var(--border-avatar);display:block;margin-bottom:10px"></i>No categories yet.</div>';return;}
   el.innerHTML=categories.map(cat=>{
     const recs=voteRecords[cat.name]||{};
     const total=Object.values(recs).reduce((a,b)=>a+b,0);
@@ -1235,7 +1172,7 @@ function renderResults(){
         <h3>${cat.name}</h3>
         <span>${total.toLocaleString()} total vote${total!==1?'s':''} · <span style="color:${cat.open?'#0f6e56':'#e24b4a'};font-weight:600">${cat.open?'Open':'Closed'}</span></span>
       </div>
-      ${bars||'<div style="font-size:12px;color:#8b79ad">No nominees yet.</div>'}
+      ${bars||'<div style="font-size:12px;color:var(--muted)">No nominees yet.</div>'}
     </div>`;
   }).join('');
 }
@@ -1265,16 +1202,16 @@ async function renderLogs(){
   try{
     const data = await apiRequest('/admin/logs');
     const el = document.getElementById('logs-table');
-    if(!data.logs.length){ el.innerHTML = '<div style="padding:8px 0;color:#8b79ad">No activity yet.</div>'; return; }
+    if(!data.logs.length){ el.innerHTML = '<div style="padding:8px 0;color:var(--muted)">No activity yet.</div>'; return; }
     el.innerHTML = data.logs.map(log=>{
       const time = log.createdAt ? new Date(log.createdAt).toLocaleString() : '—';
       const details = Object.entries(log.details||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
-      return `<div style="padding:10px 0;border-bottom:1px solid #f0ebfa">
+      return `<div style="padding:10px 0;border-bottom:1px solid var(--border-soft)">
         <div style="display:flex;justify-content:space-between;margin-bottom:2px">
-          <span style="font-weight:700;color:#1a0a3c">${log.action}</span>
-          <span style="color:#a090c8">${time}</span>
+          <span style="font-weight:700;color:var(--text)">${log.action}</span>
+          <span style="color:var(--muted)">${time}</span>
         </div>
-        <div style="color:#8b79ad">${log.username} · ${log.ip}${details?' · '+details:''}</div>
+        <div style="color:var(--muted)">${log.username} · ${log.ip}${details?' · '+details:''}</div>
       </div>`;
     }).join('');
   }catch(e){ toast(e.message||'Could not load logs.'); }
@@ -1285,11 +1222,11 @@ async function renderAdminTeam(){
     const data = await apiRequest('/admin/list');
     const el = document.getElementById('admin-list-table');
     el.innerHTML = data.admins.map(a=>`
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ebfa">
-        <span style="font-size:13px;font-weight:600;color:#1a0a3c">${a.username}${a.id===data.currentAdminId?' (you)':''}</span>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-soft)">
+        <span style="font-size:13px;font-weight:600;color:var(--text)">${a.username}${a.id===data.currentAdminId?' (you)':''}</span>
         ${a.id!==data.currentAdminId?`<button class="sm-btn red" onclick="removeAdmin('${a.id}')"><i class="ti ti-trash" style="font-size:11px"></i></button>`:''}
       </div>`).join('');
-  }catch(e){ toast(e.message||'Could not load admins.'); }
+  }catch(e){ toast(e.message||'Could not load admins.'); }        
 }
 
 async function inviteAdmin(){
