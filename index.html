@@ -271,7 +271,21 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     <button class="nav-btn" id="nb-home" onclick="showPage('home')"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></button>
     <button class="nav-btn" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-chart-pie" aria-hidden="true"></i><span>Polls</span></button>
     <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
-    <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()"><i class="ti ti-user" aria-hidden="true"></i><span>Admin</span></button>
+
+    <div class="admin-avatar-wrap" id="admin-avatar-wrap" style="display:none;position:relative">
+  <button onclick="toggleAdminMenu()" style="width:36px;height:36px;border-radius:50%;background:var(--pu);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center" id="admin-avatar-btn"></button>
+  <div id="admin-menu" style="display:none;position:absolute;top:46px;right:0;background:#fff;border:1.5px solid #e5dff7;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);min-width:200px;z-index:200;overflow:hidden">
+    <div style="padding:12px 16px;border-bottom:1px solid #f0ebfa;font-size:12px;color:#8b79ad">Logged in as</div>
+    <div style="padding:4px 16px 12px;font-size:13px;font-weight:700;color:#1a0a3c" id="admin-menu-username"></div>
+    <a onclick="showPage('admin');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer;border-top:1px solid #f0ebfa">Dashboard</a>
+    <a onclick="showPage('results');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer">Results</a>
+    <a onclick="showPage('admin-logs');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer">Activity Logs</a>
+    <a onclick="showPage('admin-team');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#1a0a3c;cursor:pointer">Manage Admins</a>
+    <a onclick="doLogout();closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#e24b4a;cursor:pointer;border-top:1px solid #f0ebfa">Logout</a>
+  </div>
+</div>
+<button class="nav-btn" id="nb-admin" onclick="handleAdminNav()" style="display:none"><i class="ti ti-user" aria-hidden="true"></i><span>Admin</span></button>
+
     <div class="cart-wrap">
       <button class="nav-btn" id="nb-cart" onclick="showPage('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i><span>Cart</span></button>
       <span class="cart-badge" id="cart-badge">0</span>
@@ -502,6 +516,39 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     </div>
   </div>
 </div>
+
+<!-- ADMIN LOGS -->
+<div class="page" id="page-admin-logs">
+  <div class="admin-inner">
+    <div class="admin-topbar">
+      <div class="admin-topbar-left"><i class="ti ti-history" style="font-size:16px;color:var(--pu)"></i> Activity Logs</div>
+      <button class="logout-btn" onclick="showPage('admin')" style="color:var(--pu)"><i class="ti ti-arrow-left" style="font-size:13px"></i> Back</button>
+    </div>
+    <div class="a-box"><div id="logs-table" style="font-size:12px"></div></div>
+  </div>
+</div>
+
+<!-- MANAGE ADMINS -->
+<div class="page" id="page-admin-team">
+  <div class="admin-inner">
+    <div class="admin-topbar">
+      <div class="admin-topbar-left"><i class="ti ti-users" style="font-size:16px;color:var(--pu)"></i> Manage Admins</div>
+      <button class="logout-btn" onclick="showPage('admin')" style="color:var(--pu)"><i class="ti ti-arrow-left" style="font-size:13px"></i> Back</button>
+    </div>
+    <div class="a-box">
+      <h2><i class="ti ti-user-plus" style="font-size:15px;color:var(--pu)"></i> Add New Admin</h2>
+      <div class="a-form-row">
+        <input type="text" id="invite-username" placeholder="Username" />
+        <input type="password" id="invite-password" placeholder="Password" />
+        <button class="a-btn" onclick="inviteAdmin()"><i class="ti ti-plus" style="font-size:13px"></i> Add</button>
+      </div>
+    </div>
+    <div class="a-box">
+      <h2><i class="ti ti-list" style="font-size:15px;color:var(--pu)"></i> Current Admins</h2>
+      <div id="admin-list-table"></div>
+    </div>
+  </div>
+</div>
 </div>
 
 <footer>
@@ -544,9 +591,10 @@ let adminBootstrapRequired = false;
 let voteRecords = {};
 let squadPublicKey = '';
 let refreshTimer = null;
-const RESTRICTED_PAGES = new Set(['admin']);
+const RESTRICTED_PAGES = new Set(['admin','admin-logs','admin-team']);
 let loginMode = 'login';
 let loginLoading = false;
+let currentAdminUsername = '';
 
 function setLoginMode(mode){
   loginMode = mode;
@@ -632,6 +680,7 @@ async function loadAdminStatus(){
     const data = await apiRequest('/admin/status');
     adminAuth = Boolean(data.authenticated);
     adminBootstrapRequired = Boolean(data.bootstrapRequired);
+    currentAdminUsername = data.username || '';
     loginMode = adminBootstrapRequired ? 'create' : 'login';
   }catch(error){
     adminAuth = false;
@@ -682,6 +731,18 @@ function syncRestrictedUi(){
     const el = document.getElementById(id);
     if(el) el.style.display = locked ? 'none' : '';
   });
+  const avatarWrap = document.getElementById('admin-avatar-wrap');
+  const adminBtn = document.getElementById('nb-admin');
+  if(adminAuth){
+    avatarWrap.style.display = 'block';
+    adminBtn.style.display = 'none';
+    const initial = (currentAdminUsername||'A').charAt(0).toUpperCase();
+    document.getElementById('admin-avatar-btn').textContent = initial;
+    document.getElementById('admin-menu-username').textContent = currentAdminUsername || '';
+  } else {
+    avatarWrap.style.display = 'none';
+    adminBtn.style.display = '';
+  }
 }
 
 function toast(msg,dur=2500){
@@ -701,6 +762,8 @@ function showPage(p){
   if(nb) nb.classList.add('active');
   if(p==='polls') renderPolls();
   if(p==='admin' && adminAuth) renderAdmin();
+  if(p==='admin-logs' && adminAuth) renderLogs();
+  if(p==='admin-team' && adminAuth) renderAdminTeam();
   if(p==='cart') renderCart();
   if(p==='results') renderResults();
   history.pushState({page:p}, '', '#'+p);
@@ -741,6 +804,7 @@ async function doLogin(){
       body: JSON.stringify({ username: u, password: p, confirmPassword: p2 })
     });
   adminAuth = true;
+    currentAdminUsername = u;
     err.classList.remove('show');
     err.textContent = '';               // ← clear it, don't set error text on success
     syncRestrictedUi();
@@ -1196,6 +1260,71 @@ function exportJSON(){
   const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='nacos_lasu_data.json'; a.click();
   URL.revokeObjectURL(url); toast('JSON exported.');
 }
+
+async function renderLogs(){
+  try{
+    const data = await apiRequest('/admin/logs');
+    const el = document.getElementById('logs-table');
+    if(!data.logs.length){ el.innerHTML = '<div style="padding:8px 0;color:#8b79ad">No activity yet.</div>'; return; }
+    el.innerHTML = data.logs.map(log=>{
+      const time = log.createdAt ? new Date(log.createdAt).toLocaleString() : '—';
+      const details = Object.entries(log.details||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
+      return `<div style="padding:10px 0;border-bottom:1px solid #f0ebfa">
+        <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+          <span style="font-weight:700;color:#1a0a3c">${log.action}</span>
+          <span style="color:#a090c8">${time}</span>
+        </div>
+        <div style="color:#8b79ad">${log.username} · ${log.ip}${details?' · '+details:''}</div>
+      </div>`;
+    }).join('');
+  }catch(e){ toast(e.message||'Could not load logs.'); }
+}
+
+async function renderAdminTeam(){
+  try{
+    const data = await apiRequest('/admin/list');
+    const el = document.getElementById('admin-list-table');
+    el.innerHTML = data.admins.map(a=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #f0ebfa">
+        <span style="font-size:13px;font-weight:600;color:#1a0a3c">${a.username}${a.id===data.currentAdminId?' (you)':''}</span>
+        ${a.id!==data.currentAdminId?`<button class="sm-btn red" onclick="removeAdmin('${a.id}')"><i class="ti ti-trash" style="font-size:11px"></i></button>`:''}
+      </div>`).join('');
+  }catch(e){ toast(e.message||'Could not load admins.'); }
+}
+
+async function inviteAdmin(){
+  const username = document.getElementById('invite-username').value.trim();
+  const password = document.getElementById('invite-password').value;
+  if(!username||!password){toast('Please fill in both fields.');return;}
+  try{
+    await apiRequest('/admin/invite', { method:'POST', body: JSON.stringify({username,password}) });
+    document.getElementById('invite-username').value='';
+    document.getElementById('invite-password').value='';
+    toast('Admin added.');
+    renderAdminTeam();
+  }catch(e){ toast(e.message||'Could not add admin.'); }
+}
+
+async function removeAdmin(id){
+  if(!confirm('Remove this admin?'))return;
+  try{
+    await apiRequest('/admin/'+id, { method:'DELETE' });
+    toast('Admin removed.');
+    renderAdminTeam();
+  }catch(e){ toast(e.message||'Could not remove admin.'); }
+}
+
+function toggleAdminMenu(){
+  const menu = document.getElementById('admin-menu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+function closeAdminMenu(){
+  document.getElementById('admin-menu').style.display = 'none';
+}
+document.addEventListener('click', (e)=>{
+  const wrap = document.getElementById('admin-avatar-wrap');
+  if(wrap && !wrap.contains(e.target)) closeAdminMenu();
+});
 
 function initiatePayment(){
   if(!cart.length){toast('Your cart is empty.');return;}

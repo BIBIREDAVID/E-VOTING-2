@@ -101,9 +101,9 @@ function createPasswordMaterial(password) {
 // ── Firestore collections ────────────────────────────────────────────────────
 const COL = {
   categories: 'categories',
-  nominees: 'nominees',       // subcollection of categories
+  nominees: 'nominees',
   transactions: 'transactions',
-  voteItems: 'voteItems',     // subcollection of transactions
+  voteItems: 'voteItems',
   admins: 'admins',
   sessions: 'sessions',
 };
@@ -113,28 +113,34 @@ async function checkRateLimit(ip, endpoint, maxRequests, windowSeconds) {
   const key = `${endpoint}_${ip.replace(/[^a-zA-Z0-9]/g, '_')}`;
   const now = Date.now();
   const windowStart = now - (windowSeconds * 1000);
-  
+
   const ref = db.collection('rateLimits').doc(key);
   const doc = await ref.get();
-  
+
   if (!doc.exists) {
-    await ref.set({ requests: [now], endpoint, ip });
+    await ref.set({ requests: [now], endpoint, ip, updatedAt: now });
     return { allowed: true, remaining: maxRequests - 1 };
   }
-  
+
   const data = doc.data();
   const requests = (data.requests || []).filter(t => t > windowStart);
-  
+
   if (requests.length >= maxRequests) {
     return { allowed: false, remaining: 0 };
   }
-  
+
   requests.push(now);
   await ref.set({ requests, endpoint, ip, updatedAt: now });
   return { allowed: true, remaining: maxRequests - requests.length };
 }
 
-
+async function cleanupRateLimits() {
+  const cutoff = Date.now() - (3600 * 1000);
+  const snap = await db.collection('rateLimits').where('updatedAt', '<', cutoff).limit(50).get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  if (!snap.empty) await batch.commit();
+}
 
 // ── State collector ──────────────────────────────────────────────────────────
 async function collectState() {
@@ -197,7 +203,7 @@ async function seedAdminIfMissing() {
   const seedPassword = String(process.env.ADMIN_SEED_PASSWORD || 'admin@1234');
 
   const snap = await db.collection(COL.admins).limit(1).get();
-  if (!snap.empty) return; // already have at least one admin
+  if (!snap.empty) return;
 
   const { salt, hash } = createPasswordMaterial(seedPassword);
   await db.collection(COL.admins).add({
@@ -223,6 +229,22 @@ function clearSessionCookie(response) {
     'Set-Cookie',
     'admin_session=; HttpOnly; Path=/; SameSite=Lax; Max-Age=0'
   );
+}
+
+// ── Activity logging ─────────────────────────────────────────────────────────
+async function logAdminActivity(adminId, username, action, details, req) {
+  try {
+    await db.collection('adminLogs').add({
+      adminId,
+      username,
+      action,
+      details: details || {},
+      ip: req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown',
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    console.error('logAdminActivity error:', e);
+  }
 }
 
 async function issueSession(adminId, response) {
@@ -271,16 +293,16 @@ async function handlePublicStateApi(req, res) {
   if ((req.method || 'GET') !== 'GET')
     return sendJson(res, 405, { success: false, message: 'Method not allowed' });
   const state = await collectState();
- return sendJson(res, 200, {
-  categories: state.categories.map(cat => ({
-    id: cat.id,
-    name: cat.name,
-    price: cat.price,
-    open: cat.open,
-    nominees: cat.nominees,
-    nomineeCount: cat.nominees.length,
-  })),
-});
+  return sendJson(res, 200, {
+    categories: state.categories.map(cat => ({
+      id: cat.id,
+      name: cat.name,
+      price: cat.price,
+      open: cat.open,
+      nominees: cat.nominees,
+      nomineeCount: cat.nominees.length,
+    })),
+  });
 }
 
 async function handleConfigApi(req, res) {
@@ -307,13 +329,11 @@ async function handleCategoriesApi(req, res, body) {
     return true;
   };
 
-  // GET /api/categories
   if (method === 'GET' && parts.length === 2) {
     if (!requireAdmin()) return;
     return sendJson(res, 200, await collectState());
   }
 
-  // POST /api/categories/bulk-status
   if (method === 'POST' && parts.length === 3 && parts[2] === 'bulk-status') {
     if (!requireAdmin()) return;
     const payload = parseJson(body);
@@ -325,10 +345,10 @@ async function handleCategoriesApi(req, res, body) {
       batch.update(doc.ref, { open: payload.open, updatedAt: admin.firestore.FieldValue.serverTimestamp() })
     );
     await batch.commit();
+    await logAdminActivity(currentAdmin.id, currentAdmin.username, payload.open ? 'OPEN_ALL_CATEGORIES' : 'CLOSE_ALL_CATEGORIES', {}, req);
     return sendJson(res, 200, await collectState());
   }
 
-  // POST /api/categories
   if (method === 'POST' && parts.length === 2) {
     if (!requireAdmin()) return;
     const payload = parseJson(body);
@@ -346,16 +366,15 @@ async function handleCategoriesApi(req, res, body) {
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+    await logAdminActivity(currentAdmin.id, currentAdmin.username, 'ADD_CATEGORY', { name, price }, req);
     return sendJson(res, 201, await collectState());
   }
 
-  // /api/categories/:id
   if (parts.length >= 3) {
     const categoryId = parts[2];
     if (!categoryId) return sendJson(res, 400, { success: false, message: 'Invalid category id' });
     const catRef = db.collection(COL.categories).doc(categoryId);
 
-    // PATCH /api/categories/:id
     if (method === 'PATCH' && parts.length === 3) {
       if (!requireAdmin()) return;
       const catDoc = await catRef.get();
@@ -363,8 +382,14 @@ async function handleCategoriesApi(req, res, body) {
 
       const payload = parseJson(body);
       const updates = { updatedAt: admin.firestore.FieldValue.serverTimestamp() };
+      const logDetails = { categoryId, name: catDoc.data().name };
+      let isOnlyStatusChange = false;
 
-      if (typeof payload.open === 'boolean') updates.open = payload.open;
+      if (typeof payload.open === 'boolean') {
+        updates.open = payload.open;
+        logDetails.openChanged = payload.open;
+        isOnlyStatusChange = true;
+      }
       if (payload.name !== undefined) {
         const name = normalizeName(payload.name);
         if (!name) return sendJson(res, 400, { success: false, message: 'Category name is required' });
@@ -372,29 +397,41 @@ async function handleCategoriesApi(req, res, body) {
         if (!dup.empty && dup.docs[0].id !== categoryId)
           return sendJson(res, 409, { success: false, message: 'Category already exists' });
         updates.name = name;
+        logDetails.renamedTo = name;
+        isOnlyStatusChange = false;
       }
-      if (payload.price !== undefined) updates.price = Number(payload.price) || 0;
+      if (payload.price !== undefined) {
+        updates.price = Number(payload.price) || 0;
+        logDetails.newPrice = updates.price;
+        isOnlyStatusChange = false;
+      }
 
       await catRef.update(updates);
+
+      const action = isOnlyStatusChange
+        ? (payload.open ? 'OPEN_CATEGORY' : 'CLOSE_CATEGORY')
+        : 'UPDATE_CATEGORY';
+      await logAdminActivity(currentAdmin.id, currentAdmin.username, action, logDetails, req);
+
       return sendJson(res, 200, await collectState());
     }
 
-    // DELETE /api/categories/:id
     if (method === 'DELETE' && parts.length === 3) {
       if (!requireAdmin()) return;
       const catDoc = await catRef.get();
       if (!catDoc.exists) return sendJson(res, 404, { success: false, message: 'Category not found' });
 
-      // Delete all nominees subcollection
       const nomsSnap = await catRef.collection(COL.nominees).get();
       const batch = db.batch();
       nomsSnap.docs.forEach(d => batch.delete(d.ref));
       batch.delete(catRef);
       await batch.commit();
+
+      await logAdminActivity(currentAdmin.id, currentAdmin.username, 'DELETE_CATEGORY', { name: catDoc.data().name }, req);
+
       return sendJson(res, 200, await collectState());
     }
 
-    // POST /api/categories/:id/nominees
     if (method === 'POST' && parts.length === 4 && parts[3] === 'nominees') {
       if (!requireAdmin()) return;
       const catDoc = await catRef.get();
@@ -414,10 +451,12 @@ async function handleCategoriesApi(req, res, body) {
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
+
+      await logAdminActivity(currentAdmin.id, currentAdmin.username, 'ADD_NOMINEE', { category: catDoc.data().name, nominee: name }, req);
+
       return sendJson(res, 201, await collectState());
     }
 
-    // DELETE /api/categories/:id/nominees/:name
     if (method === 'DELETE' && parts.length === 5 && parts[3] === 'nominees') {
       if (!requireAdmin()) return;
       const catDoc = await catRef.get();
@@ -430,6 +469,9 @@ async function handleCategoriesApi(req, res, body) {
         .limit(1)
         .get();
       if (!nomsSnap.empty) await nomsSnap.docs[0].ref.delete();
+
+      await logAdminActivity(currentAdmin.id, currentAdmin.username, 'DELETE_NOMINEE', { category: catDoc.data().name, nominee: nomineeName }, req);
+
       return sendJson(res, 200, await collectState());
     }
   }
@@ -451,17 +493,16 @@ async function handleAdminApi(req, res, body) {
     return { username, password };
   };
 
-  // GET /api/admin/status
   if (method === 'GET' && action === 'status') {
     const snap = await db.collection(COL.admins).limit(1).get();
     return sendJson(res, 200, {
       bootstrapRequired: snap.empty,
       authenticated: Boolean(currentAdmin),
       username: currentAdmin ? currentAdmin.username : null,
+      adminId: currentAdmin ? currentAdmin.id : null,
     });
   }
 
-  // POST /api/admin/login
   if (method === 'POST' && action === 'login') {
     const payload = parseJson(body);
     const username = String(payload.username || '').trim();
@@ -480,20 +521,22 @@ async function handleAdminApi(req, res, body) {
       return sendJson(res, 401, { success: false, message: 'Invalid credentials' });
 
     await issueSession(adminDoc.id, res);
+    await logAdminActivity(adminDoc.id, data.username, 'LOGIN', {}, req);
     return sendJson(res, 200, { success: true, message: 'Logged in' });
   }
 
-  // POST /api/admin/logout
   if (method === 'POST' && action === 'logout') {
     const cookies = parseCookies(req);
     if (cookies.admin_session) {
       await db.collection(COL.sessions).doc(cookies.admin_session).delete().catch(() => {});
     }
+    if (currentAdmin) {
+      await logAdminActivity(currentAdmin.id, currentAdmin.username, 'LOGOUT', {}, req);
+    }
     clearSessionCookie(res);
     return sendJson(res, 200, { success: true, message: 'Logged out' });
   }
 
-  // POST /api/admin/create-account
   if (method === 'POST' && action === 'create-account') {
     const creds = parseCredentials();
     if (creds.error) return sendJson(res, 400, { success: false, message: creds.error });
@@ -510,10 +553,10 @@ async function handleAdminApi(req, res, body) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
     await issueSession(created.id, res);
+    await logAdminActivity(created.id, creds.username, 'CREATE_ACCOUNT', {}, req);
     return sendJson(res, 201, { success: true, message: 'Admin account created' });
   }
 
-  // POST /api/admin/reset
   if (method === 'POST' && action === 'reset') {
     const creds = parseCredentials();
     if (creds.error) return sendJson(res, 400, { success: false, message: creds.error });
@@ -530,6 +573,7 @@ async function handleAdminApi(req, res, body) {
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
       await issueSession(created.id, res);
+      await logAdminActivity(created.id, creds.username, 'CREATE_ACCOUNT', {}, req);
       return sendJson(res, 201, { success: true, message: 'Admin account created' });
     }
 
@@ -545,10 +589,10 @@ async function handleAdminApi(req, res, body) {
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
     await issueSession(firstAdmin.id, res);
+    await logAdminActivity(firstAdmin.id, creds.username, 'RESET_ADMIN', {}, req);
     return sendJson(res, 200, { success: true, message: 'Admin account reset' });
   }
 
-  // POST /api/admin/change-credentials
   if (method === 'POST' && action === 'change-credentials') {
     if (!currentAdmin) return sendJson(res, 401, { success: false, message: 'Admin login required' });
 
@@ -569,7 +613,65 @@ async function handleAdminApi(req, res, body) {
       passwordHash: hash,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
+
+    await logAdminActivity(currentAdmin.id, currentAdmin.username, 'CHANGE_CREDENTIALS', { newUsername: username }, req);
+
     return sendJson(res, 200, { success: true, message: 'Credentials updated' });
+  }
+
+  if (method === 'GET' && action === 'logs') {
+    if (!currentAdmin) return sendJson(res, 401, { success: false, message: 'Admin login required' });
+    const snap = await db.collection('adminLogs').orderBy('createdAt', 'desc').limit(100).get();
+    const logs = snap.docs.map(d => {
+      const data = d.data();
+      return {
+        id: d.id,
+        username: data.username,
+        action: data.action,
+        details: data.details,
+        ip: data.ip,
+        createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
+      };
+    });
+    return sendJson(res, 200, { success: true, logs });
+  }
+
+  if (method === 'GET' && action === 'list') {
+    if (!currentAdmin) return sendJson(res, 401, { success: false, message: 'Admin login required' });
+    const snap = await db.collection(COL.admins).orderBy('createdAt', 'asc').get();
+    const admins = snap.docs.map(d => ({ id: d.id, username: d.data().username }));
+    return sendJson(res, 200, { success: true, admins, currentAdminId: currentAdmin.id });
+  }
+
+  if (method === 'POST' && action === 'invite') {
+    if (!currentAdmin) return sendJson(res, 401, { success: false, message: 'Admin login required' });
+    const creds = parseCredentials();
+    if (creds.error) return sendJson(res, 400, { success: false, message: creds.error });
+
+    const dup = await db.collection(COL.admins).where('username', '==', creds.username).limit(1).get();
+    if (!dup.empty) return sendJson(res, 409, { success: false, message: 'Username already exists' });
+
+    const { salt, hash } = createPasswordMaterial(creds.password);
+    await db.collection(COL.admins).add({
+      username: creds.username,
+      passwordSalt: salt,
+      passwordHash: hash,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+    await logAdminActivity(currentAdmin.id, currentAdmin.username, 'INVITE_ADMIN', { newUsername: creds.username }, req);
+    return sendJson(res, 201, { success: true, message: 'Admin account created' });
+  }
+
+  if (method === 'DELETE' && action && !['logs', 'list', 'status'].includes(action)) {
+    if (!currentAdmin) return sendJson(res, 401, { success: false, message: 'Admin login required' });
+    const targetId = action;
+    if (targetId === currentAdmin.id) return sendJson(res, 400, { success: false, message: 'Cannot delete your own account' });
+    const targetDoc = await db.collection(COL.admins).doc(targetId).get();
+    if (!targetDoc.exists) return sendJson(res, 404, { success: false, message: 'Admin not found' });
+    await db.collection(COL.admins).doc(targetId).delete();
+    await logAdminActivity(currentAdmin.id, currentAdmin.username, 'DELETE_ADMIN', { deletedUsername: targetDoc.data().username }, req);
+    return sendJson(res, 200, { success: true, message: 'Admin removed' });
   }
 
   return sendJson(res, 404, { success: false, message: 'Not found' });
@@ -644,19 +746,17 @@ async function recordVerifiedPayment({ transactionRef, email, amount, customerNa
   if (!email) throw new Error('No email in verified transaction');
   if (!Array.isArray(cart) || !cart.length) throw new Error('No vote selections supplied');
 
-  // Recalculate expected amount from DB prices
-  let expectedKobo = 50 * 100; // platform fee in kobo
+  let expectedKobo = 50 * 100;
   for (const item of cart) {
-  const catDoc = await db.collection(COL.categories).doc(item.categoryId).get();
-  if (!catDoc.exists) throw new Error(`Category ${item.categoryId} not found`);
-  const totalVotes = item.votes.reduce((sum, v) => sum + v.votes, 0);
-  expectedKobo += (Number(catDoc.data().price) || 0) * totalVotes * 100;
-}
+    const catDoc = await db.collection(COL.categories).doc(item.categoryId).get();
+    if (!catDoc.exists) throw new Error(`Category ${item.categoryId} not found`);
+    const totalVotes = item.votes.reduce((sum, v) => sum + v.votes, 0);
+    expectedKobo += (Number(catDoc.data().price) || 0) * totalVotes * 100;
+  }
   if (Number(amount) !== expectedKobo) {
-    throw new Error(`Amount mismatch. Expected ₦${expectedKobo/100}, received ₦${Number(amount)/100}`);
-}
+    throw new Error(`Amount mismatch. Expected ₦${expectedKobo / 100}, received ₦${Number(amount) / 100}`);
+  }
 
-  // Check duplicate
   const existingSnap = await db.collection(COL.transactions).where('reference', '==', transactionRef).limit(1).get();
   if (!existingSnap.empty) {
     const txId = existingSnap.docs[0].id;
@@ -664,7 +764,6 @@ async function recordVerifiedPayment({ transactionRef, email, amount, customerNa
     return { duplicate: true, items: itemsSnap.docs.map(d => d.data()) };
   }
 
-  // Write transaction + vote items + update nominee vote counts in a batch
   const txRef = await db.collection(COL.transactions).add({
     reference: transactionRef,
     email: email.trim().toLowerCase(),
@@ -732,7 +831,8 @@ async function handlePaymentVerification(req, res, body) {
     return sendJson(res, 200, {
       success: true,
       message: receipt.duplicate ? 'Payment already processed' : 'Payment verified and votes recorded',
-    data: { transactionRef: verified.transactionRef || reference, duplicate: receipt.duplicate, items: receipt.items },    });
+      data: { transactionRef: verified.transactionRef || reference, duplicate: receipt.duplicate, items: receipt.items },
+    });
   } catch (error) {
     return sendJson(res, 400, { success: false, message: error.message || 'Payment verification failed' });
   }
@@ -744,7 +844,6 @@ async function handleWebhook(req, res, rawBody) {
       return sendJson(res, 401, { success: false, message: 'Invalid webhook signature' });
 
     const payload = parseJson(rawBody);
-    console.log('WEBHOOK PAYLOAD:', JSON.stringify(payload));
     const verified = getVerifiedPayloadShape(payload);
     const cart = extractCart(verified.metadata || payload);
     if (!verified.transactionRef) return sendJson(res, 400, { success: false, message: 'Missing transaction reference' });
@@ -779,32 +878,36 @@ const server = http.createServer(async (req, res) => {
     if (pathname === '/api/public-state') return handlePublicStateApi(req, res);
 
     if (pathname.startsWith('/api/admin')) {
-  if (pathname === '/api/admin/login' && req.method === 'POST') {
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-    const limit = await checkRateLimit(ip, 'admin_login', 5, 60);
-    if (!limit.allowed) {
-      return sendJson(res, 429, { success: false, message: 'Too many login attempts. Please wait 1 minute.' });
+      if (pathname === '/api/admin/login' && req.method === 'POST') {
+        const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+        const limit = await checkRateLimit(ip, 'admin_login', 5, 60);
+        if (!limit.allowed) {
+          return sendJson(res, 429, { success: false, message: 'Too many login attempts. Please wait 1 minute.' });
+        }
+      }
+      const body = req.method === 'GET' ? '' : await readBody(req);
+      return handleAdminApi(req, res, body);
     }
-  }
-  const body = req.method === 'GET' ? '' : await readBody(req);
-  return handleAdminApi(req, res, body);
-}
+
     if (pathname.startsWith('/api/categories')) {
       const body = req.method === 'GET' ? '' : await readBody(req);
       return handleCategoriesApi(req, res, body);
     }
-   if (pathname === '/api/payments/verify' && req.method === 'POST') {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
-  const limit = await checkRateLimit(ip, 'payment_verify', 10, 60);
-  if (!limit.allowed) {
-    return sendJson(res, 429, { success: false, message: 'Too many requests. Please wait a moment.' });
-  }
-  return handlePaymentVerification(req, res, await readBody(req));
-}
-if (Math.random() < 0.01) cleanupRateLimits().catch(console.error);
+
+    if (pathname === '/api/payments/verify' && req.method === 'POST') {
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+      const limit = await checkRateLimit(ip, 'payment_verify', 10, 60);
+      if (!limit.allowed) {
+        return sendJson(res, 429, { success: false, message: 'Too many requests. Please wait a moment.' });
+      }
+      return handlePaymentVerification(req, res, await readBody(req));
+    }
+
     if (pathname === '/api/webhooks/squad' && req.method === 'POST') {
       return handleWebhook(req, res, await readBody(req));
     }
+
+    if (Math.random() < 0.01) cleanupRateLimits().catch(console.error);
 
     if (pathname === '/' || pathname === '/index.html') {
       const html = await fsp.readFile(INDEX_PATH, 'utf8');
