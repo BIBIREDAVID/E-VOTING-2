@@ -719,6 +719,7 @@ function showPage(p){
   if(p==='cart') renderCart();
   if(p==='results') renderResults();
   history.pushState({page:p}, '', p==='vote' ? '#vote/'+toSlug(categories[currentCatIdx]?.name||'') : '#'+p);
+}
 
 async function handleAdminNav(){
   if(!adminAuth){
@@ -1407,7 +1408,7 @@ async function bootstrap(){
     }).catch(error=>console.warn(error));
   },15000);
 }
-}
+
 window.addEventListener('popstate', ()=>{
   handleUrlRoute();
 });
