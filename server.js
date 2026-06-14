@@ -674,7 +674,29 @@ async function handleAdminApi(req, res, body) {
     return sendJson(res, 200, { success: true, message: 'Admin removed' });
   }
 
-  return sendJson(res, 404, { success: false, message: 'Not found' });
+  // GET /api/admin/transactions
+if (method === 'GET' && action === 'transactions') {
+  if (!currentAdmin) return sendJson(res, 401, { success: false, message: 'Admin login required' });
+  const snap = await db.collection(COL.transactions).orderBy('createdAt', 'desc').limit(100).get();
+  const txs = await Promise.all(snap.docs.map(async d => {
+    const data = d.data();
+    const itemsSnap = await db.collection(COL.transactions).doc(d.id).collection(COL.voteItems).get();
+    const items = itemsSnap.docs.map(i => i.data());
+    return {
+      id: d.id,
+      reference: data.reference,
+      email: data.email,
+      customerName: data.customerName || '',
+      amount: data.amount,
+      status: data.status,
+      items,
+      createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : null,
+    };
+  }));
+  return sendJson(res, 200, { success: true, transactions: txs });
+}
+
+return sendJson(res, 404, { success: false, message: 'Not found' });
 }
 
 // ── Payment ───────────────────────────────────────────────────────────────────
