@@ -716,8 +716,7 @@ function showPage(p){
   if(p==='admin-transactions' && adminAuth) renderTransactions();
   if(p==='cart') renderCart();
   if(p==='results') renderResults();
-  history.pushState({page:p}, '', '#'+p);
-}
+  history.pushState({page:p}, '', p==='vote' ? '#vote/'+toSlug(categories[currentCatIdx]?.name||'') : '#'+p);
 
 async function handleAdminNav(){
   if(!adminAuth){
@@ -1376,6 +1375,16 @@ if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
   }catch(e){toast('Could not load Squad. Check your API key.'); console.error(e);}
 }
 
+function handleUrlRoute(){
+  const hash = location.hash.slice(1);
+  if(hash.startsWith('vote/')){
+    const name = fromSlug(decodeURIComponent(hash.split('/')[1]));
+    const idx = categories.findIndex(c=>c.name===name);
+    if(idx !== -1){ openVote(idx); return; }
+  }
+  showPage(hash || 'home');
+}
+
 async function bootstrap(){
   await loadConfig();
   await loadPublicState().catch(error=>console.warn(error));
@@ -1383,7 +1392,8 @@ async function bootstrap(){
   updateCartBadge();
   syncRestrictedUi();
   syncLoginUi();
-  showPage('home');
+  const hash = location.hash.slice(1);
+  if(hash){ handleUrlRoute(); } else { showPage('home'); }
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer=setInterval(()=>{
     if(!adminAuth) return;
@@ -1396,9 +1406,9 @@ async function bootstrap(){
   },15000);
 }
 
-window.addEventListener('popstate', (e)=>{
-  const p = e.state?.page || location.hash.slice(1) || 'polls';
-  showPage(p);
+window.addEventListener('popstate', ()=>{
+  handleUrlRoute();
 });
+
 bootstrap();
 </script>
