@@ -1358,10 +1358,10 @@ if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
             body: JSON.stringify(payload)
           });
           const receiptItems = result.data?.items || [];
-          const ref = result.data?.transactionRef || ref;
+          const transactionRef = result.data?.transactionRef || ref;
           const userEmail = email;
           cart=[]; updateCartBadge(); await loadPublicState(); renderPolls();
-          renderReceipt(receiptItems, ref, userEmail);
+          renderReceipt(receiptItems, transactionRef, userEmail);
           showPage('receipt');
           toast('Payment verified and votes recorded!');
         }catch(error){
@@ -1408,7 +1408,6 @@ async function bootstrap(){
   },15000);
 }
 }
-
 window.addEventListener('popstate', ()=>{
   handleUrlRoute();
 });
