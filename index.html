@@ -43,7 +43,7 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .cart-wrap{position:relative}
 .cart-badge{position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700}
 .main{flex:1}
-.page{display:none;padding:20px 16px}
+.page{display:none;padding:20px 16px;min-height:calc(100vh - 56px)}
 .page.active{display:block}
 
 /* TOAST */
@@ -235,7 +235,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
   <!-- HOME -->
 <div class="page" id="page-home">
-<div style="background:linear-gradient(135deg,#0a0520 0%,#1a0a3c 50%,#2d1666 100%);min-height:70vh;display:flex;align-items:center;padding:60px 40px;margin:-20px -16px 0">
+<div style="background:linear-gradient(135deg,#0a0520 0%,#1a0a3c 50%,#2d1666 100%);min-height:70vh;display:flex;align-items:center;padding:60px 40px;margin:-20px -16px 0;overflow:hidden">
   <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap">
     <div style="flex:1;display:flex;align-items:center;justify-content:center;min-width:200px">
       <img src="https://i.imgur.com/l0UUSyA.png" alt="NACOS Logo" style="width:clamp(150px,30vw,320px);height:clamp(150px,30vw,320px);object-fit:contain;filter:drop-shadow(0 8px 40px rgba(108,63,197,0.5))" />
