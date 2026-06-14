@@ -156,9 +156,12 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .price-row input{width:85px;padding:6px 9px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);background:var(--input-bg)}
 .edit-name-row input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);background:var(--input-bg)}
 .tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:6px;background:var(--pu-light);color:var(--pu);font-weight:700}
-.stat-card{background:var(--stat-bg);border-radius:9px;padding:12px 14px}
-.stat-card .sc-label{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:4px}
-.stat-card .sc-val{font-size:22px;font-weight:700;color:var(--text)}.export-row{display:flex;gap:7px;flex-wrap:wrap}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.stat-card{background:var(--stat-bg);border:1.5px solid var(--border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.stat-card .sc-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
+.stat-card .sc-val{font-size:28px;font-weight:700;color:var(--text);line-height:1}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr}}
+.export-row{display:flex;gap:7px;flex-wrap:wrap}
 
 /* FOOTER */
 footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
