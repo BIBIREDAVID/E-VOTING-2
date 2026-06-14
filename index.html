@@ -19,7 +19,7 @@
   --input-bg:#fff;--bar-bg:#f0ebfa;--stat-bg:#f7f5ff;--cat-body-bg:#f7f5ff;
   --closed-bg:#faeeda;--closed-color:#854f0b;--winner-bg:#ede8fa;--winner-color:#4a2a8a;
 }
-/* @media(prefers-color-scheme:dark){
+@media(prefers-color-scheme:dark){
   :root{
     --bg:#0e0820;--surface:#1a1030;--surface-alt:#130d27;--border:#2e2050;
     --border-soft:#251840;--border-mid:#2e2050;--border-avatar:#3d2a70;
@@ -29,18 +29,18 @@
     --pu-light:#2d1f55;--closed-bg:#3a2500;--closed-color:#ffb347;
     --winner-bg:#2d1f55;--winner-color:#c4a8ff;
   }
-} */
-body{font-family:var(--font-sans);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;color:var(--text)}
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);min-height:100vh;display:flex;flex-direction:column;color:var(--text)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
 nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100}
 .nav-logo{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--text);text-decoration:none;cursor:default}
 .logo-mark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
 .logo-mark img,.lmark img,.logo-mark-f img{width:100%;height:100%;object-fit:contain;display:block;border-radius:inherit}
-.nav-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.nav-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
 .nav-btn{padding:6px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-nav);background:var(--surface);cursor:pointer;transition:all 0.15s;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:5px}
 .nav-btn:hover{border-color:var(--pu);color:var(--pu);background:var(--pu-light)}
 .nav-btn.active{background:var(--pu);color:#fff;border-color:var(--pu)}
-.cart-wrap{position:relative}
+.cart-wrap{position:relative;flex-shrink:0}
 .cart-badge{position:absolute;top:-6px;right:-6px;background:#e24b4a;color:#fff;border-radius:50%;width:17px;height:17px;font-size:9px;display:none;align-items:center;justify-content:center;font-weight:700}
 .main{flex:1}
 .page{display:none;padding:20px 16px;min-height:calc(100vh - 56px)}
@@ -51,6 +51,7 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* POLLS */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap}
 .page-header h2{font-size:16px;font-weight:700;color:var(--text)}
 .page-header p{font-size:12px;color:var(--text-muted);margin-top:2px}
 .search-bar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1.5px solid var(--border);border-radius:9px;padding:6px 12px;min-width:200px}
@@ -76,9 +77,12 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .nominees-lbl{font-size:11px;color:var(--text-muted);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
 .nom-row{display:flex;align-items:center;gap:12px;padding:11px 13px;border:1.5px solid var(--border-mid);border-radius:10px;margin-bottom:7px;background:var(--surface);transition:border-color 0.15s}
 .nom-avatar{width:36px;height:36px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--pu);flex-shrink:0;border:1.5px solid var(--border-avatar)}
+.nom-info{flex:1;min-width:0}
 .nom-name{font-size:13px;font-weight:600;color:var(--text)}
 .nom-sub{font-size:11px;color:var(--text-muted)}
-.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--border-avatar);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-nav);transition:all 0.1s}
+.counter{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.c-btn{width:28px;height:28px;border-radius:7px;border:1.5px solid var(--border-avatar);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text-nav);transition:all 0.1s;flex-shrink:0}
+.c-btn:hover{border-color:var(--pu);color:var(--pu)}
 .c-val{width:30px;text-align:center;font-size:13px;font-weight:700;color:var(--text)}
 .vote-summary{background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;margin-top:14px}
 .summary-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;color:var(--text-muted)}
@@ -86,6 +90,11 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .add-cart-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-top:11px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:7px}
 .add-cart-btn:hover{background:var(--pu-dark)}
 .add-cart-btn:disabled{opacity:0.35;cursor:not-allowed}
+
+/* share link row on vote page */
+.vote-share-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding:9px 12px;background:var(--surface-alt);border:1.5px solid var(--border);border-radius:8px}
+.vote-share-row span{font-size:11px;color:var(--text-muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vote-share-row button{padding:5px 10px;background:var(--pu);color:#fff;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;gap:4px;flex-shrink:0}
 
 /* CART */
 .cart-inner{max-width:540px;margin:0 auto}
@@ -104,32 +113,55 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .checkout-form h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:11px}
 .cf-row input{flex:1;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--input-bg);min-width:0}
 .squad-badge{font-size:11px;color:var(--text-muted);text-align:center;margin-top:7px}
+.pay-btn{width:100%;padding:11px;background:var(--vote-now-bg);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:background 0.15s}
+.pay-btn:hover{background:var(--vote-now-hover)}
 
 /* RESULTS PAGE */
 .results-inner{max-width:680px;margin:0 auto}
 .results-cat{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:12px}
+.results-cat-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .results-cat-head h3{font-size:14px;font-weight:700;color:var(--text)}
 .results-cat-head span{font-size:11px;color:var(--text-muted)}
-.result-bar-top .rbn{font-weight:600;color:var(--text)}
-.result-bar-top .rbv{color:var(--text-muted)}
+.result-bar-row{margin-bottom:10px}
+.result-bar-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:4px}
+.result-bar-top .rbn{font-weight:600;color:var(--text);font-size:13px}
+.result-bar-top .rbv{color:var(--text-muted);font-size:12px}
 .result-bar-bg{background:var(--bar-bg);border-radius:99px;height:8px;overflow:hidden}
+.result-bar-fill{height:100%;background:var(--pu);border-radius:99px;transition:width 0.4s ease}
+.result-bar-fill.top{background:linear-gradient(90deg,var(--pu),var(--pu-mid))}
 .winner-badge{display:inline-flex;align-items:center;gap:4px;background:var(--winner-bg);color:var(--winner-color);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-left:7px}
 .results-empty{text-align:center;padding:50px;color:var(--text-muted);font-size:13px}
 
 /* ADMIN LOGIN */
 .login-wrap{min-height:calc(100vh - 100px);display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .login-split{display:grid;grid-template-columns:1fr 1fr;max-width:740px;width:100%;border-radius:18px;overflow:hidden;border:1.5px solid var(--border)}
+.login-left{background:linear-gradient(135deg,#1a0a3c,#2d1666);padding:40px 32px;display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+.login-left-logo{display:flex;align-items:center;gap:8px;margin-bottom:20px}
+.lmark{width:32px;height:32px;background:var(--pu);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0}
+.login-left-logo span{font-size:12px;font-weight:700;color:#fff}
+.login-left h2{font-size:22px;font-weight:800;color:#fff;margin-bottom:8px}
+.login-left p{font-size:13px;color:rgba(255,255,255,0.6);line-height:1.7}
+.login-secure-box{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:14px}
+.sb-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.login-secure-box p{font-size:11px;color:rgba(255,255,255,0.5);line-height:1.6}
 .login-right{background:var(--surface);padding:40px 32px;display:flex;flex-direction:column;justify-content:center}
 .login-avatar{width:50px;height:50px;border-radius:50%;background:var(--pu-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;border:2px solid var(--border-avatar)}
+.login-mode{text-align:center;font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:6px}
 .login-right h3{text-align:center;font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
 .login-sub{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:22px}
-.login-field label{display:block;font-size:11px;font-weight:700;color:var(--text-nav);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
-.login-field input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;color:var(--text);background:var(--input-bg);transition:border-color 0.15s}
-.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-muted);padding:4px 6px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 2px 8px rgba(26,10,60,.06)}
 .login-status{display:none;align-items:center;gap:7px;font-size:12px;color:var(--text-muted);margin-bottom:12px}
+.login-status.show{display:flex}
+.login-error{display:none;align-items:center;gap:7px;font-size:12px;color:#e24b4a;margin-bottom:12px;background:#fdeaea;padding:8px 12px;border-radius:8px;border:1px solid #fca5a5}
+.login-error.show{display:flex}
+.login-field{margin-bottom:14px}
+.login-field label{display:block;font-size:11px;font-weight:700;color:var(--text-nav);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em}
+.login-field input{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;color:var(--text);background:var(--input-bg);transition:border-color 0.15s;outline:none}
+.login-field input:focus{border-color:var(--pu)}
+.pw-wrap{position:relative}
+.pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--text-muted);padding:4px 6px;display:flex;align-items:center;justify-content:center;z-index:2}
+.sign-in-btn{width:100%;padding:11px;background:var(--pu);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;transition:background 0.15s}
+.sign-in-btn:hover{background:var(--pu-dark)}
 .login-hint{text-align:center;font-size:11px;color:var(--text-muted);margin-top:12px}
-.login-actions .a-btn.secondary{background:var(--surface);color:var(--pu);border:1.5px solid var(--pu)}
-.login-actions .a-btn.secondary:hover{background:var(--pu-light)}
 
 /* ADMIN PANEL */
 .admin-inner{max-width:680px;margin:0 auto}
@@ -146,7 +178,7 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .a-btn.danger{background:var(--surface);color:#e24b4a;border:1.5px solid #e24b4a}
 .a-form-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .a-form-row input{flex:1;min-width:110px;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:var(--input-bg)}
-.a-key-row input{flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:var(--font-mono);background:var(--surface-alt);color:var(--text);width:100%}
+.a-key-row input{flex:1;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:monospace;background:var(--surface-alt);color:var(--text);width:100%}
 .key-hint{font-size:11px;color:var(--text-muted);margin-top:5px}
 .cat-item{border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
 .cat-header{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;background:var(--surface);gap:8px;flex-wrap:nowrap}
@@ -154,6 +186,9 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .cat-acts{display:flex;align-items:center;gap:5px;flex-shrink:0}
 .cat-title{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cat-meta{font-size:11px;color:var(--text-muted);white-space:nowrap}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot.open{background:#0f6e56}
+.status-dot.closed{background:#e24b4a}
 .sm-btn{padding:5px 10px;border:1.5px solid var(--border);border-radius:6px;font-size:11px;color:var(--text-nav);background:var(--surface);cursor:pointer;font-weight:600;white-space:nowrap;display:inline-flex;align-items:center;gap:3px;transition:all 0.15s}
 .sm-btn:hover{border-color:var(--pu);color:var(--pu)}
 .sm-btn.green{color:#0f6e56;border-color:#0f6e56}
@@ -177,13 +212,6 @@ nav{background:var(--surface);border-bottom:1.5px solid var(--border);padding:0 
 .stat-card .sc-label{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
 .stat-card .sc-val{font-size:28px;font-weight:700;color:var(--text);line-height:1}
 .export-row{display:flex;gap:7px;flex-wrap:wrap}
-@media(max-width:480px){
-  .stats-grid{grid-template-columns:1fr}
-  .cat-meta{display:none}
-  .a-form-row{flex-direction:column;align-items:stretch}
-  .a-form-row input,.a-form-row .a-btn{width:100%}
-}
-.export-row{display:flex;gap:7px;flex-wrap:wrap}
 
 /* FOOTER */
 footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
@@ -201,9 +229,10 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 .footer-credit a{color:#a090c8;text-decoration:none}
 .footer-credit a:hover{color:#fff}
 
+/* RESPONSIVE */
 @media(max-width:580px){
   .login-split{grid-template-columns:1fr}
-  .login-left{padding:24px 20px}
+  .login-left{display:none}
   .login-right{padding:24px 20px}
   .footer-top{grid-template-columns:1fr}
   .nav-btn span{display:none}
@@ -223,23 +252,12 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   .cart-wrap{display:flex !important}
   #page-home .quick-grid{grid-template-columns:1fr !important}
   #quick-access-grid{grid-template-columns:1fr !important}
+  .stats-grid{grid-template-columns:1fr}
+  .cat-meta{display:none}
+  .a-form-row{flex-direction:column;align-items:stretch}
+  .a-form-row input,.a-form-row .a-btn{width:100%}
+  .nav-right{gap:4px}
 }
-.a-btn{
-  padding:8px 14px;
-  background:var(--pu);
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  font-size:13px;
-  font-weight:600;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  white-space:nowrap;
-  transition:background 0.15s;
-}
-.a-btn:hover{background:var(--pu-dark)}
 </style>
 
 <h2 class="sr-only">NACOS-LASU Awards Voting Platform</h2>
@@ -247,25 +265,29 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 
 <div class="main">
 <nav>
-<div class="nav-logo" onclick="showPage('home')" style="cursor:pointer"><div class="logo-mark" id="nav-logo-mark">LA</div> NACOS-LASU Awards</div>  <div class="nav-right">
+  <div class="nav-logo" onclick="showPage('home')" style="cursor:pointer">
+    <div class="logo-mark" id="nav-logo-mark">LA</div>
+    <span>NACOS-LASU Awards</span>
+  </div>
+  <div class="nav-right">
     <button class="nav-btn" id="nb-home" onclick="showPage('home')"><i class="ti ti-home" aria-hidden="true"></i><span>Home</span></button>
     <button class="nav-btn" id="nb-polls" onclick="showPage('polls')"><i class="ti ti-chart-pie" aria-hidden="true"></i><span>Polls</span></button>
     <button class="nav-btn" id="nb-results" onclick="showPage('results')"><i class="ti ti-chart-bar" aria-hidden="true"></i><span>Results</span></button>
 
     <div class="admin-avatar-wrap" id="admin-avatar-wrap" style="display:none;position:relative">
-  <button onclick="toggleAdminMenu()" style="width:36px;height:36px;border-radius:50%;background:var(--pu);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center" id="admin-avatar-btn"></button>
-<div id="admin-menu" style="display:none;position:absolute;top:46px;right:0;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);min-width:200px;z-index:200;overflow:hidden">
-  <div style="padding:12px 16px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-muted)">Logged in as</div>
-  <div style="padding:4px 16px 12px;font-size:13px;font-weight:700;color:var(--text)" id="admin-menu-username"></div>
-  <a onclick="showPage('admin');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer;border-top:1px solid var(--border-soft)">Dashboard</a>
-  <a onclick="showPage('results');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Results</a>
-  <a onclick="showPage('admin-transactions');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Transactions</a>
-  <a onclick="showPage('admin-logs');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Activity Logs</a>
-  <a onclick="showPage('admin-team');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Manage Admins</a>
-  <a onclick="doLogout();closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#e24b4a;cursor:pointer;border-top:1px solid var(--border-soft)">Logout</a>
-</div>
-</div>
-<button class="nav-btn" id="nb-admin" onclick="handleAdminNav()" style="display:none"><i class="ti ti-user" aria-hidden="true"></i><span>Admin</span></button>
+      <button onclick="toggleAdminMenu()" style="width:36px;height:36px;border-radius:50%;background:var(--pu);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center" id="admin-avatar-btn"></button>
+      <div id="admin-menu" style="display:none;position:absolute;top:46px;right:0;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,0.12);min-width:200px;z-index:200;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border-soft);font-size:12px;color:var(--text-muted)">Logged in as</div>
+        <div style="padding:4px 16px 12px;font-size:13px;font-weight:700;color:var(--text)" id="admin-menu-username"></div>
+        <a onclick="showPage('admin');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer;border-top:1px solid var(--border-soft)">Dashboard</a>
+        <a onclick="showPage('results');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Results</a>
+        <a onclick="showPage('admin-transactions');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Transactions</a>
+        <a onclick="showPage('admin-logs');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Activity Logs</a>
+        <a onclick="showPage('admin-team');closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:var(--text);cursor:pointer">Manage Admins</a>
+        <a onclick="doLogout();closeAdminMenu()" style="display:block;padding:10px 16px;font-size:13px;color:#e24b4a;cursor:pointer;border-top:1px solid var(--border-soft)">Logout</a>
+      </div>
+    </div>
+    <button class="nav-btn" id="nb-admin" onclick="handleAdminNav()" style="display:none"><i class="ti ti-user" aria-hidden="true"></i><span>Admin</span></button>
 
     <div class="cart-wrap">
       <button class="nav-btn" id="nb-cart" onclick="showPage('cart')"><i class="ti ti-shopping-cart" aria-hidden="true"></i><span>Cart</span></button>
@@ -274,52 +296,45 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   </div>
 </nav>
 
-  <!-- HOME -->
+<!-- HOME -->
 <div class="page" id="page-home">
-<div style="background:linear-gradient(135deg,#0a0520 0%,#1a0a3c 50%,#2d1666 100%);min-height:70vh;display:flex;align-items:center;padding:60px 40px;margin:-20px -16px 0;overflow:hidden">
-  <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap">
-    <div style="flex:1;display:flex;align-items:center;justify-content:center;min-width:200px">
-      <img src="https://i.imgur.com/l0UUSyA.png" alt="NACOS Logo" style="width:clamp(150px,30vw,320px);height:clamp(150px,30vw,320px);object-fit:contain;filter:drop-shadow(0 8px 40px rgba(108,63,197,0.5))" />
-    </div>
-    <div style="flex:2;min-width:240px">
-      <h1 style="font-size:clamp(24px,5vw,48px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:16px">Vote with confidence.</h1>
-      <p style="font-size:clamp(13px,2vw,15px);color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:32px">A modern voting experience built for secure participation, transparent results, and smooth access across mobile and desktop.</p>
-      <button onclick="showPage('polls')" style="padding:13px 32px;background:#fff;color:#1a0a3c;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer">Start Voting</button>
+  <div style="background:linear-gradient(135deg,#0a0520 0%,#1a0a3c 50%,#2d1666 100%);min-height:70vh;display:flex;align-items:center;padding:60px 40px;margin:-20px -16px 0;overflow:hidden">
+    <div style="max-width:1100px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap">
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;min-width:200px">
+        <img src="https://i.imgur.com/l0UUSyA.png" alt="NACOS Logo" style="width:clamp(150px,30vw,320px);height:clamp(150px,30vw,320px);object-fit:contain;filter:drop-shadow(0 8px 40px rgba(108,63,197,0.5))" />
+      </div>
+      <div style="flex:2;min-width:240px">
+        <h1 style="font-size:clamp(24px,5vw,48px);font-weight:800;color:#fff;line-height:1.2;margin-bottom:16px">Vote with confidence.</h1>
+        <p style="font-size:clamp(13px,2vw,15px);color:rgba(255,255,255,0.6);line-height:1.7;margin-bottom:32px">A modern voting experience built for secure participation, transparent results, and smooth access across mobile and desktop.</p>
+        <button onclick="showPage('polls')" style="padding:13px 32px;background:#fff;color:#1a0a3c;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer">Start Voting</button>
+      </div>
     </div>
   </div>
-</div>
   <div style="max-width:1100px;margin:48px auto;padding:0 16px">
     <div style="font-size:11px;font-weight:700;color:var(--pu);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Quick Access</div>
     <h2 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:24px">Everything you need</h2>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px" id="quick-access-grid">
-      <div onclick="showPage('polls')" style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
-        <div style="width:40px;height:40px;background:#ede8fa;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
-          <i class="ti ti-chart-pie" style="font-size:20px;color:var(--pu)"></i>
-        </div>
-        <div style="font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:6px">Explore Polls</div>
-        <div style="font-size:12px;color:#8b79ad;margin-bottom:14px">Browse active polls and vote securely.</div>
+      <div onclick="showPage('polls')" style="background:var(--surface);border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
+        <div style="width:40px;height:40px;background:var(--pu-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px"><i class="ti ti-chart-pie" style="font-size:20px;color:var(--pu)"></i></div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">Explore Polls</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Browse active polls and vote securely.</div>
         <div style="font-size:12px;font-weight:600;color:var(--pu)">Open →</div>
       </div>
-      <div onclick="showPage('cart')" style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
-        <div style="width:40px;height:40px;background:#ede8fa;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
-          <i class="ti ti-shopping-cart" style="font-size:20px;color:var(--pu)"></i>
-        </div>
-        <div style="font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:6px">Vote Cart</div>
-        <div style="font-size:12px;color:#8b79ad;margin-bottom:14px">Review selected nominees and totals.</div>
+      <div onclick="showPage('cart')" style="background:var(--surface);border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
+        <div style="width:40px;height:40px;background:var(--pu-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px"><i class="ti ti-shopping-cart" style="font-size:20px;color:var(--pu)"></i></div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">Vote Cart</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Review selected nominees and totals.</div>
         <div style="font-size:12px;font-weight:600;color:var(--pu)">Open →</div>
       </div>
-      <div onclick="handleAdminNav()" style="background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
-        <div style="width:40px;height:40px;background:#ede8fa;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px">
-          <i class="ti ti-shield-lock" style="font-size:20px;color:var(--pu)"></i>
-        </div>
-        <div style="font-size:14px;font-weight:700;color:#1a0a3c;margin-bottom:6px">Admin Access</div>
-        <div style="font-size:12px;color:#8b79ad;margin-bottom:14px">Secure dashboard for platform management.</div>
+      <div onclick="handleAdminNav()" style="background:var(--surface);border-radius:12px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,0.07);cursor:pointer;transition:box-shadow 0.18s" onmouseover="this.style.boxShadow='0 6px 24px rgba(0,0,0,0.13)'" onmouseout="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.07)'">
+        <div style="width:40px;height:40px;background:var(--pu-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px"><i class="ti ti-shield-lock" style="font-size:20px;color:var(--pu)"></i></div>
+        <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px">Admin Access</div>
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Secure dashboard for platform management.</div>
         <div style="font-size:12px;font-weight:600;color:var(--pu)">Open →</div>
       </div>
     </div>
   </div>
 </div>
-
 
 <!-- POLLS -->
 <div class="page" id="page-polls">
@@ -359,13 +374,11 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     </div>
     <div class="totals-box" id="totals-box"></div>
     <div class="checkout-form" id="checkout-form-wrap">
-  <div class="cf-row" style="margin-bottom:9px">
-    <input type="email" id="cf-email" placeholder="you@mail.com" style="border-radius:8px;border:1.5px solid var(--border);padding:11px 14px;font-size:13px;width:100%;outline:none;background:var(--input-bg);color:var(--text)" />
-  </div>
-  <button class="pay-btn" onclick="initiatePayment()" style="background:var(--vote-now-bg);border-radius:8px;font-size:14px">
-    Pay with Squad
-  </button>
-</div>
+      <div class="cf-row" style="margin-bottom:9px">
+        <input type="email" id="cf-email" placeholder="you@mail.com" style="border-radius:8px;border:1.5px solid var(--border);padding:11px 14px;font-size:13px;width:100%;outline:none;background:var(--input-bg);color:var(--text)" />
+      </div>
+      <button class="pay-btn" onclick="initiatePayment()">Pay with Squad</button>
+    </div>
   </div>
 </div>
 
@@ -417,7 +430,7 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <h3>Admin Login</h3>
         <p class="login-sub">Enter your credentials to access the panel.</p>
         <div class="login-status" id="login-status"><i class="ti ti-loader-2" aria-hidden="true" style="font-size:14px"></i><span id="login-status-text">Signing in...</span></div>
-        <div class="login-error" id="login-error"><i class="ti ti-alert-circle" aria-hidden="true" style="font-size:14px"></i> Incorrect username or password.</div>
+        <div class="login-error" id="login-error"><i class="ti ti-alert-circle" aria-hidden="true" style="font-size:14px"></i> <span id="login-error-text">Incorrect username or password.</span></div>
         <div class="login-field">
           <label for="login-user">Username</label>
           <input type="text" id="login-user" placeholder="Enter your username" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" />
@@ -453,12 +466,10 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
       <div class="admin-topbar-left"><i class="ti ti-settings" aria-hidden="true" style="font-size:16px;color:var(--pu)"></i> Admin Panel <span class="a-pill">Authenticated</span></div>
       <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout" aria-hidden="true" style="font-size:13px"></i> Logout</button>
     </div>
-
     <div class="a-box">
       <h2><i class="ti ti-chart-pie" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Overview</h2>
       <div class="stats-grid" id="admin-stats"></div>
     </div>
-
     <div class="a-box">
       <h2><i class="ti ti-plus" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Add Category</h2>
       <div class="a-form-row">
@@ -467,7 +478,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <button class="a-btn" onclick="addCategory()"><i class="ti ti-plus" aria-hidden="true" style="font-size:13px"></i> Add</button>
       </div>
     </div>
-
     <div class="a-box">
       <h2><i class="ti ti-list" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Categories <span class="tag" id="cat-count">0</span></h2>
       <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
@@ -476,7 +486,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
       </div>
       <div id="admin-list"></div>
     </div>
-
     <div class="a-box">
       <h2><i class="ti ti-download" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Export</h2>
       <div class="export-row">
@@ -484,7 +493,6 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
         <button class="a-btn secondary" onclick="exportJSON()"><i class="ti ti-braces" aria-hidden="true" style="font-size:13px"></i> Export JSON</button>
       </div>
     </div>
-
     <div class="a-box">
       <h2><i class="ti ti-key" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Change Credentials</h2>
       <div class="a-form-row" style="flex-wrap:wrap">
@@ -553,8 +561,8 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
       </div>
       <div class="footer-col">
         <h4>Navigate</h4>
-        <a id="footer-home-link" onclick="showPage('polls')">Home</a>
-        <a id="footer-polls-link" onclick="showPage('polls')">Polls</a>
+        <a onclick="showPage('home')">Home</a>
+        <a onclick="showPage('polls')">Polls</a>
         <a id="footer-results-link" onclick="showPage('results')">Results</a>
         <a onclick="showPage('cart')">Cart</a>
       </div>
@@ -588,152 +596,109 @@ let loginMode = 'login';
 let loginLoading = false;
 let currentAdminUsername = '';
 
-function setLoginMode(mode){
-  loginMode = mode;
-  syncLoginUi();
+/* ── slug helpers ── */
+function toSlug(str){
+  return str.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+function fromSlug(str){
+  return str.toUpperCase().replace(/-/g,' ');
 }
 
-function apiRequest(path, options = {}) {
-  return fetch(API_BASE + path, {
-    ...options,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(options.headers || {})
-    }
-  }).then(async response => {
-    const text = await response.text();
-    let data = {};
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (error) {
-      data = { message: text };
-    }
-    if (!response.ok) {
-      throw new Error(data.message || `Request failed with status ${response.status}`);
-    }
+function setLoginMode(mode){ loginMode=mode; syncLoginUi(); }
+
+function apiRequest(path, options={}){
+  return fetch(API_BASE+path,{
+    ...options, credentials:'include',
+    headers:{'Content-Type':'application/json',...(options.headers||{})}
+  }).then(async r=>{
+    const text=await r.text();
+    let data={};
+    try{ data=text?JSON.parse(text):{}; }catch(e){ data={message:text}; }
+    if(!r.ok) throw new Error(data.message||`Request failed with status ${r.status}`);
     return data;
   });
 }
 
 function normalizeCategories(data){
-  categories = Array.isArray(data.categories) ? data.categories.map(category => ({
-    id: category.id,
-    name: String(category.name || '').trim().toUpperCase(),
-    price: Number(category.price) || 0,
-    open: Boolean(category.open),
-    nomineeCount: Number(category.nomineeCount) || (Array.isArray(category.nominees) ? category.nominees.length : 0),
-    nominees: Array.isArray(category.nominees) ? category.nominees.map(nominee => String(nominee || '').trim().toUpperCase()).filter(Boolean) : []
-  })) : [];
-  voteRecords = data.voteRecords || {};
+  categories=Array.isArray(data.categories)?data.categories.map(c=>({
+    id:c.id,
+    name:String(c.name||'').trim().toUpperCase(),
+    price:Number(c.price)||0,
+    open:Boolean(c.open),
+    nomineeCount:Number(c.nomineeCount)||(Array.isArray(c.nominees)?c.nominees.length:0),
+    nominees:Array.isArray(c.nominees)?c.nominees.map(n=>String(n||'').trim().toUpperCase()).filter(Boolean):[]
+  })):[];
+  voteRecords=data.voteRecords||{};
 }
 
-async function loadState(){
-  const data = await apiRequest('/state');
-  normalizeCategories(data);
-}
-
-async function loadPublicState(){
-  const data = await apiRequest('/public-state');
-  normalizeCategories(data);
-  voteRecords = {};
-}
-
-async function refreshState(){
-  await loadState();
-  renderPolls();
-  renderResults();
-  if(adminAuth) renderAdmin();
-}
+async function loadState(){ const d=await apiRequest('/state'); normalizeCategories(d); }
+async function loadPublicState(){ const d=await apiRequest('/public-state'); normalizeCategories(d); voteRecords={}; }
+async function refreshState(){ await loadState(); renderPolls(); renderResults(); if(adminAuth) renderAdmin(); }
 
 async function loadConfig(){
   try{
-    const data = await apiRequest('/config');
-    squadPublicKey = data.squadPublicKey || '';
-    const logoUrl = data.logoUrl || '';
-    const keyInput = document.getElementById('squad-key');
-    if(keyInput && squadPublicKey && !keyInput.value.trim()){
-      keyInput.value = squadPublicKey;
-    }
+    const data=await apiRequest('/config');
+    squadPublicKey=data.squadPublicKey||'';
+    const logoUrl=data.logoUrl||'';
+    const keyInput=document.getElementById('squad-key');
+    if(keyInput&&squadPublicKey&&!keyInput.value.trim()) keyInput.value=squadPublicKey;
     ['nav-logo-mark','login-logo-mark','footer-logo-mark'].forEach(id=>{
       const slot=document.getElementById(id);
       if(!slot) return;
-      slot.innerHTML = logoUrl
-        ? `<img src="${logoUrl}" alt="NACOS logo" />`
-        : 'LA';
+      slot.innerHTML=logoUrl?`<img src="${logoUrl}" alt="NACOS logo" />`:'LA';
     });
-  }catch(error){
-    console.warn(error);
-  }
+  }catch(e){ console.warn(e); }
 }
 
 async function loadAdminStatus(){
   try{
-    const data = await apiRequest('/admin/status');
-    adminAuth = Boolean(data.authenticated);
-    adminBootstrapRequired = Boolean(data.bootstrapRequired);
-    currentAdminUsername = data.username || '';
-    loginMode = adminBootstrapRequired ? 'create' : 'login';
-  }catch(error){
-    adminAuth = false;
-    adminBootstrapRequired = false;
-    loginMode = 'login';
-    console.warn(error);
+    const data=await apiRequest('/admin/status');
+    adminAuth=Boolean(data.authenticated);
+    adminBootstrapRequired=Boolean(data.bootstrapRequired);
+    currentAdminUsername=data.username||'';
+    loginMode=adminBootstrapRequired?'create':'login';
+  }catch(e){
+    adminAuth=false; adminBootstrapRequired=false; loginMode='login'; console.warn(e);
   }
-  const saveBtn = document.getElementById('admin-save-btn');
-  const hint = document.getElementById('admin-save-hint');
-  if(saveBtn){
-    saveBtn.textContent = adminBootstrapRequired ? 'Create Admin' : 'Update';
-  }
-  if(hint){
-    hint.textContent = adminBootstrapRequired
-      ? 'Create the first admin account to unlock the dashboard.'
-      : 'Update your admin username and password after logging in.';
-  }
-  syncLoginUi();
-  syncRestrictedUi();
+  const saveBtn=document.getElementById('admin-save-btn');
+  const hint=document.getElementById('admin-save-hint');
+  if(saveBtn) saveBtn.textContent=adminBootstrapRequired?'Create Admin':'Update';
+  if(hint) hint.textContent=adminBootstrapRequired
+    ?'Create the first admin account to unlock the dashboard.'
+    :'Update your admin username and password after logging in.';
+  syncLoginUi(); syncRestrictedUi();
 }
 
 function syncLoginUi(){
-  const modeLabel = document.getElementById('login-mode');
-  const submitBtn = document.getElementById('login-submit-btn');
-  const confirmWrap = document.getElementById('bootstrap-confirm-wrap');
-  const status = document.getElementById('login-status');
-  const statusText = document.getElementById('login-status-text');
-  const isWriteMode = loginMode === 'create' || loginMode === 'reset';
-  if(modeLabel) modeLabel.textContent = loginMode === 'create' ? 'Create Account' : loginMode === 'reset' ? 'Reset Admin' : 'Admin Login';
-  if(submitBtn) submitBtn.textContent = loginMode === 'create' ? 'Create Account' : loginMode === 'reset' ? 'Reset Admin' : 'Sign In';
-  if(confirmWrap) confirmWrap.style.display = isWriteMode ? '' : 'none';
-  if(status){
-    status.classList.toggle('show', loginLoading);
-  }
-  if(statusText){
-    statusText.textContent = loginMode === 'create'
-      ? 'Creating admin account...'
-      : loginMode === 'reset'
-        ? 'Resetting admin account...'
-        : 'Signing in...';
-  }
+  const modeLabel=document.getElementById('login-mode');
+  const submitBtn=document.getElementById('login-submit-btn');
+  const confirmWrap=document.getElementById('bootstrap-confirm-wrap');
+  const status=document.getElementById('login-status');
+  const statusText=document.getElementById('login-status-text');
+  const isWriteMode=loginMode==='create'||loginMode==='reset';
+  if(modeLabel) modeLabel.textContent=loginMode==='create'?'Create Account':loginMode==='reset'?'Reset Admin':'Admin Login';
+  if(submitBtn) submitBtn.textContent=loginMode==='create'?'Create Account':loginMode==='reset'?'Reset Admin':'Sign In';
+  if(confirmWrap) confirmWrap.style.display=isWriteMode?'':'none';
+  if(status) status.classList.toggle('show',loginLoading);
+  if(statusText) statusText.textContent=loginMode==='create'?'Creating admin account...':loginMode==='reset'?'Resetting admin account...':'Signing in...';
 }
 
 function syncRestrictedUi(){
-  const locked = !adminAuth;
-  const adminNav = ['nb-polls', 'nb-results', 'footer-results-link', 'nb-home'];
-  adminNav.forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = locked ? 'none' : '';
+  const locked=!adminAuth;
+  ['nb-polls','nb-results','footer-results-link','nb-home'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=locked?'none':'';
   });
-  const avatarWrap = document.getElementById('admin-avatar-wrap');
-  const adminBtn = document.getElementById('nb-admin');
+  const avatarWrap=document.getElementById('admin-avatar-wrap');
+  const adminBtn=document.getElementById('nb-admin');
   if(adminAuth){
-    avatarWrap.style.display = 'block';
-    adminBtn.style.display = 'none';
-    const initial = (currentAdminUsername||'A').charAt(0).toUpperCase();
-    document.getElementById('admin-avatar-btn').textContent = initial;
-    document.getElementById('admin-menu-username').textContent = currentAdminUsername || '';
+    avatarWrap.style.display='block';
+    adminBtn.style.display='none';
+    document.getElementById('admin-avatar-btn').textContent=(currentAdminUsername||'A').charAt(0).toUpperCase();
+    document.getElementById('admin-menu-username').textContent=currentAdminUsername||'';
   } else {
-    avatarWrap.style.display = 'none';
-    adminBtn.style.display = '';
+    avatarWrap.style.display='none';
+    adminBtn.style.display='';
   }
 }
 
@@ -744,29 +709,25 @@ function toast(msg,dur=2500){
 }
 
 function showPage(p){
-  if(RESTRICTED_PAGES.has(p) && !adminAuth){
-    p = 'polls';
-  }
+  if(RESTRICTED_PAGES.has(p)&&!adminAuth) p='polls';
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  const nb = document.getElementById('nb-'+p) || document.getElementById('nb-admin');
+  const nb=document.getElementById('nb-'+p)||document.getElementById('nb-admin');
   if(nb) nb.classList.add('active');
   if(p==='polls') renderPolls();
-  if(p==='admin' && adminAuth) renderAdmin();
-  if(p==='admin-logs' && adminAuth) renderLogs();
-  if(p==='admin-team' && adminAuth) renderAdminTeam();
-  if(p==='admin-transactions' && adminAuth) renderTransactions();
+  if(p==='admin'&&adminAuth) renderAdmin();
+  if(p==='admin-logs'&&adminAuth) renderLogs();
+  if(p==='admin-team'&&adminAuth) renderAdminTeam();
+  if(p==='admin-transactions'&&adminAuth) renderTransactions();
   if(p==='cart') renderCart();
   if(p==='results') renderResults();
-  history.pushState({page:p}, '', p==='vote' ? '#vote/'+toSlug(categories[currentCatIdx]?.name||'') : '#'+p);
+  history.pushState({page:p},'',p==='vote'?'#vote/'+toSlug(categories[currentCatIdx]?.name||''):'#'+p);
 }
 
 async function handleAdminNav(){
-  if(!adminAuth){
-    await loadAdminStatus();
-  }
-  showPage(adminAuth ? 'admin' : 'admin-login');
+  if(!adminAuth) await loadAdminStatus();
+  showPage(adminAuth?'admin':'admin-login');
   syncLoginUi();
 }
 
@@ -775,72 +736,51 @@ async function doLogin(){
   const p=document.getElementById('login-pw').value;
   const p2=document.getElementById('login-pw2').value;
   const err=document.getElementById('login-error');
+  const errText=document.getElementById('login-error-text');
   const submitBtn=document.getElementById('login-submit-btn');
   if(loginLoading) return;
-  if((loginMode === 'create' || loginMode === 'reset') && p !== p2){
-    err.classList.add('show');
-    err.textContent = 'Passwords do not match.';
-    toast('Passwords do not match.');
-    return;
+  if((loginMode==='create'||loginMode==='reset')&&p!==p2){
+    err.classList.add('show'); errText.textContent='Passwords do not match.';
+    toast('Passwords do not match.'); return;
   }
   try{
-    loginLoading = true;
-    syncLoginUi();
-    if(submitBtn) submitBtn.disabled = true;
-    const endpoint = loginMode === 'create'
-      ? '/admin/create-account'
-      : loginMode === 'reset'
-        ? '/admin/reset'
-        : '/admin/login';
-    await apiRequest(endpoint, {
-      method: 'POST',
-      body: JSON.stringify({ username: u, password: p, confirmPassword: p2 })
-    });
-  adminAuth = true;
-    currentAdminUsername = u;
-    err.classList.remove('show');
-    err.textContent = '';               // ← clear it, don't set error text on success
+    loginLoading=true; syncLoginUi();
+    if(submitBtn) submitBtn.disabled=true;
+    const endpoint=loginMode==='create'?'/admin/create-account':loginMode==='reset'?'/admin/reset':'/admin/login';
+    await apiRequest(endpoint,{method:'POST',body:JSON.stringify({username:u,password:p,confirmPassword:p2})});
+    adminAuth=true; currentAdminUsername=u;
+    err.classList.remove('show'); errText.textContent='';
     syncRestrictedUi();
-    document.getElementById('login-user').value = '';
-    document.getElementById('login-pw').value = '';
-    const pw2 = document.getElementById('login-pw2');
-    if(pw2) pw2.value = '';
-    loginMode = 'login';
-    await refreshState();
-    showPage('admin'); renderAdmin();
-  }catch(error){
-    err.classList.add('show');
+    document.getElementById('login-user').value='';
     document.getElementById('login-pw').value='';
-    toast(error.message || 'Incorrect username or password.');
+    const pw2=document.getElementById('login-pw2'); if(pw2) pw2.value='';
+    loginMode='login';
+    await refreshState(); showPage('admin'); renderAdmin();
+  }catch(e){
+    err.classList.add('show');
+    errText.textContent=e.message||'Incorrect username or password.';
+    document.getElementById('login-pw').value='';
+    toast(e.message||'Incorrect username or password.');
   }finally{
-    loginLoading = false;
-    if(submitBtn) submitBtn.disabled = false;
-    syncLoginUi();
+    loginLoading=false; if(submitBtn) submitBtn.disabled=false; syncLoginUi();
   }
 }
 
 async function doLogout(){
-  try{
-    await apiRequest('/admin/logout', { method: 'POST' });
-  }catch(error){
-    console.warn(error);
-  }
-  adminAuth=false;
-  syncRestrictedUi();
-  await loadPublicState().catch(error=>console.warn(error));
-  toast('Logged out.');
-  showPage('home');
+  try{ await apiRequest('/admin/logout',{method:'POST'}); }catch(e){ console.warn(e); }
+  adminAuth=false; syncRestrictedUi();
+  await loadPublicState().catch(e=>console.warn(e));
+  toast('Logged out.'); showPage('home');
 }
 
 function togglePw(){
-  const inp=document.getElementById('login-pw'), icon=document.getElementById('pw-eye');
+  const inp=document.getElementById('login-pw'),icon=document.getElementById('pw-eye');
   inp.type=inp.type==='password'?'text':'password';
   icon.className=inp.type==='password'?'ti ti-eye':'ti ti-eye-off';
 }
-
 function togglePw2(){
-  const inp=document.getElementById('login-pw2'), icon=document.getElementById('pw-eye2');
-  if(!inp || !icon) return;
+  const inp=document.getElementById('login-pw2'),icon=document.getElementById('pw-eye2');
+  if(!inp||!icon) return;
   inp.type=inp.type==='password'?'text':'password';
   icon.className=inp.type==='password'?'ti ti-eye':'ti ti-eye-off';
 }
@@ -853,19 +793,13 @@ async function changeCredentials(){
   if(p!==p2){toast('Passwords do not match.');return;}
   try{
     const endpoint=adminBootstrapRequired?'/admin/create-account':'/admin/change-credentials';
-    await apiRequest(endpoint, {
-      method: 'POST',
-      body: JSON.stringify({ username: u, password: p })
-    });
+    await apiRequest(endpoint,{method:'POST',body:JSON.stringify({username:u,password:p})});
     document.getElementById('new-user').value='';
     document.getElementById('new-pw').value='';
     document.getElementById('new-pw2').value='';
-    adminBootstrapRequired=false;
-    await loadAdminStatus();
+    adminBootstrapRequired=false; await loadAdminStatus();
     toast(endpoint==='/admin/create-account'?'Admin account created.':'Credentials updated successfully.');
-  }catch(error){
-    toast(error.message || 'Could not update admin credentials.');
-  }
+  }catch(e){ toast(e.message||'Could not update admin credentials.'); }
 }
 
 async function addCategory(){
@@ -873,112 +807,67 @@ async function addCategory(){
   const price=parseInt(document.getElementById('cat-price').value)||100;
   if(!name){toast('Please enter a category name.');return;}
   try{
-    await apiRequest('/categories', {
-      method: 'POST',
-      body: JSON.stringify({ name, price })
-    });
+    await apiRequest('/categories',{method:'POST',body:JSON.stringify({name,price})});
     document.getElementById('cat-input').value='';
     document.getElementById('cat-price').value='100';
-    await refreshState();
-    toast('Category added.');
-  }catch(error){
-    toast(error.message || 'Could not add category.');
-  }
+    await refreshState(); toast('Category added.');
+  }catch(e){ toast(e.message||'Could not add category.'); }
 }
 
 async function deleteCategory(i){
-  if(!confirm('Delete "'+categories[i].name+'"? This cannot be undone.'))return;
-  try{
-    await apiRequest('/categories/' + categories[i].id, { method: 'DELETE' });
-    await refreshState();
-    toast('Category deleted.');
-  }catch(error){
-    toast(error.message || 'Could not delete category.');
-  }
+  if(!confirm('Delete "'+categories[i].name+'"? This cannot be undone.')) return;
+  try{ await apiRequest('/categories/'+categories[i].id,{method:'DELETE'}); await refreshState(); toast('Category deleted.'); }
+  catch(e){ toast(e.message||'Could not delete category.'); }
 }
 
-function toggleCat(i){openCats[categories[i].id]=!openCats[categories[i].id];renderAdmin();}
+function toggleCat(i){ openCats[categories[i].id]=!openCats[categories[i].id]; renderAdmin(); }
 
 async function toggleCatStatus(i){
   try{
-    await apiRequest('/categories/' + categories[i].id, {
-      method: 'PATCH',
-      body: JSON.stringify({ open: !categories[i].open })
-    });
+    await apiRequest('/categories/'+categories[i].id,{method:'PATCH',body:JSON.stringify({open:!categories[i].open})});
     await refreshState();
-    toast(categories[i].name + (categories[i].open ? ' opened for voting.' : ' closed for voting.'));
-  }catch(error){
-    toast(error.message || 'Could not update category status.');
-  }
+    toast(categories[i].name+(categories[i].open?' opened for voting.':' closed for voting.'));
+  }catch(e){ toast(e.message||'Could not update category status.'); }
 }
 
 async function setAllStatus(open){
   try{
-    await apiRequest('/categories/bulk-status', {
-      method: 'POST',
-      body: JSON.stringify({ open })
-    });
-    await refreshState();
-    toast(open?'All categories opened.':'All categories closed.');
-  }catch(error){
-    toast(error.message || 'Could not update category statuses.');
-  }
+    await apiRequest('/categories/bulk-status',{method:'POST',body:JSON.stringify({open})});
+    await refreshState(); toast(open?'All categories opened.':'All categories closed.');
+  }catch(e){ toast(e.message||'Could not update category statuses.'); }
 }
 
 async function renameCat(i){
   const val=document.getElementById('rename-'+i).value.trim().toUpperCase();
   if(!val){toast('Name cannot be empty.');return;}
   try{
-    await apiRequest('/categories/' + categories[i].id, {
-      method: 'PATCH',
-      body: JSON.stringify({ name: val })
-    });
-    await refreshState();
-    toast('Category renamed.');
-  }catch(error){
-    toast(error.message || 'Could not rename category.');
-  }
+    await apiRequest('/categories/'+categories[i].id,{method:'PATCH',body:JSON.stringify({name:val})});
+    await refreshState(); toast('Category renamed.');
+  }catch(e){ toast(e.message||'Could not rename category.'); }
 }
 
 async function addNominee(i){
   const inp=document.getElementById('nin-'+i);
   const name=inp.value.trim().toUpperCase();
-  if(!name)return;
+  if(!name) return;
   try{
-    await apiRequest('/categories/' + categories[i].id + '/nominees', {
-      method: 'POST',
-      body: JSON.stringify({ name })
-    });
-    inp.value='';
-    await refreshState();
-    toast('Nominee added.');
-  }catch(error){
-    toast(error.message || 'Could not add nominee.');
-  }
+    await apiRequest('/categories/'+categories[i].id+'/nominees',{method:'POST',body:JSON.stringify({name})});
+    inp.value=''; await refreshState(); toast('Nominee added.');
+  }catch(e){ toast(e.message||'Could not add nominee.'); }
 }
 
 async function deleteNominee(ci,ni){
   const nom=categories[ci].nominees[ni];
-  try{
-    await apiRequest('/categories/' + categories[ci].id + '/nominees/' + encodeURIComponent(nom), { method: 'DELETE' });
-    await refreshState();
-  }catch(error){
-    toast(error.message || 'Could not delete nominee.');
-  }
+  try{ await apiRequest('/categories/'+categories[ci].id+'/nominees/'+encodeURIComponent(nom),{method:'DELETE'}); await refreshState(); }
+  catch(e){ toast(e.message||'Could not delete nominee.'); }
 }
 
 async function updatePrice(i){
   try{
-    const price = parseInt(document.getElementById('price-'+i).value)||0;
-    await apiRequest('/categories/' + categories[i].id, {
-      method: 'PATCH',
-      body: JSON.stringify({ price })
-    });
-    await refreshState();
-    toast('Price updated.');
-  }catch(error){
-    toast(error.message || 'Could not update price.');
-  }
+    const price=parseInt(document.getElementById('price-'+i).value)||0;
+    await apiRequest('/categories/'+categories[i].id,{method:'PATCH',body:JSON.stringify({price})});
+    await refreshState(); toast('Price updated.');
+  }catch(e){ toast(e.message||'Could not update price.'); }
 }
 
 function renderAdmin(){
@@ -993,14 +882,14 @@ function renderAdmin(){
      <div class="stat-card"><div class="sc-label">Open Polls</div><div class="sc-val">${openCount}</div></div>`;
   document.getElementById('cat-count').textContent=totalCats;
   const el=document.getElementById('admin-list');
-if(!totalCats){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:6px 0">No categories yet.</div>';return;}
+  if(!totalCats){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:6px 0">No categories yet.</div>';return;}
   el.innerHTML=categories.map((cat,i)=>{
     const open=openCats[cat.id];
     const noms=cat.nominees.map((n,j)=>`
-        <div class="nom-list-item">
-          <span>${n} <span style="color:var(--text-faint);font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
-          <button class="sm-btn red" onclick="deleteNominee(${i},${j})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
-        </div>`).join('');
+      <div class="nom-list-item">
+        <span>${n} <span style="color:var(--text-faint);font-size:10px">(${(voteRecords[cat.name]||{})[n]||0} votes)</span></span>
+        <button class="sm-btn red" onclick="deleteNominee(${i},${j})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
+      </div>`).join('');
     return `<div class="cat-item">
       <div class="cat-header">
         <div class="cat-title-wrap">
@@ -1009,15 +898,15 @@ if(!totalCats){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);
           <span class="cat-meta">${cat.nominees.length} nominees · ₦${cat.price}/vote</span>
         </div>
         <div class="cat-acts">
-          <button class="sm-btn ${cat.open?'red':'green'}" onclick="toggleCatStatus(${i})">${cat.open?'<i class="ti ti-lock" aria-hidden="true" style="font-size:11px"></i> Close':'<i class="ti ti-lock-open" aria-hidden="true" style="font-size:11px"></i> Open'}</button>
-          <button class="sm-btn" onclick="toggleCat(${i})">${open?'<i class="ti ti-chevron-up" aria-hidden="true" style="font-size:11px"></i>':'<i class="ti ti-pencil" aria-hidden="true" style="font-size:11px"></i> Edit'}</button>
-          <button class="sm-btn red" onclick="deleteCategory(${i})"><i class="ti ti-trash" aria-hidden="true" style="font-size:11px"></i></button>
+          <button class="sm-btn ${cat.open?'red':'green'}" onclick="toggleCatStatus(${i})">${cat.open?'<i class="ti ti-lock" style="font-size:11px"></i> Close':'<i class="ti ti-lock-open" style="font-size:11px"></i> Open'}</button>
+          <button class="sm-btn" onclick="toggleCat(${i})">${open?'<i class="ti ti-chevron-up" style="font-size:11px"></i>':'<i class="ti ti-pencil" style="font-size:11px"></i> Edit'}</button>
+          <button class="sm-btn red" onclick="deleteCategory(${i})"><i class="ti ti-trash" style="font-size:11px"></i></button>
         </div>
       </div>
       ${open?`<div class="cat-body">
         <div class="edit-name-row">
           <input type="text" id="rename-${i}" value="${cat.name}" placeholder="Category name" />
-          <button class="sm-btn" onclick="renameCat(${i})"><i class="ti ti-check" aria-hidden="true" style="font-size:11px"></i> Rename</button>
+          <button class="sm-btn" onclick="renameCat(${i})"><i class="ti ti-check" style="font-size:11px"></i> Rename</button>
         </div>
         <div class="price-row">
           <label>Price per vote (₦)</label>
@@ -1026,7 +915,7 @@ if(!totalCats){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);
         <div>${noms||'<div style="font-size:12px;color:var(--text-muted);padding:4px 0">No nominees yet.</div>'}</div>
         <div class="nom-add-row">
           <input type="text" id="nin-${i}" placeholder="Nominee name" onkeydown="if(event.key==='Enter')addNominee(${i})" />
-          <button onclick="addNominee(${i})"><i class="ti ti-plus" aria-hidden="true" style="font-size:12px"></i> Add</button>
+          <button onclick="addNominee(${i})"><i class="ti ti-plus" style="font-size:12px"></i> Add</button>
         </div>
       </div>`:''}
     </div>`;
@@ -1039,22 +928,20 @@ function renderPolls(){
   const grid=document.getElementById('polls-grid');
   const count=document.getElementById('polls-count');
   if(!categories.length){
-    grid.innerHTML='<div class="empty-st"><i class="ti ti-mood-empty" aria-hidden="true" style="font-size:36px;color:var(--border-avatar);display:block;margin-bottom:10px"></i>No categories yet. Go to Admin to add some.</div>';
-    if(count) count.textContent='No polls available';
-    return;
+    grid.innerHTML='<div class="empty-st"><i class="ti ti-mood-empty" style="font-size:36px;color:var(--border-avatar);display:block;margin-bottom:10px"></i>No categories yet. Go to Admin to add some.</div>';
+    if(count) count.textContent='No polls available'; return;
   }
   if(count) count.textContent=filtered.length+' poll'+(filtered.length!==1?'s':'')+' · '+categories.filter(c=>c.open).length+' open';
-
-grid.innerHTML=filtered.map((cat,ri)=>{
-  const i=categories.indexOf(cat);
-  return `<div class="poll-card${cat.open?'':' closed'}" onclick="${cat.open?'openVote('+i+')':''}">
-    ${!cat.open?'<span class="closed-badge">Closed</span>':''}
-    <h3>${cat.name}</h3>
-    <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
-    <div class="poll-nominees">${cat.nominees.length} nominee${cat.nominees.length!==1?'s':''}</div>
-    ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:var(--text-muted);font-weight:600">Voting closed</span>'}
-  </div>`;
-}).join('');
+  grid.innerHTML=filtered.map((cat)=>{
+    const i=categories.indexOf(cat);
+    return `<div class="poll-card${cat.open?'':' closed'}" onclick="${cat.open?'openVote('+i+')':''}">
+      ${!cat.open?'<span class="closed-badge">Closed</span>':''}
+      <h3>${cat.name}</h3>
+      <div class="poll-price">₦${cat.price.toLocaleString()} per vote</div>
+      <div class="poll-nominees">${cat.nominees.length} nominee${cat.nominees.length!==1?'s':''}</div>
+      ${cat.open?'<button class="vote-now-btn">Vote Now</button>':'<span style="font-size:11px;color:var(--text-muted);font-weight:600">Voting closed</span>'}
+    </div>`;
+  }).join('');
   if(!filtered.length&&q) grid.innerHTML='<div class="empty-st">No results for "'+q+'"</div>';
 }
 
@@ -1070,18 +957,29 @@ function openVote(i){
   showPage('vote');
 }
 
+function copyVoteLink(link){
+  navigator.clipboard.writeText(link).then(()=>toast('Link copied!')).catch(()=>toast('Could not copy.'));
+}
+
 function renderNomRows(){
   const cat=categories[currentCatIdx];
   const el=document.getElementById('nom-rows');
   if(!cat.nominees.length){el.innerHTML='<div style="font-size:13px;color:var(--text-muted);padding:8px 0">No nominees added yet.</div>';return;}
-  el.innerHTML=cat.nominees.map(n=>
+  const slug=toSlug(cat.name);
+  const link=location.origin+'/#vote/'+slug;
+  const shareRow=`<div class="vote-share-row">
+    <i class="ti ti-link" style="font-size:13px;color:var(--text-muted);flex-shrink:0"></i>
+    <span>${link}</span>
+    <button onclick="copyVoteLink('${link}')"><i class="ti ti-copy" style="font-size:12px"></i> Copy Link</button>
+  </div>`;
+  el.innerHTML=shareRow+cat.nominees.map(n=>
     `<div class="nom-row">
       <div class="nom-avatar">${n.charAt(0)}</div>
       <div class="nom-info"><div class="nom-name">${n}</div><div class="nom-sub">Add votes below</div></div>
       <div class="counter">
         <button class="c-btn" onclick="chgVote('${n.replace(/'/g,"\\'")}', -1)" aria-label="Remove vote">−</button>
         <span class="c-val" id="cv-${n.replace(/\s+/g,'_')}">${voteState[n]}</span>
-        <button class="c-btn plus" onclick="chgVote('${n.replace(/'/g,"\\'")}', 1)" aria-label="Add vote">+</button>
+        <button class="c-btn" onclick="chgVote('${n.replace(/'/g,"\\'")}', 1)" aria-label="Add vote">+</button>
       </div>
     </div>`
   ).join('');
@@ -1106,7 +1004,7 @@ function updateVoteSummary(){
 function addToCart(){
   const cat=categories[currentCatIdx];
   const votes=Object.entries(voteState).filter(([,v])=>v>0);
-  if(!votes.length)return;
+  if(!votes.length) return;
   const sub=votes.reduce((a,[,v])=>a+(v*cat.price),0);
   cart.push({categoryId:cat.id,category:cat.name,price:cat.price,votes,subtotal:sub,catIdx:currentCatIdx});
   updateCartBadge(); toast('Added to cart!'); showPage('polls');
@@ -1118,7 +1016,7 @@ function updateCartBadge(){
   b.style.display=cart.length?'flex':'none';
 }
 
-function removeCartItem(i){cart.splice(i,1);updateCartBadge();renderCart();toast('Item removed.');}
+function removeCartItem(i){ cart.splice(i,1); updateCartBadge(); renderCart(); toast('Item removed.'); }
 
 function renderCart(){
   const el=document.getElementById('cart-items');
@@ -1128,7 +1026,7 @@ function renderCart(){
     el.innerHTML=`<div class="cart-empty">
       <i class="ti ti-shopping-cart" aria-hidden="true"></i>
       <p>Your cart is empty.</p>
-      <button class="cart-empty-btn" onclick="showPage('polls')">Browse Polls</button>
+      <button class="vote-now-btn" style="max-width:200px" onclick="showPage('polls')">Browse Polls</button>
     </div>`;
     tot.innerHTML=''; form.style.display='none'; return;
   }
@@ -1137,41 +1035,40 @@ function renderCart(){
     <div style="margin-bottom:18px">
       <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px">${item.category}</div>
       ${item.votes.map(([nom,v])=>`
-        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;background:var(--surface)">
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;margin-bottom:6px;background:var(--surface);flex-wrap:wrap">
           <div style="width:36px;height:36px;border-radius:50%;background:var(--vote-now-bg);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">${nom.charAt(0)}</div>
-          <div style="flex:1;font-size:13px;font-weight:600;color:var(--text)">${nom}</div>
+          <div style="flex:1;font-size:13px;font-weight:600;color:var(--text);min-width:80px">${nom}</div>
           <div style="display:flex;align-items:center;gap:8px">
-            <button onclick="chgCartVote(${i},'${nom}',-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">−</button>
-            <span style="font-size:13px;font-weight:700;min-width:20px;text-align:center">${v}</span>
-            <button onclick="chgCartVote(${i},'${nom}',1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center">+</button>
+            <button onclick="chgCartVote(${i},'${nom}',-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text)">−</button>
+            <span style="font-size:13px;font-weight:700;min-width:20px;text-align:center;color:var(--text)">${v}</span>
+            <button onclick="chgCartVote(${i},'${nom}',1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--text)">+</button>
           </div>
-          <div style="font-size:14px;font-weight:700;color:#1a0a3c;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface)">₦${(v*item.price).toLocaleString()}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">₦${(v*item.price).toLocaleString()}</div>
           <button onclick="removeNomFromCart(${i},'${nom}')" style="font-size:11px;color:#e24b4a;background:none;border:none;cursor:pointer;font-weight:600">Remove</button>
         </div>`).join('')}
     </div>`).join('');
-
   const votesTotal=cart.reduce((a,c)=>a+c.subtotal,0);
   tot.innerHTML=`
-    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:#1a0a3c;padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface)">
+    <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--text);padding:14px 16px;border:1.5px solid var(--border);border-radius:10px;background:var(--surface)">
       <span>Total</span><span>₦${(votesTotal+50).toLocaleString()}</span>
     </div>
     <button onclick="clearCart()" style="width:100%;padding:11px;background:var(--surface);color:#e24b4a;border:1.5px solid #e24b4a;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:8px">Clear Cart</button>`;
 }
 
-function chgCartVote(cartIdx, nom, d){
-  const item = cart[cartIdx];
-  const voteIdx = item.votes.findIndex(([n])=>n===nom);
-  if(voteIdx === -1) return;
-  const newVal = Math.max(0, item.votes[voteIdx][1] + d);
-  if(newVal === 0){ removeNomFromCart(cartIdx, nom); return; }
-  item.votes[voteIdx][1] = newVal;
-  item.subtotal = item.votes.reduce((a,[,v])=>a+(v*item.price),0);
+function chgCartVote(cartIdx,nom,d){
+  const item=cart[cartIdx];
+  const voteIdx=item.votes.findIndex(([n])=>n===nom);
+  if(voteIdx===-1) return;
+  const newVal=Math.max(0,item.votes[voteIdx][1]+d);
+  if(newVal===0){removeNomFromCart(cartIdx,nom);return;}
+  item.votes[voteIdx][1]=newVal;
+  item.subtotal=item.votes.reduce((a,[,v])=>a+(v*item.price),0);
   updateCartBadge(); renderCart();
 }
 
-function removeNomFromCart(cartIdx, nom){
-  cart[cartIdx].votes = cart[cartIdx].votes.filter(([n])=>n!==nom);
-  cart[cartIdx].subtotal = cart[cartIdx].votes.reduce((a,[,v])=>a+(v*cart[cartIdx].price),0);
+function removeNomFromCart(cartIdx,nom){
+  cart[cartIdx].votes=cart[cartIdx].votes.filter(([n])=>n!==nom);
+  cart[cartIdx].subtotal=cart[cartIdx].votes.reduce((a,[,v])=>a+(v*cart[cartIdx].price),0);
   if(!cart[cartIdx].votes.length) cart.splice(cartIdx,1);
   updateCartBadge(); renderCart();
 }
@@ -1181,33 +1078,32 @@ function clearCart(){
   cart=[]; updateCartBadge(); renderCart(); toast('Cart cleared.');
 }
 
-function renderReceipt(items, transactionRef, email){
-  const el = document.getElementById('receipt-body');
+function renderReceipt(items,transactionRef,email){
+  const el=document.getElementById('receipt-body');
   if(!el) return;
-  const grouped = items.reduce((acc, item) => {
-    if(!acc[item.category]) acc[item.category] = [];
-    acc[item.category].push(item);
-    return acc;
-  }, {});
-  el.innerHTML = `
-    <div style="background:#f7f5ff;border:1.5px solid #e5dff7;border-radius:10px;padding:13px 15px;margin-bottom:12px;font-size:12px;color:#8b79ad">
+  const grouped=items.reduce((acc,item)=>{
+    if(!acc[item.category]) acc[item.category]=[];
+    acc[item.category].push(item); return acc;
+  },{});
+  el.innerHTML=`
+    <div style="background:var(--surface-alt);border:1.5px solid var(--border);border-radius:10px;padding:13px 15px;margin-bottom:12px;font-size:12px;color:var(--text-muted)">
       <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Reference</span><span style="color:var(--text);font-weight:600">${transactionRef}</span></div>
       <div style="display:flex;justify-content:space-between"><span>Email</span><span style="color:var(--text);font-weight:600">${email}</span></div>
     </div>
-    ${Object.entries(grouped).map(([cat, votes]) => `
+    ${Object.entries(grouped).map(([cat,votes])=>`
       <div style="margin-bottom:10px">
         <div style="font-size:11px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">${cat}</div>
-        ${votes.map(v => `
+        ${votes.map(v=>`
           <div style="display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid var(--border-soft)">
             <span style="font-weight:600;color:var(--text)">${v.nominee}</span>
-            <span style="color:var(--primary);font-weight:700">${v.votes} vote${v.votes!==1?'s':''}</span>
+            <span style="color:var(--pu);font-weight:700">${v.votes} vote${v.votes!==1?'s':''}</span>
           </div>`).join('')}
       </div>`).join('')}`;
 }
 
 function renderResults(){
   const el=document.getElementById('results-body');
-  if(!categories.length){el.innerHTML='<div class="results-empty"><i class="ti ti-chart-bar" aria-hidden="true" style="font-size:36px;color:var(--border-avatar);display:block;margin-bottom:10px"></i>No categories yet.</div>';return;}
+  if(!categories.length){el.innerHTML='<div class="results-empty"><i class="ti ti-chart-bar" style="font-size:36px;color:var(--border-avatar);display:block;margin-bottom:10px"></i>No categories yet.</div>';return;}
   el.innerHTML=categories.map(cat=>{
     const recs=voteRecords[cat.name]||{};
     const total=Object.values(recs).reduce((a,b)=>a+b,0);
@@ -1217,7 +1113,7 @@ function renderResults(){
       const pct=total>0?Math.round(v/total*100):0;
       return `<div class="result-bar-row">
         <div class="result-bar-top">
-          <span class="rbn">${rank===0&&total>0?'<span class="winner-badge"><i class="ti ti-trophy" aria-hidden="true" style="font-size:10px"></i> Leading</span>':''} ${n}</span>
+          <span class="rbn">${rank===0&&total>0?'<span class="winner-badge"><i class="ti ti-trophy" style="font-size:10px"></i> Leading</span>':''} ${n}</span>
           <span class="rbv">${v.toLocaleString()} vote${v!==1?'s':''} · ${pct}%</span>
         </div>
         <div class="result-bar-bg"><div class="result-bar-fill${rank===0?' top':''}" style="width:${pct}%"></div></div>
@@ -1228,7 +1124,7 @@ function renderResults(){
         <h3>${cat.name}</h3>
         <span>${total.toLocaleString()} total vote${total!==1?'s':''} · <span style="color:${cat.open?'#0f6e56':'#e24b4a'};font-weight:600">${cat.open?'Open':'Closed'}</span></span>
       </div>
-      ${bars||'<div style="font-size:12px;color:var(--muted)">No nominees yet.</div>'}
+      ${bars||'<div style="font-size:12px;color:var(--text-muted)">No nominees yet.</div>'}
     </div>`;
   }).join('');
 }
@@ -1238,7 +1134,7 @@ function exportCSV(){
   let csv='Category,Nominee,Votes\n';
   categories.forEach(cat=>{
     const recs=voteRecords[cat.name]||{};
-    cat.nominees.forEach(n=>{ csv+=`"${cat.name}","${n}",${recs[n]||0}\n`; });
+    cat.nominees.forEach(n=>{csv+=`"${cat.name}","${n}",${recs[n]||0}\n`;});
   });
   const blob=new Blob([csv],{type:'text/csv'});
   const url=URL.createObjectURL(blob);
@@ -1256,51 +1152,44 @@ function exportJSON(){
 
 async function renderLogs(){
   try{
-    const data = await apiRequest('/admin/logs');
-    const el = document.getElementById('logs-table');
-    if(!data.logs.length){ el.innerHTML = '<div style="padding:8px 0;color:var(--muted)">No activity yet.</div>'; return; }
-    el.innerHTML = data.logs.map(log=>{
-      const time = log.createdAt ? new Date(log.createdAt).toLocaleString() : '—';
-      const details = Object.entries(log.details||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
+    const data=await apiRequest('/admin/logs');
+    const el=document.getElementById('logs-table');
+    if(!data.logs.length){el.innerHTML='<div style="padding:8px 0;color:var(--text-muted)">No activity yet.</div>';return;}
+    el.innerHTML=data.logs.map(log=>{
+      const time=log.createdAt?new Date(log.createdAt).toLocaleString():'—';
+      const details=Object.entries(log.details||{}).map(([k,v])=>`${k}: ${v}`).join(', ');
       return `<div style="padding:10px 0;border-bottom:1px solid var(--border-soft)">
         <div style="display:flex;justify-content:space-between;margin-bottom:2px">
           <span style="font-weight:700;color:var(--text)">${log.action}</span>
-          <span style="color:var(--muted)">${time}</span>
+          <span style="color:var(--text-muted)">${time}</span>
         </div>
-        <div style="color:var(--muted)">${log.username} · ${log.ip}${details?' · '+details:''}</div>
+        <div style="color:var(--text-muted)">${log.username} · ${log.ip}${details?' · '+details:''}</div>
       </div>`;
     }).join('');
-  }catch(e){ toast(e.message||'Could not load logs.'); }
+  }catch(e){toast(e.message||'Could not load logs.');}
 }
 
 async function renderTransactions(){
   try{
-    const data = await apiRequest('/admin/transactions');
-    const txs = data.transactions || [];
-    const summaryEl = document.getElementById('tx-summary-box');
-    const tableEl = document.getElementById('tx-table');
-
-    const totalAmount = txs.reduce((a,t) => a + (t.amount/100), 0);
-    const platformFees = txs.length * 50;
-    const votesRevenue = totalAmount - platformFees;
-
-    summaryEl.innerHTML = `
+    const data=await apiRequest('/admin/transactions');
+    const txs=data.transactions||[];
+    const summaryEl=document.getElementById('tx-summary-box');
+    const tableEl=document.getElementById('tx-table');
+    const totalAmount=txs.reduce((a,t)=>a+(t.amount/100),0);
+    const platformFees=txs.length*50;
+    const votesRevenue=totalAmount-platformFees;
+    summaryEl.innerHTML=`
       <div class="stats-grid">
         <div class="stat-card"><div class="sc-label">Total Transactions</div><div class="sc-val">${txs.length}</div></div>
         <div class="stat-card"><div class="sc-label">Total Collected</div><div class="sc-val">₦${totalAmount.toLocaleString()}</div></div>
         <div class="stat-card"><div class="sc-label">Platform Fees</div><div class="sc-val">₦${platformFees.toLocaleString()}</div></div>
         <div class="stat-card"><div class="sc-label">Votes Revenue</div><div class="sc-val">₦${votesRevenue.toLocaleString()}</div></div>
       </div>`;
-
-    if(!txs.length){
-      tableEl.innerHTML = '<div style="padding:8px 0;color:var(--text-muted)">No transactions yet.</div>';
-      return;
-    }
-
-    tableEl.innerHTML = txs.map(tx => {
-      const time = tx.createdAt ? new Date(tx.createdAt).toLocaleString() : '—';
-      const votesAmount = (tx.amount/100) - 50;
-      const itemsSummary = tx.items.map(i=>`${i.nominee} (${i.category}) ×${i.votes}`).join(', ');
+    if(!txs.length){tableEl.innerHTML='<div style="padding:8px 0;color:var(--text-muted)">No transactions yet.</div>';return;}
+    tableEl.innerHTML=txs.map(tx=>{
+      const time=tx.createdAt?new Date(tx.createdAt).toLocaleString():'—';
+      const votesAmount=(tx.amount/100)-50;
+      const itemsSummary=tx.items.map(i=>`${i.nominee} (${i.category}) ×${i.votes}`).join(', ');
       return `<div style="padding:12px 0;border-bottom:1px solid var(--border-soft)">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;flex-wrap:wrap;gap:6px">
           <div>
@@ -1314,70 +1203,60 @@ async function renderTransactions(){
         </div>
         <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">${itemsSummary}</div>
         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-faint)">
-          <span>${tx.reference}</span>
-          <span>${time}</span>
+          <span>${tx.reference}</span><span>${time}</span>
         </div>
       </div>`;
     }).join('');
-  }catch(e){ toast(e.message||'Could not load transactions.'); }
+  }catch(e){toast(e.message||'Could not load transactions.');}
 }
 
 async function renderAdminTeam(){
   try{
-    const data = await apiRequest('/admin/list');
-    const el = document.getElementById('admin-list-table');
-    el.innerHTML = data.admins.map(a=>`
-        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-soft)">
+    const data=await apiRequest('/admin/list');
+    const el=document.getElementById('admin-list-table');
+    el.innerHTML=data.admins.map(a=>`
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border-soft)">
         <span style="font-size:13px;font-weight:600;color:var(--text)">${a.username}${a.id===data.currentAdminId?' (you)':''}</span>
         ${a.id!==data.currentAdminId?`<button class="sm-btn red" onclick="removeAdmin('${a.id}')"><i class="ti ti-trash" style="font-size:11px"></i></button>`:''}
       </div>`).join('');
-  }catch(e){ toast(e.message||'Could not load admins.'); }        
+  }catch(e){toast(e.message||'Could not load admins.');}
 }
 
 async function inviteAdmin(){
-  const username = document.getElementById('invite-username').value.trim();
-  const password = document.getElementById('invite-password').value;
+  const username=document.getElementById('invite-username').value.trim();
+  const password=document.getElementById('invite-password').value;
   if(!username||!password){toast('Please fill in both fields.');return;}
   try{
-    await apiRequest('/admin/invite', { method:'POST', body: JSON.stringify({username,password}) });
+    await apiRequest('/admin/invite',{method:'POST',body:JSON.stringify({username,password})});
     document.getElementById('invite-username').value='';
     document.getElementById('invite-password').value='';
-    toast('Admin added.');
-    renderAdminTeam();
-  }catch(e){ toast(e.message||'Could not add admin.'); }
+    toast('Admin added.'); renderAdminTeam();
+  }catch(e){toast(e.message||'Could not add admin.');}
 }
 
 async function removeAdmin(id){
-  if(!confirm('Remove this admin?'))return;
-  try{
-    await apiRequest('/admin/'+id, { method:'DELETE' });
-    toast('Admin removed.');
-    renderAdminTeam();
-  }catch(e){ toast(e.message||'Could not remove admin.'); }
+  if(!confirm('Remove this admin?')) return;
+  try{ await apiRequest('/admin/'+id,{method:'DELETE'}); toast('Admin removed.'); renderAdminTeam(); }
+  catch(e){toast(e.message||'Could not remove admin.');}
 }
 
 function toggleAdminMenu(){
-  const menu = document.getElementById('admin-menu');
-  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+  const menu=document.getElementById('admin-menu');
+  menu.style.display=menu.style.display==='none'?'block':'none';
 }
-function closeAdminMenu(){
-  document.getElementById('admin-menu').style.display = 'none';
-}
-document.addEventListener('click', (e)=>{
-  const wrap = document.getElementById('admin-avatar-wrap');
-  if(wrap && !wrap.contains(e.target)) closeAdminMenu();
+function closeAdminMenu(){ document.getElementById('admin-menu').style.display='none'; }
+document.addEventListener('click',(e)=>{
+  const wrap=document.getElementById('admin-avatar-wrap');
+  if(wrap&&!wrap.contains(e.target)) closeAdminMenu();
 });
 
 function initiatePayment(){
   if(!cart.length){toast('Your cart is empty.');return;}
   const email=document.getElementById('cf-email').value.trim();
   if(!email){toast('Please enter your email address.');return;}
-  const key = squadPublicKey;
-if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
-  const fname='';
-  const lname='';
+  const key=squadPublicKey;
+  if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
   const amount=cart.reduce((a,c)=>a+c.subtotal,0)+50;
-  const customerName=(fname+' '+lname).trim();
   try{
     const s=new squad({
       onClose:()=>{},
@@ -1386,58 +1265,44 @@ if(!key){toast('Payment is not configured yet. Please contact admin.');return;}
         try{
           toast('Verifying payment...');
           const payload={
-            reference: ref,
-            email,
-            customerName,
-            cart: cart.map(item=>({
-              categoryId:item.categoryId,
-              category:item.category,
-              votes:item.votes.map(([name,votes])=>({name, votes}))
+            reference:ref, email, customerName:'',
+            cart:cart.map(item=>({
+              categoryId:item.categoryId, category:item.category,
+              votes:item.votes.map(([name,votes])=>({name,votes}))
             }))
           };
-          const result=await apiRequest('/payments/verify', {
-            method: 'POST',
-            body: JSON.stringify(payload)
-          });
-          const receiptItems = result.data?.items || [];
-          const transactionRef = result.data?.transactionRef || ref;
-          const userEmail = email;
+          const result=await apiRequest('/payments/verify',{method:'POST',body:JSON.stringify(payload)});
+          const receiptItems=result.data?.items||[];
+          const transactionRef=result.data?.transactionRef||ref;
           cart=[]; updateCartBadge(); await loadPublicState(); renderPolls();
-          renderReceipt(receiptItems, transactionRef, userEmail);
-          showPage('receipt');
-          toast('Payment verified and votes recorded!');
-        }catch(error){
-          toast(error.message || 'Payment verification failed.');
-          console.error(error);
-        }
+          renderReceipt(receiptItems,transactionRef,email);
+          showPage('receipt'); toast('Payment verified and votes recorded!');
+        }catch(e){ toast(e.message||'Payment verification failed.'); console.error(e); }
       },
-      key,email,amount:amount*100,currency_code:'NGN',
-      customer_name:customerName||undefined,
-      metadata:{cart:cart.map(c=>({categoryId:c.categoryId,category:c.category,votes:c.votes.map(([name,votes])=>({name, votes}))})),email,customer_name:customerName,platform_fee:50}
+      key, email, amount:amount*100, currency_code:'NGN',
+      metadata:{cart:cart.map(c=>({categoryId:c.categoryId,category:c.category,votes:c.votes.map(([name,votes])=>({name,votes}))})),email,platform_fee:50}
     });
     s.setup(); s.open();
   }catch(e){toast('Could not load Squad. Check your API key.'); console.error(e);}
 }
 
 function handleUrlRoute(){
-  const hash = location.hash.slice(1);
+  const hash=location.hash.slice(1);
   if(hash.startsWith('vote/')){
-    const name = fromSlug(decodeURIComponent(hash.split('/')[1]));
-    const idx = categories.findIndex(c=>c.name===name);
-    if(idx !== -1){ openVote(idx); return; }
+    const slug=decodeURIComponent(hash.split('/')[1]);
+    const idx=categories.findIndex(c=>toSlug(c.name)===slug);
+    if(idx!==-1){openVote(idx);return;}
   }
-  showPage(hash || 'home');
+  showPage(hash||'home');
 }
 
 async function bootstrap(){
   await loadConfig();
-  await loadPublicState().catch(error=>console.warn(error));
+  await loadPublicState().catch(e=>console.warn(e));
   await loadAdminStatus();
-  updateCartBadge();
-  syncRestrictedUi();
-  syncLoginUi();
-  const hash = location.hash.slice(1);
-  if(hash){ handleUrlRoute(); } else { showPage('home'); }
+  updateCartBadge(); syncRestrictedUi(); syncLoginUi();
+  const hash=location.hash.slice(1);
+  if(hash){handleUrlRoute();}else{showPage('home');}
   if(refreshTimer) clearInterval(refreshTimer);
   refreshTimer=setInterval(()=>{
     if(!adminAuth) return;
@@ -1446,14 +1311,11 @@ async function bootstrap(){
       if(document.getElementById('page-polls').classList.contains('active')) renderPolls();
       if(document.getElementById('page-admin').classList.contains('active')&&adminAuth) renderAdmin();
       if(document.getElementById('page-admin-transactions').classList.contains('active')&&adminAuth) renderTransactions();
-    }).catch(error=>console.warn(error));
+    }).catch(e=>console.warn(e));
   },15000);
 }
 
-window.addEventListener('popstate', ()=>{
-  handleUrlRoute();
-});
-
+window.addEventListener('popstate',()=>{ handleUrlRoute(); });
 bootstrap();
 </script>
 </div>
