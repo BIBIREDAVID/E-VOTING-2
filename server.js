@@ -476,6 +476,57 @@ async function handleCategoriesApi(req, res, body) {
     }
   }
 
+  // POST /api/categories/bulk-import
+if (method === 'POST' && parts.length === 3 && parts[2] === 'bulk-import') {
+  if (!requireAdmin()) return;
+  const payload = parseJson(body);
+  const rows = Array.isArray(payload.rows) ? payload.rows : [];
+  if (!rows.length) return sendJson(res, 400, { success: false, message: 'No rows provided' });
+
+  const results = { categoriesCreated: 0, nomineesCreated: 0, errors: [] };
+  const catCache = {};
+
+  for (const row of rows) {
+    const catName = normalizeName(row.category);
+    const price = Number(row.price) || 100;
+    const nomName = normalizeName(row.nominee);
+    if (!catName || !nomName) { results.errors.push(`Skipped invalid row: ${JSON.stringify(row)}`); continue; }
+
+    let catRef;
+    if (catCache[catName]) {
+      catRef = catCache[catName];
+    } else {
+      const existing = await db.collection(COL.categories).where('name', '==', catName).limit(1).get();
+      if (existing.empty) {
+        const created = await db.collection(COL.categories).add({
+          name: catName, price, open: true,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        catRef = created;
+        results.categoriesCreated++;
+      } else {
+        catRef = existing.docs[0].ref;
+      }
+      catCache[catName] = catRef;
+    }
+
+    const nomsRef = catRef.collection(COL.nominees);
+    const existingNom = await nomsRef.where('name', '==', nomName).limit(1).get();
+    if (existingNom.empty) {
+      await nomsRef.add({
+        name: nomName, votes: 0,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      results.nomineesCreated++;
+    }
+  }
+
+  await logAdminActivity(currentAdmin.id, currentAdmin.username, 'BULK_IMPORT', results, req);
+  return sendJson(res, 200, { success: true, ...results });
+}
+
   return sendJson(res, 404, { success: false, message: 'Not found' });
 }
 

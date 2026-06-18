@@ -472,6 +472,12 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     </div>
     <div class="a-box">
       <h2><i class="ti ti-plus" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Add Category</h2>
+      <div class="a-box">
+  <h2><i class="ti ti-upload" style="font-size:15px;color:var(--pu)"></i> Bulk Import (CSV)</h2>
+  <p style="font-size:11px;color:var(--text-muted);margin-bottom:10px">Format: <code>category,price,nominee</code> — one nominee per row. Existing categories/nominees are skipped.</p>
+  <input type="file" id="csv-input" accept=".csv" style="margin-bottom:8px;font-size:12px" />
+  <button class="a-btn" onclick="importCSV()"><i class="ti ti-upload" style="font-size:13px"></i> Import CSV</button>
+</div>
       <div class="a-form-row">
         <input type="text" id="cat-input" placeholder="Category name (e.g. DJ OF THE YEAR)" />
         <input type="number" id="cat-price" placeholder="Price ₦" min="0" value="100" style="max-width:100px" />
@@ -1284,6 +1290,38 @@ function initiatePayment(){
     });
     s.setup(); s.open();
   }catch(e){toast('Could not load Squad. Check your API key.'); console.error(e);}
+}
+
+function parseCSV(text){
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines[0].split(',').map(h=>h.trim().toLowerCase());
+  return lines.slice(1).map(line=>{
+    const cols = line.split(',').map(c=>c.trim());
+    const row = {};
+    headers.forEach((h,i)=>row[h]=cols[i]);
+    return row;
+  });
+}
+
+async function importCSV(){
+  const fileInput = document.getElementById('csv-input');
+  const file = fileInput.files[0];
+  if(!file){toast('Please choose a CSV file.');return;}
+  try{
+    const text = await file.text();
+    const rows = parseCSV(text);
+    if(!rows.length){toast('CSV file is empty.');return;}
+    toast('Importing...');
+    const result = await apiRequest('/categories/bulk-import', {
+      method: 'POST',
+      body: JSON.stringify({ rows })
+    });
+    fileInput.value = '';
+    await refreshState();
+    toast(`Imported: ${result.categoriesCreated} categories, ${result.nomineesCreated} nominees added.`);
+  }catch(error){
+    toast(error.message || 'Import failed.');
+  }
 }
 
 function handleUrlRoute(){
