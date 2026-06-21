@@ -778,8 +778,10 @@ function verifyWebhookSignature(rawBody, headers) {
 
 async function verifyWithSquad(reference) {
   if (!SQUAD_SECRET_KEY) throw new Error('Missing SQUAD_SECRET_KEY');
+  const url = `${SQUAD_VERIFY_BASE}/transaction/verify/${encodeURIComponent(reference)}`;
+  console.log('[verifyWithSquad] Calling:', url, 'with reference:', reference);
   const res = await fetch(
-    `${SQUAD_VERIFY_BASE}/transaction/verify/${encodeURIComponent(reference)}`,
+    url,
     {
       headers: {
         Authorization: `Bearer ${SQUAD_SECRET_KEY}`,
@@ -788,7 +790,8 @@ async function verifyWithSquad(reference) {
     }
   );
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data?.message || `Squad verification failed: ${res.status}`);
+  console.log('[verifyWithSquad] Squad responded with status:', res.status, 'body:', JSON.stringify(data));
+  if (!res.ok) throw new Error(data?.message || `Squad verification failed: ${res.status} - ${JSON.stringify(data)}`);
   if (String(data?.data?.transaction_status || '').toLowerCase() !== 'success')
     throw new Error(`Transaction not successful: ${data?.data?.transaction_status || 'unknown'}`);
   return data;
