@@ -142,6 +142,14 @@ async function cleanupRateLimits() {
   if (!snap.empty) await batch.commit();
 }
 
+async function cleanupExpiredSessions() {
+  const now = new Date().toISOString();
+  const snap = await db.collection(COL.sessions).where('expiresAt', '<', now).limit(50).get();
+  const batch = db.batch();
+  snap.docs.forEach(d => batch.delete(d.ref));
+  if (!snap.empty) await batch.commit();
+}
+
 // ── State collector ──────────────────────────────────────────────────────────
 let stateCache = null;
 let stateCacheTime = 0;
@@ -988,6 +996,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (Math.random() < 0.01) cleanupRateLimits().catch(console.error);
+    if (Math.random() < 0.01) cleanupExpiredSessions().catch(console.error);
 
     if (pathname === '/' || pathname === '/index.html') {
       const html = await fsp.readFile(INDEX_PATH, 'utf8');
