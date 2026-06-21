@@ -828,13 +828,16 @@ function extractCart(payload) {
 }
 
 function getVerifiedPayloadShape(payload) {
-  const data = payload?.data || payload || {};
+  // Squad's webhook wraps the real transaction in payload.Body
+  // Squad's verify-API response wraps it in payload.data
+  // Cart/custom metadata lives under "meta" (webhook) or "metadata" (verify API)
+  const data = payload?.Body || payload?.data || payload || {};
   return {
-    transactionRef: data.transaction_ref || data.transaction_reference || payload?.transaction_ref || payload?.reference,
-    email: data.email || payload?.email || payload?.customer?.email || payload?.metadata?.email,
+    transactionRef: data.transaction_ref || data.transaction_reference || payload?.TransactionRef || payload?.transaction_ref || payload?.reference,
+    email: data.email || payload?.email || payload?.customer?.email || data.meta?.email || data.metadata?.email,
     amount: Number(data.transaction_amount ?? data.amount ?? payload?.amount ?? 0),
     customerName: data.customer_name || payload?.customer_name || payload?.customer?.name,
-    metadata: data.metadata || data.custom_fields || payload?.metadata || payload?.custom_fields || {},
+    metadata: data.meta || data.metadata || data.custom_fields || payload?.metadata || payload?.custom_fields || {},
     raw: payload,
   };
 }
