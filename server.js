@@ -145,30 +145,25 @@ async function cleanupRateLimits() {
 // ── State collector ──────────────────────────────────────────────────────────
 async function collectState() {
   const catsSnap = await db.collection(COL.categories).orderBy('createdAt', 'asc').get();
+  const allNomsSnap = await db.collectionGroup(COL.nominees).orderBy('createdAt', 'asc').get();
 
-  const categories = await Promise.all(
-    catsSnap.docs.map(async doc => {
-      const data = doc.data();
-      const nomsSnap = await db
-        .collection(COL.categories)
-        .doc(doc.id)
-        .collection(COL.nominees)
-        .orderBy('createdAt', 'asc')
-        .get();
-      const nominees = nomsSnap.docs.map(n => ({
-        id: n.id,
-        name: n.data().name,
-        votes: n.data().votes || 0,
-      }));
-      return {
-        id: doc.id,
-        name: data.name,
-        price: data.price || 0,
-        open: Boolean(data.open),
-        nominees,
-      };
-    })
-  );
+  const nomsByCategory = {};
+  allNomsSnap.docs.forEach(n => {
+    const catId = n.ref.parent.parent.id;
+    if (!nomsByCategory[catId]) nomsByCategory[catId] = [];
+    nomsByCategory[catId].push({ id: n.id, name: n.data().name, votes: n.data().votes || 0 });
+  });
+
+  const categories = catsSnap.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      name: data.name,
+      price: data.price || 0,
+      open: Boolean(data.open),
+      nominees: nomsByCategory[doc.id] || [],
+    };
+  });
 
   const voteRecords = {};
   categories.forEach(cat => {
@@ -188,10 +183,7 @@ async function collectState() {
     stats: {
       categories: categories.length,
       nominees: categories.reduce((s, c) => s + c.nominees.length, 0),
-      votes: categories.reduce(
-        (s, c) => s + c.nominees.reduce((ss, n) => ss + n.votes, 0),
-        0
-      ),
+      votes: categories.reduce((s, c) => s + c.nominees.reduce((ss, n) => ss + n.votes, 0), 0),
       openPolls: categories.filter(c => c.open).length,
     },
   };
