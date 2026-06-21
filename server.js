@@ -795,12 +795,19 @@ async function verifyWithSquad(reference) {
 }
 
 function extractCart(payload) {
-  const source = payload?.cart || payload?.metadata?.cart || payload?.custom_fields?.cart || [];
+  let source = payload?.cart || payload?.metadata?.cart || payload?.custom_fields?.cart || [];
+  if (typeof source === 'string') {
+    try { source = JSON.parse(source); } catch (e) { source = []; }
+  }
   if (!Array.isArray(source)) return [];
   return source
     .map(item => {
-      const votes = Array.isArray(item.votes)
-        ? item.votes
+      let votesRaw = item.votes;
+      if (typeof votesRaw === 'string') {
+        try { votesRaw = JSON.parse(votesRaw); } catch (e) { votesRaw = []; }
+      }
+      const votes = Array.isArray(votesRaw)
+        ? votesRaw
             .map(v => {
               if (Array.isArray(v)) return { name: String(v[0] || '').trim().toUpperCase(), votes: Number(v[1]) || 0 };
               if (v && typeof v === 'object') return { name: normalizeName(v.name || v.nominee || ''), votes: Number(v.votes ?? v.count ?? 0) || 0 };
@@ -905,8 +912,15 @@ async function handlePaymentVerification(req, res, body) {
     if (!reference) return sendJson(res, 400, { success: false, message: 'Transaction reference is required' });
 
     const verification = await verifyWithSquad(reference);
+    console.log('[payments/verify] Squad verification response:', JSON.stringify(verification));
+
     const verified = getVerifiedPayloadShape(verification);
-    const cart = extractCart(verified.metadata || payload);
+    console.log('[payments/verify] verified shape:', JSON.stringify(verified));
+
+    const hasUsableMetadata = verified.metadata && Array.isArray(verified.metadata.cart) && verified.metadata.cart.length;
+    const cart = extractCart(hasUsableMetadata ? verified.metadata : payload);
+    console.log('[payments/verify] extracted cart:', JSON.stringify(cart), 'used source:', hasUsableMetadata ? 'squad metadata' : 'client payload');
+
     const receipt = await recordVerifiedPayment({
       transactionRef: verified.transactionRef || reference,
       email: verified.email,
@@ -922,18 +936,26 @@ async function handlePaymentVerification(req, res, body) {
       data: { transactionRef: verified.transactionRef || reference, duplicate: receipt.duplicate, items: receipt.items },
     });
   } catch (error) {
+    console.error('[payments/verify] FAILED:', error.message, error.stack);
     return sendJson(res, 400, { success: false, message: error.message || 'Payment verification failed' });
   }
 }
 
 async function handleWebhook(req, res, rawBody) {
   try {
-    if (!verifyWebhookSignature(rawBody, req.headers))
+    if (!verifyWebhookSignature(rawBody, req.headers)) {
+      console.error('[webhooks/squad] Invalid signature. Headers:', JSON.stringify(req.headers));
       return sendJson(res, 401, { success: false, message: 'Invalid webhook signature' });
+    }
 
     const payload = parseJson(rawBody);
+    console.log('[webhooks/squad] payload:', JSON.stringify(payload));
+
     const verified = getVerifiedPayloadShape(payload);
-    const cart = extractCart(verified.metadata || payload);
+    const hasUsableMetadata = verified.metadata && Array.isArray(verified.metadata.cart) && verified.metadata.cart.length;
+    const cart = extractCart(hasUsableMetadata ? verified.metadata : payload);
+    console.log('[webhooks/squad] extracted cart:', JSON.stringify(cart), 'used source:', hasUsableMetadata ? 'squad metadata' : 'webhook payload');
+
     if (!verified.transactionRef) return sendJson(res, 400, { success: false, message: 'Missing transaction reference' });
 
     await recordVerifiedPayment({
@@ -946,6 +968,7 @@ async function handleWebhook(req, res, rawBody) {
     });
     return sendJson(res, 200, { success: true, message: 'Webhook processed' });
   } catch (error) {
+    console.error('[webhooks/squad] FAILED:', error.message, error.stack);
     return sendJson(res, 400, { success: false, message: error.message || 'Webhook processing failed' });
   }
 }
@@ -996,7 +1019,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (Math.random() < 0.01) cleanupRateLimits().catch(console.error);
-    if (Math.random() < 0.01) cleanupExpiredSessions().catch(console.error);
+  if (Math.random() < 0.01) cleanupExpiredSessions().catch(console.error);
 
     if (pathname === '/' || pathname === '/index.html') {
       const html = await fsp.readFile(INDEX_PATH, 'utf8');
