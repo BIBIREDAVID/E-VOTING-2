@@ -143,7 +143,16 @@ async function cleanupRateLimits() {
 }
 
 // ── State collector ──────────────────────────────────────────────────────────
+let stateCache = null;
+let stateCacheTime = 0;
+const STATE_CACHE_TTL = 10000;
+
 async function collectState() {
+  const now = Date.now();
+  if (stateCache && (now - stateCacheTime) < STATE_CACHE_TTL) {
+    return stateCache;
+  }
+
   const catsSnap = await db.collection(COL.categories).orderBy('createdAt', 'asc').get();
   const allNomsSnap = await db.collectionGroup(COL.nominees).orderBy('createdAt', 'asc').get();
 
@@ -171,7 +180,7 @@ async function collectState() {
     cat.nominees.forEach(n => { voteRecords[cat.name][n.name] = n.votes; });
   });
 
-  return {
+  const result = {
     categories: categories.map(cat => ({
       id: cat.id,
       name: cat.name,
@@ -187,7 +196,13 @@ async function collectState() {
       openPolls: categories.filter(c => c.open).length,
     },
   };
+
+  stateCache = result;
+  stateCacheTime = now;
+  return result;
 }
+
+function invalidateStateCache() { stateCache = null; }
 
 // ── Admin seed ───────────────────────────────────────────────────────────────
 async function seedAdminIfMissing() {
