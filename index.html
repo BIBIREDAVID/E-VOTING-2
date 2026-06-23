@@ -402,9 +402,10 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
 <!-- RESULTS -->
 <div class="page" id="page-results">
   <div class="results-inner">
-    <div class="page-header" style="max-width:680px">
-      <div><h2>Live Results</h2><p>Vote counts update as ballots are cast</p></div>
-    </div>
+    <div class="page-header" style="max-width:680px; display:flex; justify-content:space-between; align-items:center;">
+  <div><h2>Live Results</h2><p>Vote counts update as ballots are cast</p></div>
+  <button class="nav-btn" onclick="downloadResultsPDF()"><i class="ti ti-download"></i> Download PDF</button>
+</div>
     <div id="results-body"></div>
   </div>
 </div>
@@ -495,9 +496,10 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
     <div class="a-box">
       <h2><i class="ti ti-download" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Export</h2>
       <div class="export-row">
-        <button class="a-btn secondary" onclick="exportCSV()"><i class="ti ti-file-spreadsheet" aria-hidden="true" style="font-size:13px"></i> Export Results CSV</button>
-        <button class="a-btn secondary" onclick="exportJSON()"><i class="ti ti-braces" aria-hidden="true" style="font-size:13px"></i> Export JSON</button>
-      </div>
+  <button class="a-btn secondary" onclick="exportCSV()"><i class="ti ti-file-spreadsheet" aria-hidden="true" style="font-size:13px"></i> Export Results CSV</button>
+  <button class="a-btn secondary" onclick="exportJSON()"><i class="ti ti-braces" aria-hidden="true" style="font-size:13px"></i> Export JSON</button>
+  <button class="a-btn secondary" onclick="downloadResultsPDF()"><i class="ti ti-file-type-pdf" aria-hidden="true" style="font-size:13px"></i> Export PDF</button>
+</div>
     </div>
     <div class="a-box">
       <h2><i class="ti ti-key" aria-hidden="true" style="font-size:15px;color:var(--pu)"></i> Change Credentials</h2>
@@ -584,6 +586,8 @@ footer{background:#1a0a3c;color:#c4b5f5;padding:32px 20px 20px;margin-top:auto}
   </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="https://checkout.squadco.com/widget/squad.min.js"></script>
 <script>
 const API_BASE = '/api';
@@ -1154,6 +1158,67 @@ function exportJSON(){
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='nacos_lasu_data.json'; a.click();
   URL.revokeObjectURL(url); toast('JSON exported.');
+}
+
+function downloadResultsPDF() {
+  if (!categories.length) { toast('No data to export.'); return; }
+
+  // 1. Initialize jsPDF
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // 2. Add Title & Timestamp
+  doc.setFontSize(18);
+  doc.text("NACOS-LASU Awards - Official Results", 14, 20);
+  doc.setFontSize(11);
+  doc.text("Generated on: " + new Date().toLocaleString(), 14, 28);
+
+  // 3. Prepare Data arrays
+  const head = [['Category', 'Nominee', 'Votes', 'Status']];
+  const body = [];
+
+  // Loop through your categories and voteRecords
+  categories.forEach(cat => {
+    const recs = voteRecords[cat.name] || {};
+    
+    // Sort nominees from highest to lowest votes
+    const sorted = [...cat.nominees].sort((a,b) => (recs[b]||0) - (recs[a]||0));
+    
+    sorted.forEach((nom, index) => {
+      const votes = recs[nom] || 0;
+      // The first person in the sorted array is the winner (if they have more than 0 votes)
+      const isWinner = (index === 0 && votes > 0);
+      
+      body.push([
+        cat.name,
+        nom,
+        votes.toString(),
+        isWinner ? 'WINNER' : ''
+      ]);
+    });
+  });
+
+  // 4. Generate the stylized table
+  doc.autoTable({
+    startY: 35,
+    head: head,
+    body: body,
+    theme: 'grid',
+    headStyles: { fillColor: [108, 63, 197] }, // Matches your var(--pu) color
+    
+    // Check every row; if column 3 says 'WINNER', highlight it!
+    didParseCell: function (data) {
+      if (data.section === 'body' && data.row.raw[3] === 'WINNER') {
+        data.cell.styles.fillColor = [237, 232, 250]; // Matches your var(--pu-light)
+        data.cell.styles.textColor = [74, 42, 138];   // Matches your var(--pu-dark)
+        data.cell.styles.fontStyle = 'bold';
+      }
+    }
+  });
+
+  // 5. Trigger download
+  doc.save('NACOS_Awards_Results.pdf');
+  toast('PDF exported.');
 }
 
 async function renderLogs(){
